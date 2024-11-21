@@ -11,7 +11,7 @@
 | 7  | 접근 제어자            | 2024-11-19 |
 | 8  | 자바 메모리 구조와 static | 2024-11-20 |
 | 9  | final             | 2024-11-20 |
-| 10 | 상속                | 2024-11-   |
+| 10 | 상속                | 2024-11-21 |
 | 11 | 다형성1              | 2024-11-   |
 | 12 | 다형성2              | 2024-11-   |
 | 13 | 다형성과 설계           | 2024-11-   |
@@ -25,7 +25,8 @@
     - https://www.inflearn.com/course/%EA%B9%80%EC%98%81%ED%95%9C%EC%9D%98-%EC%8B%A4%EC%A0%84-%EC%9E%90%EB%B0%94-%EA%B8%B0%EB%B3%B8%ED%8E%B8
 
 - 아래 내용은...
-    - 강의 내용을 개인적으로 복습하고자 정리하였습니다.
+    - 강의 내용을 개인적으로 복습하고자 정리하였습니다. 
+    - 유료 강의이므로, 실제 작성한 전체 코드는 비공개 합니다. (저작권...)
 
 ---
 
@@ -1536,6 +1537,126 @@ public class FinalRefMain {
 ---
 
 ## 10. 상속
+
+- 상속: `extends`
+- 자바는 `단일상속`
+- 상속과 `메모리 구조`
+  - 인스턴스 생성시 부모 클래스도 포함해서 같이 생성된다.
+    - 단순하게 물려받는 것 아님!
+  - 변수나 메서드 호출 시,
+    - 우선 본인 타입에서 해당 값을 찾는다.
+    - 찾는 값이 없으면 부모로 올라가서 찾는다.
+      ![본인타입에서 찾고 부모로](https://github.com/user-attachments/assets/fbcbe4c0-f8d2-479a-abcb-6b133ee3fa23)
+- 메서드 `오버라이딩` (Overriding)
+  - `오버로딩`(Overloading) vs `오버라이딩`(Overriding)
+    - 오버로딩
+      - 메서드 이름이 같고 매개변수(파라미터)가 다른 메서드를 여러개 정의하는 것
+    - 오버라이딩
+      - 상속관계에서 하위 클래스에서 상위 클래스의 메서드를 재정의하는 것
+  - 메서드 오버라이딩 조건
+    - `@Override` 애노테이션 붙이자.
+- 상속관계에도 접근 제어자가 적용된다.
+- `super`
+  - 부모에 접근할때 `super` 키워드 사용
+  - 생성자
+    - 상속을 받으면 생성자의 첫줄에 `super(...)` 를 사용해서 부모 클래스의 생성자를 호출해야 한다. (반드시! 규칙임)
+    - 상속관계에서 생성자 순서
+      - 자식이 먼저 생성되는게 아니라 부모 것을 먼저 완성하고 내려온다.
+      - `super()`가 첫줄에서 가장 먼저 실행되므로!
+        ![상속관계에서 생성자 호출 순서](https://github.com/user-attachments/assets/c66442c4-fa34-4554-a0ca-4a0b1c9b863b)
+- `final`
+  - `final`로 선언된 클래스는 확장될 수 없다. (== 상속될 수 없다.)
+  - `final`로 선언된 메서드는 오버라이딩 될 수 없다
+
+- 대표예시)
+  - 상속 관계 상품
+    - 부모 클래스 : 
+      - `Item`
+        - 공통 속성: `name`, `price`
+        - 공통 메서드: `getPrice()`, `print()` -> 자식에서 오버라이딩!
+    - 자식 클래스 :
+      - `Book`
+        - 개별 속성: `author`, `isbn`
+      - `Album`
+        - 개별 속성: `artist`
+      - `Movie`
+        - 개별 속성: `director`, `actor`
+
+```java
+package extends1.ex;
+
+public class ShopMain {
+
+    public static void main(String[] args) {
+        Book book = new Book("JAVA", 10000, "han", "12345");
+        Album album = new Album("앨범1", 15000,"seo");
+        Movie movie = new Movie("영화1", 18000,"감독1", "배우1");
+
+        book.print();
+        album.print();
+        movie.print();
+
+        int sum = book.getPrice() + album.getPrice() + movie.getPrice();
+        System.out.println("상품 가격의 합: " + sum);
+    }
+}
+```
+
+- 실행결과
+    ```
+    이름:JAVA, 가격:10000
+    - 저자:han, isbn:12345
+    이름:앨범1, 가격:15000
+    - 아티스트:seo
+    이름:영화1, 가격:18000
+    - 감독:감독1, 배우:배우1
+    상품 가격의 합: 43000
+    ```
+
+```java
+package extends1.ex;
+
+public class Item {
+    private String name;
+    private int price;
+
+    public Item(String name, int price) {
+        this.name = name;
+        this.price = price;
+    }
+
+    public int getPrice() {
+        return price;
+    }
+
+    public void print() {
+        System.out.println("이름:" + name + ", 가격:" + price);
+    }
+}
+```
+
+```java
+package extends1.ex;
+
+public class Book extends Item {
+    private String author;
+    private String isbn;
+
+    public Book(String name, int price, String author, String isbn) {
+        super(name, price);
+        this.author = author;
+        this.isbn = isbn;
+    }
+
+    @Override
+    public void print() {
+        super.print();
+        System.out.println("- 저자:" + author + ", isbn:" + isbn);
+    }
+}
+```
+
+- `Album`, `Movie`는 생략.
 
 ---
 
