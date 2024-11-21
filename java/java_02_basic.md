@@ -106,7 +106,7 @@ public class Student {
 - 배열에 참조값 대입
 - 배열에 들어있는 객체 사용
 
-![배열에 참조값을 대입한 이후 최종 그림.png](java/img/java_02_basic/배열에%20참조값을%20대입한%20이후%20최종%20그림.png)
+![배열에 참조값을 대입한 이후 최종 그림](https://github.com/user-attachments/assets/5f899ceb-77c1-4baf-933b-2432a760d9ab)
 
 ```java
 public class ClassStart4 {
