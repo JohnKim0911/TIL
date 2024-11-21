@@ -976,7 +976,7 @@ public class BankAccountMain {
 
 ### 자바 메모리 구조
 
-![자바 메모리 구조 - 비유](../../java-basic/src/static1/img/자바%20메모리%20구조_비유.png)
+![자바 메모리 구조_비유](https://github.com/user-attachments/assets/7200793c-5a66-4396-8133-53e042a2f2e1)
 
 - 자바 메모리 구조
     - `메서드 영역`
@@ -991,7 +991,7 @@ public class BankAccountMain {
         - 배열도 이 영역에 생성된다.
 
 
-![자바 메모리 구조 - 실제](../../java-basic/src/static1/img/자바%20메모리%20구조_실제.png)
+![자바 메모리 구조_실제](https://github.com/user-attachments/assets/1e6a9a57-2556-458c-afca-f7584c350ecd)
 
 - 자바 메모리 구조
     - `메서드 영역`
@@ -1022,7 +1022,7 @@ public class BankAccountMain {
     - `메서드`는 `메서드 영역`에서 공통으로 관리되고 실행된다.
     - 인스턴스의 `메서드`를 호출하면 실제로는 `메서드 영역`에 있는 코드를 불러서 수행한다.
 
-![메서드 코드는 메서드 영역에](../../java-basic/src/static1/img/메서드%20코드는%20메서드%20영역에.png)
+![메서드 코드는 메서드 영역에](https://github.com/user-attachments/assets/c739559e-c3dd-46a7-992d-5e268fe76fc0)
 
 ### 스택과 큐 자료 구조
 
@@ -1033,8 +1033,8 @@ public class BankAccountMain {
         - 예시) 냉장고에 콜라 넣기.
             - 가장 나중에 넣은 콜라가 가장 먼저 나옴.
 
-![스택구조1](../../java-basic/src/static1/img/스택구조1.png)
-![스택구조2](../../java-basic/src/static1/img/스택구조2.png)
+![스택구조1](https://github.com/user-attachments/assets/23b6b018-6044-41f7-9f87-ba0e6c840ffe)
+![스택구조2](https://github.com/user-attachments/assets/2b264a4d-cf69-403e-acce-b97de2100aa9)
 
 - `큐`(Queue)
     - `선입 선출`(`FIFO`, First In First Out)
@@ -1043,7 +1043,7 @@ public class BankAccountMain {
         - 예시) 선착순 이벤트
             - 가장 먼저 온 사람이 먼저 당첨되도록.
 
-![queue](../../java-basic/src/static1/img/queue.png)
+![queue](https://github.com/user-attachments/assets/c50c23f1-aa78-49df-9e71-95984a23c605)
 
 ### 스택 영역
 
@@ -1055,7 +1055,7 @@ public class BankAccountMain {
 
 ### 스택 영역과 힙 영역
 
-![스택 영역 and 힙 영역](../../java-basic/src/static1/img/스택%20영역%20and%20힙%20영역.png)
+![스택 영역 and 힙 영역](https://github.com/user-attachments/assets/5e7d1208-5d89-483f-b43c-4340a49c065d)
 
 - `x001` 참조값을 가진 `Data` 인스턴스를 참조하는 곳이 없다.
     - 참조하는 곳이 없으므로 사용되는 곳도 없다.
@@ -1158,7 +1158,7 @@ public class DataCountMain3 {
     - `Data3.count`와 같이 `클래스명`에 `.`(dot)을 사용 한다.
     - 마치 클래스에 직접 접근하는 것 처럼 느껴진다.
 
-![static 변수](../../java-basic/src/static1/img/static%20변수.png)
+![static 변수](https://github.com/user-attachments/assets/e322ceb6-d8dd-4898-a29f-b6f144daa9c1)
 
 - `static`이 붙은 멤버 변수는 `메서드 영역`에서 관리한다.
     - `static`이 붙은 멤버 변수 `count`는 `인스턴스 영역`에 생성되지 않는다. 대신에 `메서드 영역`에서 이 변수를 관리한다.
