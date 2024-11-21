@@ -5,7 +5,7 @@
 
 ## Java
 
-- 인프런 - 김영한의 실전 자바 로드맵
+- 인프런 - 김영한의 실전 자바 로드맵 (https://www.inflearn.com/roadmaps/744)
   1. [입문편](java/java_01_start.md)
      - 변수, 연산자, 조건문, 반복문, 스코프, 형변환, 배열, 메서드
   2. [기본편](java/java_02_basic.md)
