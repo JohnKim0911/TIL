@@ -1982,7 +1982,8 @@ public class AbstractMain {
 - 클래스 상속 관계는 UML에서 실선을 사용하지만, 인터페이스 구현(상속) 관계는 UML에서 **점선**을 사용한다.
 
 - 인터페이스 예제
-  ![예제5](https://github.com/user-attachments/assets/3a4f28e9-0a04-44eb-86a4-15ede36c260c)
+
+![예제5](https://github.com/user-attachments/assets/3a4f28e9-0a04-44eb-86a4-15ede36c260c)
 
 ```java
 package poly.ex5;
