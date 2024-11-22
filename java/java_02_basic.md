@@ -1,21 +1,21 @@
 # (복습) 김영한의 실전 자바 - 기본편
 
-|    | 제목                | 복습일        |
-|----|-------------------|------------|
-| 1  | 강의소개와 자료          | 2024-11-17 |
-| 2  | 클래스와 데이터          | 2024-11-17 |
-| 3  | 기본형과 참조형          | 2024-11-18 |
-| 4  | 객체 지향 프로그래밍       | 2024-11-18 |
-| 5  | 생성자               | 2024-11-19 |
-| 6  | 패키지               | 2024-11-19 |
-| 7  | 접근 제어자            | 2024-11-19 |
-| 8  | 자바 메모리 구조와 static | 2024-11-20 |
-| 9  | final             | 2024-11-20 |
-| 10 | 상속                | 2024-11-21 |
-| 11 | 다형성1              | 2024-11-22 |
-| 12 | 다형성2              | 2024-11-   |
-| 13 | 다형성과 설계           | 2024-11-   |
-| 14 | 다음으로              | 2024-11-   |
+|    | 제목                                        | 복습일        |
+|----|-------------------------------------------|------------|
+| 1  | [강의소개와 자료](#1-강의-소개와-자료)                  | 2024-11-17 |
+| 2  | [클래스와 데이터](#2-클래스와-데이터)                   | 2024-11-17 |
+| 3  | [기본형과 참조형](#3-기본형과-참조형)                   | 2024-11-18 |
+| 4  | [객체 지향 프로그래밍](#4-객체-지향-프로그래밍)             | 2024-11-18 |
+| 5  | [생성자](#5-생성자)                             | 2024-11-19 |
+| 6  | [패키지](#6-패키지)                             | 2024-11-19 |
+| 7  | [접근 제어자](#7-접근-제어자)                       | 2024-11-19 |
+| 8  | [자바 메모리 구조와 static](#8-자바-메모리-구조와-static) | 2024-11-20 |
+| 9  | [final](#9-final)                         | 2024-11-20 |
+| 10 | [상속](#10-상속)                              | 2024-11-21 |
+| 11 | [다형성1](#11-다형성1)                          | 2024-11-22 |
+| 12 | [다형성2](#12-다형성2)                          | 2024-11-22 |
+| 13 | [다형성과 설계](#13-다형성과-설계)                    | 2024-11-   |
+| 14 | [다음으로](#14-다음으로)                          | 2024-11-   |
 
 ---
 
@@ -1796,6 +1796,365 @@ public class Book extends Item {
 ---
 
 ## 12. 다형성2
+
+### 다형성 예제
+- 다형성을 통해서 서로 다른 타입들을 상위 클래스 하나로 묶어서 관리할 수 있다.
+  - 같은 타입이므로 배열이나 메소드에서 묶어서 사용 가능.
+    - 중복되는 코드들을 줄일 수 있다.
+
+![예제2](https://github.com/user-attachments/assets/e000347c-64de-4e3e-9abd-3a60afb48ef6)
+
+```java
+package poly.ex2;
+
+public class Animal {
+    public void sound() {
+        System.out.println("동물 울음 소리");
+    }
+}
+```
+
+```java
+package poly.ex2;
+
+public class Dog extends Animal {
+    @Override
+    public void sound() {
+        System.out.println("멍멍");
+    }
+}
+```
+
+// `Cat()`, `Caw()`는 생략함.
+
+```java
+package poly.ex2;
+
+public class AnimalPolyMain2 {
+
+    public static void main(String[] args) {
+        Animal[] animalArr = {new Dog(), new Cat(), new Caw()};
+        for (Animal animal : animalArr) {
+            soundAnimal(animal);
+        }
+    }
+
+    //동물이 추가 되어도 변하지 않는 코드
+    private static void soundAnimal(Animal animal) {
+        System.out.println("동물 소리 테스트 시작");
+        animal.sound();
+        System.out.println("동물 소리 테스트 종료");
+    }
+}
+```
+
+```
+//출력결과
+동물 소리 테스트 시작
+멍멍
+동물 소리 테스트 종료
+
+동물 소리 테스트 시작
+냐옹
+동물 소리 테스트 종료
+
+동물 소리 테스트 시작
+음매
+동물 소리 테스트 종료
+```
+
+- 새로운 기능이 추가되었을 때 변하는 부분을 최소화 하는 것이 잘 작성된 코드이다.
+  - 변하는 부분과 변하지 않는 부분을 명확하게 구분하는 것이 좋다.
+
+- 남은 문제
+  1. `Animal` 클래스를 생성할 수 있는 문제
+     - `Animal animal = new Animal();` // 이걸 막아야 함.
+     - **추상 클래스**를 사용하면 해결 가능!
+  2. `Animal` 클래스를 상속 받는 곳에서` sound()` 메서드를 오버라이딩을 하지 않을 가능성
+     - 오버라이딩 하지 않아서 `Animal.sound()`를 그대로 호출할 가능성을 막아야함.
+     - **추상 메서드**를 사용하면 해결 가능!
+
+### 추상 클래스
+
+- **추상 클래스**
+  - 동물(`Animal`)과 같이 부모 클래스는 제공하지만, 실제 생성되면 안되는 클래스
+  - 추상적인 개념을 제공하는 클래스.
+  - 실체인 인스턴스가 존재하지 않는다.
+    - **인스턴스를 생성하지 못한다. (제약)**
+  - 상속을 목적으로 사용되고, 부모 클래스 역할을 담당한다.
+  - `abstract` 키워드 사용
+    - 예시) `abstract class 클래스명 {...}`
+
+- **추상 메서드**
+  - 자식 클래스가 반드시 오버라이딩 해야 하는 메서드를 부모 클래스에 정의할 수 있다.
+  - 추상적인 개념을 제공하는 메서드
+  - 실체가 존재하지 않고, 메서드 바디가 없다.
+  - 예시) `public abstract void 메서드명();`
+  - **추상 메서드가 하나라도 있는 클래스는 추상 클래스로 선언해야 한다.**
+  - **추상 메서드는 상속 받는 자식 클래스가 반드시 오버라이딩 해서 사용해야 한다.**
+
+- 추상 클래스 예제
+![예제3](https://github.com/user-attachments/assets/b9b3c3fa-ad29-4f95-b774-a340fc8133b8)
+
+```java
+package poly.ex3;
+
+public abstract class AbstractAnimal {
+    public abstract void sound();
+
+    public void move() {
+        System.out.println("동물이 움직입니다.");
+    }
+}
+```
+
+```java
+package poly.ex3;
+
+public class Dog extends AbstractAnimal {
+
+    @Override
+    public void sound() { // 오버라이딩 하지 않으면 컴파일 오류 발생
+        System.out.println("멍멍");
+    }
+}
+```
+
+```java
+package poly.ex3;
+
+public class AbstractMain {
+
+    public static void main(String[] args) {
+        //추상클래스 생성 불가
+        //AbstractAnimal animal = new AbstractAnimal();
+
+        Dog dog = new Dog();
+        Cat cat = new Cat();
+        Caw caw = new Caw();
+
+        cat.sound();
+        cat.move();
+
+        soundAnimal(dog);
+        soundAnimal(cat);
+        soundAnimal(caw);
+    }
+
+    //동물이 추가 되어도 변하지 않는 부분
+    private static void soundAnimal(AbstractAnimal animal) {
+        System.out.println("동물 소리 테스트 시작");
+        animal.sound();
+        System.out.println("동물 소리 테스트 종료");
+    }
+}
+```
+
+### 순수 추상 클래스
+- 모든 메서드가 추상 메서드인 순수 추상 클래스.
+  - 코드를 실행할 바디 부분이 전혀 없다.
+      ```java
+      public abstract class AbstractAnimal {
+          public abstract void sound();
+          public abstract void move();
+      }
+      ```
+- 상속시 자식은 모든 메서드를 오버라이딩 해야 한다.
+  - 어떤 규격을 지켜서 구현해야 하는 것 처럼 느껴진다.
+    - 인터페이스(규격)와 같이 느껴진다.
+      - 예시) USB 인터페이스
+- 자바는 순수 추상 클래스를 더 편리하게 사용할 수 있도록 **인터페이스**라는 개념을 제공한다.
+
+### 인터페이스
+
+- 인터페이스 정의시 `class` 대신 `interface` 키워드 사용
+- 인터페이스를 상속 받을 때는 `extends` 대신 `implements`키워드 사용
+- 인터페이스의 메서드는 모두 `public`, `abstract`이다.
+  - 해당 키워드 생략이 권장된다.
+- 인터페이스는 다중 구현(다중 상속)을 지원한다.
+- 인터페이스에서 멤버 변수는 `public`, `static`, `final`이 모두 포함되었다고 간주된다.
+  - 해당 키워드 생략이 권장된다.
+    ```java
+    public interface InterfaceAnimal {
+        double MY_PI = 3.14; //public static final
+    }
+    ```
+- 클래스 상속 관계는 UML에서 실선을 사용하지만, 인터페이스 구현(상속) 관계는 UML에서 **점선**을 사용한다.
+
+- 인터페이스 예제
+![예제5](https://github.com/user-attachments/assets/3a4f28e9-0a04-44eb-86a4-15ede36c260c)
+
+```java
+package poly.ex5;
+
+public interface InterfaceAnimal {
+    void sound(); //public abstract
+    void move(); //public abstract
+}
+```
+
+```java
+package poly.ex5;
+
+public class Dog implements InterfaceAnimal{
+    @Override
+    public void sound() {
+        System.out.println("멍멍");
+    }
+
+    @Override
+    public void move() {
+        System.out.println("개 이동");
+    }
+}
+```
+
+//`Cat()`, `Caw()`는 생략
+
+```java
+package poly.ex5;
+
+public class InterfaceMain {
+
+    public static void main(String[] args) {
+        //인터페이스 생성 불가
+        //InterfaceAnimal interfaceAnimal = new InterfaceAnimal();
+
+        Cat cat = new Cat();
+        Dog dog = new Dog();
+        Caw caw = new Caw();
+
+        soundAnimal(cat);
+        soundAnimal(dog);
+        soundAnimal(caw);
+    }
+
+    //변하지 않는 부분
+    private static void soundAnimal(InterfaceAnimal animal) {
+        System.out.println("동물 소리 테스트 시작");
+        animal.sound();
+        System.out.println("동물 소리 테스트 종료");
+    }
+}
+```
+
+- 인터페이스를 사용해야 하는 이유
+  - 제약
+    - 순수 추상 클래스, 인터페이스 둘다 반드시 특정 메서드를 구현하라는 제약을 주는 것이다.
+    - 순수 추상 클래스의 경우, 누군가 실행 가능한 메서드를 끼워 넣을 수 있다.
+      - 그러면 더 이상 순수 추상 클래스가 아니게 된다.
+    - 인터페이스는 모든 메서드가 추상 메서드이다. 따라서 이런 문제를 원천 차단할 수 있다.
+  - 다중구현
+    - 자바에서는 단일상속만 가능하다.
+      - 순수 추상 클래스는 한개만 가능...
+    - 인터페이스는 다중구현이 가능하다.
+
+### 인터페이스 다중 구현
+
+- 자바가 다중 상속을 지원하지 않는 이유 (복습)
+  - 다이아문제 발생 가능
+    - 어떤 부모의 메서드를 상속받을지 애매해지는 것.
+- 인터페이스 다중 구현
+  - 어느 부모로 부터 상속받던지, 구현은 자식의 몫이다.
+    - 결과적으로 두 부모 중 어떤 한 부모의 메서드를 선택하는게 아니라 자식에서 직접 구현한다.
+    - 다이아몬드 문제가 발생하지 않는다.
+  
+  ![인터페이스 다중 구현](https://github.com/user-attachments/assets/d27299ef-8bb4-48aa-961b-cf78f7ddf490)
+
+- 메모리 구조
+  - `a.methodCommon()` 호출시, `Child.methodCommon()` 호출
+    ![인터페이스 다중 구현_메모리구조](https://github.com/user-attachments/assets/39d48674-384e-4697-b357-8fb1763e5a5b)
+
+### 클래스와 인터페이스 활용
+
+클래스 상속과 인터페이스 구현을 함께 사용하는 예
+
+![클래스와 인터페이스 활용](https://github.com/user-attachments/assets/0610ecf7-5c65-4513-8d10-1ae529e92392)
+
+```java
+package poly.ex6;
+
+public abstract class AbstractAnimal {
+    public abstract void sound();
+    public void move() {
+        System.out.println("동물이 이동합니다.");
+    }
+}
+```
+
+```java
+package poly.ex6;
+
+public interface Fly {
+    void fly();
+}
+```
+
+```java
+package poly.ex6;
+
+public class Dog extends AbstractAnimal {
+    @Override
+    public void sound() {
+        System.out.println("멍멍");
+    }
+}
+```
+
+```java
+package poly.ex6;
+
+public class Bird extends AbstractAnimal implements Fly{
+    @Override
+    public void sound() {
+        System.out.println("짹짹");
+    }
+
+    @Override
+    public void fly() {
+        System.out.println("새 날기");
+    }
+}
+```
+//`Chicken()`은 생략
+
+```java
+package poly.ex6;
+
+public class SoundFlyMain {
+
+    public static void main(String[] args) {
+        Dog dog = new Dog();
+        Bird bird = new Bird();
+        Chicken chicken = new Chicken();
+
+        soundAnimal(dog);
+        soundAnimal(bird);
+        soundAnimal(chicken);
+
+        flyAnimal(bird);
+        flyAnimal(chicken);
+    }
+
+    //변하지 않는 부분
+    private static void soundAnimal(AbstractAnimal animal) {
+        System.out.println("동물 소리 테스트 시작");
+        animal.sound();
+        System.out.println("동물 소리 테스트 종료");
+    }
+
+    //Fly 인터페이스가 있으면 사용 가능
+    private static void flyAnimal(Fly fly) {
+        System.out.println("날기 테스트 시작");
+        fly.fly();
+        System.out.println("날기 테스트 종료");
+    }
+}
+```
+- 메모리 구조
+  - `flyAnimal(bird);` 호출시, `Bird.fly()` 가 호출된다.
+  ![fly(bird) 호출시](https://github.com/user-attachments/assets/9b89097c-4720-4609-ac9d-eb8385b92d36)
+
 
 ---
 
