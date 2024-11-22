@@ -12,7 +12,7 @@
 | 8  | 자바 메모리 구조와 static | 2024-11-20 |
 | 9  | final             | 2024-11-20 |
 | 10 | 상속                | 2024-11-21 |
-| 11 | 다형성1              | 2024-11-   |
+| 11 | 다형성1              | 2024-11-22 |
 | 12 | 다형성2              | 2024-11-   |
 | 13 | 다형성과 설계           | 2024-11-   |
 | 14 | 다음으로              | 2024-11-   |
@@ -1661,6 +1661,137 @@ public class Book extends Item {
 ---
 
 ## 11. 다형성1
+
+- 다형성(Polymorphism)의 뜻
+  - 다양한 형태, 여러 형태
+  
+- 다형성 2가지 핵심 이론
+  - **다형적 참조**
+  - **메서드 오버라이딩**
+    
+- **다형적 참조**
+  - **부모 타입은 자식 타입을 담을 수 있다.**
+    - `Parent poly = new Child()` // 가능
+    - `Child child1 = new Parent()` // 불가능. 컴파일 오류 발생
+  - 다형적 참조의 한계
+    - **상속 관계는 부모 방향으로 찾아 올라갈 수는 있지만, 자식 방향으로 찾아 내려갈 수는 없다.**
+      ![다형적 참조의 한계](https://github.com/user-attachments/assets/8dfaf685-ebf0-45d7-b4ef-adc66cffbd47)
+  - 다형성과 캐스팅
+    - 캐스팅 용어정리
+      - 업캐스팅(upcasting): 부모 타입으로 변경
+      - 다운캐스팅(downcasting): 자식 타입으로 변경
+    - 부모가 자식 타입의 기능을 사용하려면, 다운캐스팅을 해야한다.
+      - `Child child = (Child) poly`
+      - `child.childMethod();`
+      - 일시적 다운캐스팅
+        - 변수에 담지 않고, 바로 다운캐스팅해서 사용할 수 있다.
+          - `((Child) poly).childMethod();`
+    - 업캐스팅은 생략을 권장한다.
+      - `Parent parent1 = (Parent) child;` // `(Parent)` 생략 권장.
+        - `Parent parent1 = child;`
+    - 다운캐스팅 잘못하면 런타임 오류가 발생할 수 있다.
+         ```java
+         package poly.basic;
+             
+         //다운캐스팅을 자동으로 하지 않는 이유
+         public class CastingMain4 {
+             
+             public static void main(String[] args) {
+                 Parent parent1 = new Child();
+                 Child child1 = (Child) parent1;
+                 child1.childMethod(); //문제 없음
+             
+                 Parent parent2 = new Parent();
+                 Child child2 = (Child) parent2; //런타임 오류 - ClassCastException
+                 child2.childMethod(); //실행 불가
+             }
+         }
+         ```
+         ![다운캐스팅이 불가능한 경우](https://github.com/user-attachments/assets/0ddc9541-7a9d-4feb-adf4-407197127af7)
+    - 업캐스팅이 안전하고, 다운캐스팅이 위험한 이유
+      - 객체를 생성하면 부모 타입은 모두 함께 생성되지만 자식 타입은 생성되지 않는다.
+        - 업캐스팅
+          - 위로만 타입을 변경하기 때문에, 메모리 상에 인스턴스가 모두 존재한다. 때문에 항상 안전하다.
+            ![그림으로 설명 - 업캐스팅](https://github.com/user-attachments/assets/94140ca3-b7d9-4386-a8b9-312a9a92e8b8)
+        - 다운캐스팅
+          - 인스턴스에 존재하지 않는 하위 타입으로 캐스팅하는 문제가 발생할 수 있다.
+          ![그림으로 설명 - 다운캐스팅](https://github.com/user-attachments/assets/3024c15e-3c68-4e89-9651-c77936b4aeeb)
+          - 개발자가 다운캐스팅시 문제가 발생할 수 있는 것을 인지하고,
+            - 그래도 캐스팅하고 싶다면, 직접 (명시적으로) 캐스팅 해주어야한다.
+  - `instanceof` 키워드
+    - 어떤 인스턴스를 참조하고 있는지 확인 할 때 사용
+    - 다운캐스팅을 수행하기 전, 먼저 `instanceof`를 사용해서 원하는 타입으로 변경이 가능한지 확인한 다음에 다운캐스팅을 수행하는 것이 안전하다.
+      ```java
+      private static void call(Parent parent) {
+          parent.parentMethod();
+              
+          //Child 인스턴스인 경우 childMethod() 실행
+          if (parent instanceof Child) {
+              System.out.println("Child 인스턴스 맞음");
+              Child child = (Child) parent;
+              child.childMethod();
+          }
+      }
+      ```
+    - **자바 16**부터는 `instanceof`를 사용하면서 동시에 변수를 선언할 수 있다.
+      ```java
+      private static void call(Parent parent) {
+          parent.parentMethod();
+              
+          //Child 인스턴스인 경우 childMethod() 실행
+          if (parent instanceof Child child) { // 이부분! 자바16부터 적용가능
+              System.out.println("Child 인스턴스 맞음");
+              child.childMethod();
+          }
+      }
+      ```
+          
+- **다형성과 메서드 오버라이딩**
+  - **오버라이딩 된 메서드가 항상 우선권을 가진다.**
+      ```java
+      package poly.overriding;
+        
+      public class Parent {
+        
+          public String value = "parent";
+        
+          public void method() {
+              System.out.println("Parent.method");
+          }
+      }
+      ```
+      ```java
+      package poly.overriding;
+        
+      public class Child extends Parent{
+        
+          public String value = "child";
+        
+          @Override
+          public void method() {
+              System.out.println("Child.method");
+          }
+      }
+      ```
+      ```java
+      package poly.overriding;
+        
+      public class OverridingMain {
+        
+          public static void main(String[] args) {
+              //일부 내용 생략
+        
+              //부모 변수가 자식 인스턴스 참조(다형적 참조)
+              Parent poly = new Child();
+              System.out.println("Parent -> Child");
+              System.out.println("value = " + poly.value); //변수는 오버라이딩 X --> 출력결과: value = parent
+              poly.method(); //메서드 오버라이딩 O --> 출력결과: Child.method //이 부분 중요!!!
+          }
+      }
+      ```
+      ![오버라이딩된 메서드는 항상 우선권](https://github.com/user-attachments/assets/a1e7c62d-8eea-419a-9d9c-6a7ec0c12532)
+
+- 다형성 예제는 다음 시간에!
 
 ---
 
