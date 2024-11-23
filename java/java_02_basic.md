@@ -2182,7 +2182,7 @@ public class SoundFlyMain {
   - 구현 = 인터페이스를 구현한 클래스, 구현 객체
     - K3, 아반떼, 테슬라 모델3
   - 예시) 운전자 - 자동차
-    ![운전자-자동차](https://github.com/user-attachments/assets/039e67ee-e273-4f3d-a0ff-0679ff23cc9a)
+    - ![운전자-자동차](https://github.com/user-attachments/assets/039e67ee-e273-4f3d-a0ff-0679ff23cc9a)
 
 - 역할과 구현을 분리
   - 클라이언트는 역할(인터페이스)만 알면된다.
@@ -2191,10 +2191,10 @@ public class SoundFlyMain {
     - 클라이언트는 구현 대상 자체를 변경해도 영향을 받지 않는다.
 
 - 클라이언트 & 서버
-  ![클라이언트 서버](https://github.com/user-attachments/assets/94499e7a-d5e5-4a25-8c8c-1f68e1c36b76)
   - 요청: 클라이언트
   - 응답: 서버
   - 동시에 서버이면서 클라이언트가 될 수도 있다.
+  - ![클라이언트 서버](https://github.com/user-attachments/assets/94499e7a-d5e5-4a25-8c8c-1f68e1c36b76)
 
 - ⭐ **다형성의 본질** ⭐
   - ⭐ **클라이언트를 변경하지 않고, 서버의 구현 기능을 유연하게 변경할 수 있다.** ⭐
