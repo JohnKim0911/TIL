@@ -14,7 +14,7 @@
 | 10 | [상속](#10-상속)                              | 2024-11-21 |
 | 11 | [다형성1](#11-다형성1)                          | 2024-11-22 |
 | 12 | [다형성2](#12-다형성2)                          | 2024-11-22 |
-| 13 | [다형성과 설계](#13-다형성과-설계)                    | 2024-11-   |
+| 13 | [다형성과 설계](#13-다형성과-설계)                    | 2024-11-23 |
 | 14 | [다음으로](#14-다음으로)                          | 2024-11-   |
 
 ---
@@ -2161,6 +2161,178 @@ public class SoundFlyMain {
 
 ## 13. 다형성과 설계
 
+### 좋은 객체 지향 프로그래밍이란?
+
+- 객체 지향 특징
+  - 추상화
+  - 캡슐화
+  - 상속
+  - **다형성** --> 객체 지향 프로그래밍의 꽃!
+
+- 객체 지향 프로그래밍
+  - 명령어의 목록이 아닌, 객체들의 모임으로 프로그램을 보는 시각
+  - 프로그램이 **유연**하고 **변경**이 용이하다.
+    - 레고 블럭 조립하듯이
+    - 키보드, 마우스 갈아 끼우듯이
+  - 대규모 개발에 많이 사용된다.
+  
+- 역할과 구분으로 분리
+  - 역할 = 인터페이스
+    - 자동차
+  - 구현 = 인터페이스를 구현한 클래스, 구현 객체
+    - K3, 아반떼, 테슬라 모델3
+  - 예시) 운전자 - 자동차
+    ![운전자-자동차](https://github.com/user-attachments/assets/039e67ee-e273-4f3d-a0ff-0679ff23cc9a)
+
+- 역할과 구현을 분리
+  - 클라이언트는 역할(인터페이스)만 알면된다.
+    - 클라이언트는 구현 대상의 내부 구조를 몰라도 된다.
+    - 클라이언트는 구현 대상의 내부 구조가 변경되어도 영향을 받지 않는다.
+    - 클라이언트는 구현 대상 자체를 변경해도 영향을 받지 않는다.
+
+- 클라이언트 & 서버
+  ![클라이언트 서버](https://github.com/user-attachments/assets/94499e7a-d5e5-4a25-8c8c-1f68e1c36b76)
+  - 요청: 클라이언트
+  - 응답: 서버
+  - 동시에 서버이면서 클라이언트가 될 수도 있다.
+
+- ⭐ **다형성의 본질** ⭐
+  - ⭐ **클라이언트를 변경하지 않고, 서버의 구현 기능을 유연하게 변경할 수 있다.** ⭐
+
+![클라이언트 서버2](https://github.com/user-attachments/assets/8cc018d9-e856-4cf1-a32d-e2eec83316f3)
+
+- 인터페이스를 안정적으로 잘 설계하는 것이 중요하다.
+  - 인터페이스가 바뀌면 인터페이스에 의존하는 클라이언트, 인터페이스를 구현한 구현체 등의 모든 코드를 바꿔야 한다...
+
+- 다형성이 중요하다.
+  - 디자인 패턴 대부분은 다형성을 활용하는 것.
+  - 스프링의 핵심인 제어의 역전(IoC), 의존관계 주입(DI)도 결국 다형성을 활용하는 것.
+  - 스프링을 사용하면 마치 레고 블럭 조립하듯이 구현을 편리하게 변경할 수 있다.
+
+### 다형성 - 역할과 구현 예제
+
+![역할과 구현 예제](https://github.com/user-attachments/assets/6a3d7783-7e9d-4cfc-b655-2f215932eb91)
+
+```java
+package poly.car1;
+
+public interface Car {
+    void startEngine();
+    void offEngine();
+    void pressAccelerator();
+}
+```
+
+```java
+package poly.car1;
+
+public class K3Car implements Car{
+    @Override
+    public void startEngine() {
+        System.out.println("K3Car.startEngine");
+    }
+
+    @Override
+    public void offEngine() {
+        System.out.println("K3Car.offEngine");
+    }
+
+    @Override
+    public void pressAccelerator() {
+        System.out.println("K3Car.pressAccelerator");
+    }
+}
+```
+
+//`Model3Car()` 생략
+
+```java
+package poly.car1;
+
+public class Driver {
+
+    private Car car;
+
+    public void setCar(Car car) {
+        System.out.println("자동차를 설정합니다: " + car);
+        this.car = car;
+    }
+
+    public void drive() {
+        System.out.println("자동차를 운전합니다.");
+        car.startEngine();
+        car.pressAccelerator();
+        car.offEngine();
+    }
+}
+```
+
+```java
+package poly.car1;
+
+public class CarMain1 {
+    public static void main(String[] args) {
+        Driver driver = new Driver();
+
+        //차량 선택(k3)
+        K3Car k3Car = new K3Car();
+        driver.setCar(k3Car);
+        driver.drive();
+
+        //차량 변경(k3 -> model3)
+        Model3Car model3Car = new Model3Car();
+        driver.setCar(model3Car);
+        driver.drive();
+    }
+}
+```
+
+- 차량 변경(k3 -> model3)시, 메모리 구조
+    ![역할과 구현 예제_메모리 구조](https://github.com/user-attachments/assets/833d320d-6075-4e6a-b272-67e272da0c5f)
+
+### OCP 원칙
+- OCP: Open-Closed Principle
+    - 좋은 객체 지향 설계 원칙 중 하나.
+    - **Open** for extension
+      - 확장에는 열려있고,
+    - **Closed** for modification
+      - 변경에는 닫혀있다.
+    - 즉, 새로운 기능을 추가할 수 있는데, 기존 코드는 수정하지 않는다. (or 수정을 최소화한다).
+
+- 위 자동차 예제가 OCP 원칙을 잘 지키고 있는 코드이다.
+    - 새로운 자동차(`NewCar`)를 추가(확장)해도, 클라이언트인 `Driver`의 코드(핵심코드)는 수정하지 않아도 된다.
+        ![역할과 구현 예제2](https://github.com/user-attachments/assets/5303c6e4-9066-4d14-a608-28a03a935ae4)
+
+- 전략 패턴 (Strategy Pattern)
+    - 디자인 패턴 중에 가장 중요한 패턴
+    - 알고리즘을 클라이언트 코드의 변경 없이 쉽게 교체 할 수 있다.
+    - 위 자동차 예제가 전략 패턴을 사용한 코드이다.
+      - `Car` 인터페이스가 전략을 정의하는 인터페이스가 되고,
+      - 각각의 차량이 전략의 구체적인 구현이 된다.
+      - 전략(`Car`)을 클라이언트 코드(`Driver`)의 변경 없이 교체할 수 있다.
+
+### 문제와 풀이
+
+- 결제 시스템 개발
+  - 좋은 예제!!
+  - 유료 강의라, 소스 코드 전체를 공개하진 않는다. 아래 링크에 있긴한데, 나만 볼 수 있다...
+    - https://github.com/JohnKim0911/kyh_java-basic/tree/master/src/poly/ex/pay1
+  - 코드 구조
+    - `Pay` (`interface`)
+      - `NaverPay`
+      - `KakaoPay`
+      - `DefaultPay`
+        - 결제 수단이 맞지 않는경우 사용 할 클래스
+    - `PayStore` //결제 수단 추가시 변하는 부분
+      - 사용자가 입력한 결제 수단이 맞으면, `Pay`를 구현한 해당 인스턴스를 반환한다.
+        - 맞지 않으면 `null` 대신에 항상 실패하는 결제 수단인 `DefaultPay` 인스턴스를 반환
+      - 추상 클래스로 선언해서 객체 생성 막는다.
+        - 기능은 `static`으로 선언
+    - `PayService` //결제수단이 추가되어도 바뀌지 않는 부분
+      - `PayStore`를 통해 결제 수단을 받고, 해당 결제 수단의 `pay()`를 호출하고 결과를 받는다.
+    - `PayMain`
+      - 사용자 입력을 받아서 `PayService()`에 전달한다.
+          
 ---
 
 ## 14. 다음으로
