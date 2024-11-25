@@ -5,7 +5,7 @@
 | 1  | [강의 소개와 자료](#1-강의-소개와-자료)            | 2024-11-24 |
 | 2  | [Object 클래스](#2-object-클래스)          | 2024-11-24 |
 | 3  | [불변 객체](#3-불변-객체)                    | 2024-11-25 |
-| 4  | [String 클래스](#4-string-클래스)          |            |
+| 4  | [String 클래스](#4-string-클래스)          | 2024-11-25 |
 | 5  | [래퍼, Class 클래스](#5-래퍼-class-클래스)     |            |
 | 6  | [열거형 - ENUM](#6-열거형---enum)          |            |
 | 7  | [날짜와 시간](#7-날짜와-시간)                  |            |
@@ -19,19 +19,19 @@
 
 ## 1. 강의 소개와 자료
 
-![강의소개](https://github.com/user-attachments/assets/9c5f142f-03be-4d03-b94d-95d9745eb9f4)
-
 - 실제 강의:
     - https://www.inflearn.com/course/%EA%B9%80%EC%98%81%ED%95%9C%EC%9D%98-%EC%8B%A4%EC%A0%84-%EC%9E%90%EB%B0%94-%EC%A4%91%EA%B8%89-1
 
 - 아래 내용은...
     - 강의 내용을 개인적으로 복습하고자 정리하였습니다.
     - 유료 강의이므로, 실제 작성한 전체 코드는 비공개 합니다. (저작권...)
+      - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1
+        - 링크가 있긴하지만, 저만 볼 수 있습니다. (404 error 뜨는게 정상)
 
-- 비공개 레포지토리:
-    - https://github.com/JohnKim0911/kyh_java-mid1
-        - 링크가 있긴하지만, 저만 볼 수 있습니다.
-        - (강의 들으면서 직접 작성한 코드를 보관)
+- 강의 구성
+
+![강의소개](https://github.com/user-attachments/assets/9c5f142f-03be-4d03-b94d-95d9745eb9f4)
+
 
 ---
 
@@ -512,6 +512,263 @@ public class ImmutableMyDate {
 ---
 
 ## 4. String 클래스
+
+## String 클래스 - 기본
+
+- 자바에서 문자를 다루는 타입은 `char`, `String`.
+  - `char`를 사용해서 여러 문자를 나열하려면 `char[]`을 사용해야 한다.
+  - `char[]`을 직접 다루는 방법은 매우 불편하다.
+  - 자바는 문자열을 매우 편리하게 다룰 수 있는 `String` 클래스를 제공한다.
+
+- `String` 클래스를 통해 문자열을 생성하는 방법은 2가지가 있다.
+  - `String str1 = "hello";`
+    - 문자열은 매우 자주 사용된다. 그래서 편의상 `str1`과 같이 입력하면, 자바에서 `str2`처럼 변경해준다.
+      - 이 경우 실제로는 성능 최적화를 위해 문자열 풀을 사용하는데, 이 부분은 뒤에서 설명한다.
+  - `String str2 = new String("hello");`
+
+- `String` 클래스 구조
+  - 다루기 불편한 `char[]`을 내부에 감추고,
+  - 문자열을 다룰 수 있도록 다양한 기능을 제공한다.
+
+```java
+public final class String {
+    
+    //문자열 보관
+    //private final char[] value;// 자바 9 이전
+    private final byte[] value;// 자바 9 이후
+    
+    //여러 메서드
+    public String concat(String str) {...}
+    public int length() {...}
+    
+    //생략
+}
+```
+
+- 참고: 자바 9 이후 `String` 클래스 변경 사항
+  - 자바에서 문자 하나를 표현하는 `char`는 `2byte`를 차지한다.
+  - `String` 클래스 변경 사항
+    - 자바 9 이전
+      - `char[]` 사용
+      - 모든 문자에 `2byte` 사용
+    - 자바 9 이후
+      - `byte[]` 사용
+      - 단순 영어, 숫자로만 표현된 경우 `1byte`를 사용하고
+      - 그렇지 않은 경우, `2byte`를 사용한다.
+
+- String 클래스와 참조형
+    - `String`은 클래스이고, 참조형이다.
+      - 원칙적으로 `+` 같은 연산을 사용할 수 없다.
+      - 하지만 문자열은 너무 자주 다루어지기 때문에 자바 언어에서 편의상 특별히 `+` 연산을 제공한다.
+
+### String 클래스 - 비교
+
+- `String` 클래스 비교할 때는 `==` 비교가 아니라 항상 `equals()` 비교를 해야한다.
+
+
+```java
+package lang.string.equals;
+
+public class StringEqualsMain1 {
+
+    public static void main(String[] args) {
+        String str1 = new String("hello"); //x001
+        String str2 = new String("hello"); //x002
+        System.out.println("new String() == 비교: " + (str1 == str2)); //false
+        System.out.println("new String() equals 비교: " + (str1.equals(str2))); //true
+
+        String str3 = "hello"; //x003 //문자열 리터럴 -> 문자열 풀 사용
+        String str4 = "hello"; //x003
+        System.out.println("리터럴 == 비교: " + (str3 == str4)); //true
+        System.out.println("리터럴 equals 비교: " + (str3.equals(str4))); //true
+    }
+}
+```
+
+![문자열 풀](https://github.com/user-attachments/assets/7fa09ce8-804d-4ce5-9216-98dcac5ebea4)
+
+- 문자열 풀 (String Pool)
+  - 문자열 리터럴을 사용하는 경우, 자바는 메모리 효율성과 성능 최적화를 위해 문자열 풀을 사용한다.
+      - 자바가 실행되는 시점에 문자열 풀에 `String` 인스턴스를 미리 만들어둔다.
+      - 같은 문자열이 이미 있으면 만들지 않는다.
+    - 같은 문자를 사용하는 경우, 메모리 사용을 줄이고 문자를 만드는 시간도 줄어들기 때문에 성능도 최적화 할 수 있다.
+  - 문자열 리터럴을 사용하는 경우, 같은 참조값을 가지므로 `==` 비교에 성공한다.
+    - 하지만, `String` 인스턴스를 받는 쪽이 `new String()`으로 만들어진건지 문자열 리터럴로 만들어진것지 확인 할 수 있는 방법이 없다.
+    - 따라서 항상 `equals()`를 사용해서 동등성 비교를 해야한다.
+
+### String 클래스 - 불변 객체
+
+- `String`은 불변 객체이다.
+  - 생성 이후에 절대로 내부의 문자열 값을 변경할 수 없다.
+  - `String.concat()`은 내부에서 새로운 `String` 객체를 만들어서 반환한다.
+
+- `String`이 불변으로 설계된 이유
+  - `String`은 자바 내부에서 문자열 풀을 통해 최적화를 한다.
+    - 만약 `String` 내부의 값을 변경할 수 있다면, 기존에 문자열 풀에서 같은 문자를 참조하는 변수의 모든 문자가 함께 변경되어 버리는 문제가 발생한다.
+    - `String` 클래스는 불변으로 설계되어서 이런 사이드 이펙트 문제가 발생하지 않는다.
+
+### String 클래스 - 주요 메서드
+
+- 외우지 말자. 이런게 있구나 대략 보고, 나중에 필요할때 찾아보자.
+
+- 주요 메서드 목록
+  - 아래 메서드들의 예제 코드들은 비공개. (저작권)
+    - 비공개 레포지토리에서 나만 볼 수 있다...
+  - 문자열 정보 조회
+    - `length()` : 문자열의 길이를 반환한다. 
+    - `isEmpty()` : 문자열이 비어 있는지 확인한다. (길이가 0)
+    - `isBlank()` : 문자열이 비어 있는지 확인한다. (길이가 0이거나 공백(Whitespace)만 있는 경우), 자바 11 
+    - `charAt(int index)` : 지정된 인덱스에 있는 문자를 반환한다.
+    -  비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/lang/string/method/StringInfoMain.java
+  - 문자열 비교
+    - `equals(Object anObject)` : 두 문자열이 동일한지 비교한다. 
+    - `equalsIgnoreCase(String anotherString)` : 두 문자열을 대소문자 구분 없이 비교한다. 
+    - `compareTo(String anotherString)` : 두 문자열을 사전 순으로 비교한다. 
+    - `compareToIgnoreCase(String str)` : 두 문자열을 대소문자 구분 없이 사전적으로 비교한다. 
+    - `startsWith(String prefix)` : 문자열이 특정 접두사로 시작하는지 확인한다. 
+    - `endsWith(String suffix)` : 문자열이 특정 접미사로 끝나는지 확인한다.
+    - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/lang/string/method/StringComparisonMain.java
+  - 문자열 검색
+    - `contains(CharSequence s)` : 문자열이 특정 문자열을 포함하고 있는지 확인한다. 
+      - 참고: `CharSequence` 는 `String`, `StringBuilder` 의 상위 타입이다.
+    - `indexOf(String ch)` / `indexOf(String ch, int fromIndex)` : 문자열이 처음 등장하는 위치를 반환한다. 
+    - `lastIndexOf(String ch)` : 문자열이 마지막으로 등장하는 위치를 반환한다.
+    - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/lang/string/method/StringSearchMain.java
+  - 문자열 조작 및 변환
+    - `substring(int beginIndex)` / `substring(int beginIndex, int endIndex)` : 문자열의 부분 문자열을 반환한다. 
+    - `concat(String str)` : 문자열의 끝에 다른 문자열을 붙인다. 
+    - `replace(CharSequence target, CharSequence replacement)` : 특정 문자열을 새 문자열로 대체한다. 
+    - `replaceAll(String regex, String replacement)` : 문자열에서 정규 표현식과 일치하는 부분을 새 문자열로 대체한다. 
+    - `replaceFirst(String regex, String replacement)` : 문자열에서 정규 표현식과 일치하는 첫 번째 부분을 새 문자열로 대체한다. 
+    - 비공개 레포지토리1: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/lang/string/method/StringUtilsMain1.java
+    - `toLowerCase()` / `toUpperCase()` : 문자열을 소문자나 대문자로 변환한다. 
+    - `trim()` : 문자열 양쪽 끝의 공백을 제거한다. 단순 Whitespace 만 제거할 수 있다. 
+    - `strip()` : Whitespace 와 유니코드 공백을 포함해서 제거한다. 자바 11
+    - 비공개 레포지토리2: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/lang/string/method/StringUtilsMain2.java
+  - 문자열 분할 및 조합
+    - `split(String regex)` : 문자열을 정규 표현식을 기준으로 분할한다. 
+    - `join(CharSequence delimiter, CharSequence... elements)` : 주어진 구분자로 여러 문자열을 결합한다.
+    - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/lang/string/method/StringSplitJoinMain.java
+  - 기타 유틸리티
+    - `valueOf(Object obj)` : 다양한 타입을 문자열로 변환한다. 
+    - `toCharArray()`: 문자열을 문자 배열로 변환한다. 
+    - 비공개 레포지토리1: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/lang/string/method/StringUtilsMain1.java
+    - `format(String format, Object... args)` : 형식 문자열과 인자를 사용하여 새로운 문자열을 생성한다. 
+    - `matches(String regex)` : 문자열이 주어진 정규 표현식과 일치하는지 확인한다.
+    - 비공개 레포지토리2: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/lang/string/method/StringUtilsMain2.java
+
+### StringBuilder - 가변 String
+
+- 불변인 `String` 클래스의 단점
+    - 문자를 더하거나 변경할 때 마다 계속해서 **새로운 객체**를 생성해야 한다.
+      - 문자를 자주 더하거나 변경해야 하는 상황이라면 더 많은 String 객체를 만들고, GC해야 한다.
+      - 결과적으로 컴퓨터의 CPU, 메모리를 자원을 더 많이 사용하게 된다. 
+        - 문자열의 크기가 클수록, 문자열을 더 자주 변경할수록 시스템의 자원을 더 많이 소모한다.
+        
+```java
+String str = "A" + "B" + "C" + "D";
+String str = String("A") + String("B") + String("C") + String("D");
+String str = new String("AB") + String("C") + String("D");
+String str = new String("ABC") + String("D");
+String str = new String("ABCD");
+```
+
+- `StringBuilder`를 사용하면 위 문제들을 해결할 수 있다.
+
+- `StringBuilder`
+  - 가변 `String`이다.
+    - 가변은 내부의 값을 바로 변경하면 되기 때문에 새로운 객체를 생성할 필요가 없다.
+    - 따라서 성능과 메모리 사용면에서 불변보다 더 효율적이다.
+- `StringBuilder` 메서드 목록
+  - `append(String str)` : 메서드를 사용해 여러 문자열을 추가한다. 
+  - `insert(int index, String str)` : 메서드로 특정 위치에 문자열을 삽입한다. 
+  - `delete(int index1, int index2)` : 메서드로 특정 범위의 문자열을 삭제한다. 
+  - `reverse()` : 메서드로 문자열을 뒤집는다.
+  - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/lang/string/builder/StringBuilderMain1_1.java
+
+- `StringBuilder`는 보통 문자열을 변경하는 동안만 사용하다가 문자열 변경이 끝나면 안전한(불변) `String`으로 변환하는 것이 좋다.
+
+### String 최적화
+
+- 문자열 리터럴 최적화
+  - 자바 컴파일러는 문자열 리터럴을 더하는 부분을 자동으로 합쳐준다.
+      - 컴파일 전 : `String helloWorld = "Hello, " + "World!";`
+      - 컴파일 후 : `String helloWorld = "Hello, World!";`
+      - 런타임에 별도의 문자열 결합 연산을 수행하지 않기 때문에 성능이 향상된다.
+
+- `String` 변수 최적화
+  - 문자열 변수의 경우 그 안에 어떤 값이 들어있는지 컴파일 시점에는 알 수 없기 때문에 단순하게 합칠 수 없다.
+    - `String result = str1 + str2;`
+    - 이런 경우 다음과 같이 최적화를 수행한다.
+      - `String result = new StringBuilder().append(str1).append(str2).toString();`
+  - 이렇듯 자바가 최적화를 처리해주기 때문에 지금처럼 간단한 경우에는 `StringBuilder`를 사용하지 않아도 된다.
+  - 대신에 문자열 더하기 연산(`+`)을 사용하면 충분하다.
+
+- `String` 최적화가 어려운 경우
+  - 반복문안에서 문자열을 더하는 경우에는 최적화가 이루어지지 않는다.
+    - 반복 횟수만큼 객체를 생성해야 한다.
+    - 반복문 내에서의 문자열 연결은, 런타임에 연결할 문자열의 개수와 내용이 결정된다.
+      - 이런 경우, 컴파일러는 얼마나 많은 반복이 일어날지, 각 반복에서 문자열이 어떻게 변할지 예측할 수 없다.
+  - 반복문 내 문자열 연산 비교. (`String` vs `StringBuilder`)
+    - `String`
+      - 11484ms == 11초
+        - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/lang/string/builder/LoopStringMain.java
+    - `StringBuilder`
+      - 9ms == 0.009초
+        - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/lang/string/builder/LoopStringBuilderMain.java
+    - `StringBuilder`를 사용했을때 압도적으로 빠르다...
+
+- `StringBuilder`를 직접 사용하는 것이 더 좋은 경우
+  - **반복문**에서 반복해서 문자를 연결할 때 
+    - 천번 이상...
+  - **조건문**을 통해 동적으로 문자열을 조합할 때 
+  - **복잡한** 문자열의 특정 부분을 변경해야 할 때 
+  - **매우 긴** 대용량 문자열을 다룰 때
+
+- 참고: `StringBuilder` vs `StringBuffer`
+    - `StringBuilder`와 똑같은 기능을 수행하는 `StringBuffer` 클래스도 있다.
+    - `StringBuffer`는 멀티 스레드 상황에서 사용한다. 지금은 몰라도 된다. 
+    - 대부분의 경우 `StringBuilder`를 사용한다.
+
+### 메서드 체인닝 - Method Chaining
+
+- 메서드 체이닝 기법
+  - 코드를 간결하고 읽기 쉽게 만들어준다.
+  - 메서드 체이닝 기법을 사용하기 위해선 자기 자신(`this`)을 반환해야 한다.
+      - 예) `StringBuilder` 에서 문자열을 변경하는 대부분의 메서드
+        - `append()`, `insert()`, `delete()`, `reverse()` 등.
+
+```java
+public StringBuilder append(String str) {
+    super.append(str);
+    return this;
+}
+```
+
+```java
+package lang.string.builder;
+
+public class StringBuilderMain1_2 {
+    
+    public static void main(String[] args) {
+        StringBuilder sb = new StringBuilder();
+        
+        //메서드 체이닝 사용
+        String string = sb.append("A").append("B").append("C").append("D")
+                            .insert(4, "Java")
+                            .delete(4, 8)
+                            .reverse()
+                            .toString();
+        
+        System.out.println("string = " + string);
+    }
+    
+}
+```
+
+- "만드는 사람이 수고로우면 쓰는 사람이 편하고, 만드는 사람이 편하면 쓰는 사람이 수고롭다."
+    - 메서드 체이닝은 구현하는 입장에서는 번거롭지만 사용하는 개발자는 편리해진다.
+    - 자바의 라이브러리와 오픈 소스들은 메서드 체이닝 방식을 종종 사용한다.
 
 ---
 
