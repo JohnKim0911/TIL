@@ -513,7 +513,7 @@ public class ImmutableMyDate {
 
 ## 4. String 클래스
 
-## String 클래스 - 기본
+### String 클래스 - 기본
 
 - 자바에서 문자를 다루는 타입은 `char`, `String`.
   - `char`를 사용해서 여러 문자를 나열하려면 `char[]`을 사용해야 한다.
