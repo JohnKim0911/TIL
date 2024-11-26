@@ -980,13 +980,12 @@ int unboxedValue = boxedValue; //오토 언박싱(Auto-Unboxing)
   - `class`는 자바의 예약어다. 따라서 패키지명, 변수명으로 사용할 수 없다.
     - 대신 `clazz` 라는 이름을 관행으로 사용한다.
 
-### 클래스 생성하기
-
-- Class 클래스에는 클래스의 모든 정보가 들어있다. 
-- 이 정보를 기반으로 인스턴스를 생성하거나, 메서드를 호출하고, 필드의 값도 변경할 수 있다.
-  - 예제코드 (비공개 레포지토리)
-    - hello() 클래스: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/lang/clazz/Hello.java
-    - main 클래스: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/lang/clazz/ClassCreateMain.java
+- 클래스 생성하기
+  - Class 클래스에는 클래스의 모든 정보가 들어있다. 
+  - 이 정보를 기반으로 인스턴스를 생성하거나, 메서드를 호출하고, 필드의 값도 변경할 수 있다.
+    - 예제코드 (비공개 레포지토리)
+      - hello() 클래스: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/lang/clazz/Hello.java
+      - main 클래스: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/lang/clazz/ClassCreateMain.java
 - `class` 클래스는 대략 보고, 넘어가자. 나중에 다시 다룬다.
 
 ### System 클래스
