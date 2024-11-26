@@ -6,7 +6,7 @@
 | 2  | [Object 클래스](#2-object-클래스)          | 2024-11-24 |
 | 3  | [불변 객체](#3-불변-객체)                    | 2024-11-25 |
 | 4  | [String 클래스](#4-string-클래스)          | 2024-11-25 |
-| 5  | [래퍼, Class 클래스](#5-래퍼-class-클래스)     |            |
+| 5  | [래퍼, Class 클래스](#5-래퍼-class-클래스)     | 2024-11-26 |
 | 6  | [열거형 - ENUM](#6-열거형---enum)          |            |
 | 7  | [날짜와 시간](#7-날짜와-시간)                  |            |
 | 8  | [중첩 클래스, 내부 클래스1](#8-중첩-클래스-내부-클래스1) |            |
@@ -773,6 +773,304 @@ public class StringBuilderMain1_2 {
 ---
 
 ## 5. 래퍼, Class 클래스
+
+### 래퍼 클래스 - 기본형의 한계
+
+- 기본형의 한계
+  - 객체가 아님
+    - 기본형은 객체가 아니므로 메서드를 제공할 수 없다.
+    - 아래는 나중에 설명
+      - 객체 참조가 필요한 컬렉션 프레임워크를 사용할 수 없다.
+      - 제네릭도 사용할 수 없다.
+  - `null` 값을 가질 수 없음
+    - 기본형은 항상 값을 가진다. 
+    - `없음`이라는 상태를 표현 할 수 없다.
+
+- 직접 만든 래퍼 클래스
+  - 특정 기본형을 감싸서(Wrap) 만드는 클래스를 래퍼 클래스(Wrapper class)라 한다.
+  - 래퍼클래스를 사용하면 기본형의 한계를 극복 할 수 있다.
+
+```java
+package lang.wrapper;
+
+public class MyInteger { //직접 만든 래퍼 클래스
+
+    private final int value;
+
+    public MyInteger(int value) {
+        this.value = value;
+    }
+
+    public int getValue() {
+        return value;
+    }
+
+    public int compareTo(int target) {
+        if (value < target) {
+            return -1;
+        } else if (value > target) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(value); //숫자를 문자로 변경
+    }
+}
+```
+
+```java
+package lang.wrapper;
+
+public class MyIntegerNullMain1 {
+
+    public static void main(String[] args) {
+        MyInteger[] intArr = {new MyInteger(-1), new MyInteger(0), new MyInteger(1)};
+        System.out.println(findValue(intArr, -1)); //-1
+        System.out.println(findValue(intArr, 0)); //0
+        System.out.println(findValue(intArr, 1)); //1
+        System.out.println(findValue(intArr, 100)); //null
+    }
+
+    //배열에 해당 값이 있으면 그 값을 반환하고, 값이 없으면 null 반환
+    private static MyInteger findValue(MyInteger[] intArr, int target) {
+        for (MyInteger myInteger : intArr) {
+            if (myInteger.getValue() == target) {
+                return myInteger;
+            }
+        }
+        return null;
+    }
+}
+```
+
+### 래퍼 클래스 - 자바 래퍼 클래스
+
+- 자바는 기본형에 대응하는 래퍼 클래스를 기본으로 제공한다.
+  - 래퍼 클래스는 기본형의 객체 버전이다.
+  - 기본적으로 앞글자가 대문자로 바뀐다.
+    - `Integer`와 `Character`는 예외
+    
+    | 기본형     | 래퍼클래스     | 참고      |
+    |---------|-----------|---------|
+    | byte    | Byte      |         |
+    | short   | Short     |         |
+    | int     | Integer   | * 글자 다름 |
+    | long    | Long      |         |
+    | float   | Float     |         |
+    | double  | Double    |         |
+    | char    | Character | * 글자 다름 |
+    | boolean | Boolean   |         |
+
+- 래퍼 클래스 특징
+  - 불변이다.
+  - `equals`로 비교해야 한다.
+    - 래퍼 클래스는 객체이기 때문에 `==` 비교를 하면 인스턴스의 참조값을 비교한다.
+      - 래퍼 클래스는 내부의 값을 비교하도록 `equals()` 를 재정의 해두었다.
+
+
+- 래퍼 클래스 사용법
+  - **래퍼 클래스 생성 - 박싱(Boxing)**
+    - 기본형을 래퍼 클래스로 변경하는 것을 **박싱(Boxing)** 이라 한다.
+      - `Integer integerObj = Integer.valueOf(10);`
+        - 성능 최적화 기능
+          - 일반적으로 자주 사용하는 `-128` ~ `127` 범위의 `Integer` 클래스를 미리 생성해둔다.
+        - 불변이다.
+        - 내부에서 `new Integer(10)`을 사용해서 객체를 생성하고 반환한다.
+      - `Integer newInteger = new Integer(10);` // 사용을 권장하지 않는다.
+        - 미래에 삭제 예정. 위의 `valueOf()` 사용하자
+    - 다른 타입도 동일하게 사용한다.
+      - `Long longObj = Long.valueOf(100);`
+      - `Double doubleObj = Double.valueOf(10.5);`
+  - **intValue() - 언박싱(Unboxing)**
+    - 래퍼 클래스에 들어있는 기본형 값을 다시 꺼내는 메서드이다.
+      - `int intValue = integerObj.intValue();`
+      - `long longValue = longObj.longValue();`
+  - 래퍼 클래스는 객체를 그대로 출력해도 내부에 있는 값을 문자로 출력하도록 `toString()`을 재정의했다.
+  
+### 래퍼 클래스 - 오토 박싱
+
+- 기본형을 래퍼 클래스로 변환하거나(`valueOf()`),  래퍼 클래스를 기본형으로 변환하는 일(`intValue()`)이 자주 있는데, 그 과정이 번거롭다.
+  - 자바 1.5부터 오토 박싱(Auto-boxing), 오토 언박싱(Auto-Unboxing)을 지원한다.
+    - 컴파일러가 자동으로 `valueOf()`, `intValue()`를  추가해준다.
+
+```java
+Integer boxedValue = 10; //오토 박싱(Auto-boxing)
+//Integer boxedValue = Integer.valueOf(10); //컴파일 단계에서 추가
+
+int unboxedValue = boxedValue; //오토 언박싱(Auto-Unboxing)
+//int unboxedValue = boxedValue.intValue(); //컴파일 단계에서 추가
+```
+
+### 래퍼 클래스 - 주요 메서드와 성능
+
+- 래퍼 클래스 - 주요 메서드
+  - `valueOf()` : 래퍼 타입을 반환한다. 숫자, 문자열을 모두 지원한다. **(숫자 or 문자열 --> 래퍼)**
+    - 예시) `Integer i1 = Integer.valueOf(10);` //숫자, 래퍼 객체 반환
+    - 예시) `Integer i2 = Integer.valueOf("10");` //문자열, 래퍼 객체 반환
+  - `parseInt()` : 문자열을 기본형으로 변환한다. **(문자열 --> 기본형)**
+    - 예시) `int intValue = Integer.parseInt("10");` //문자열 전용, 기본형 반환
+    - `Long.parseLong()` 처럼 각 타입에 `parseXxx()`가 존재한다.
+  - `compareTo()` : 내 값과 인수로 넘어온 값을 비교한다. 내 값이 크면 `1` , 같으면 `0` , 내 값이 작으면 `-1` 을 반환한다.
+    - 예시) `int compareResult = i1.compareTo(20);` // 10.compareTo(20) --> 10이 20보다 작으므로 -1 반환
+  - `Integer.sum()` , `Integer.min()` , `Integer.max()` : static 메서드이다. 간단한 덧셈, 작은 값, 큰 값 연산을 수행한다
+    - 예시) `Integer.sum(10, 20);` //30
+    - 예시) `Integer.min(10, 20)` //10
+    - 예시) `Integer.max(10, 20)` //20
+
+- 래퍼 클래스와 성능
+  - `1` ~ `1_000_000_000`(10억) 까지 숫자를 더하는 반복문 수행시간 비교
+    - 기본형 vs 래퍼 클래스 
+      - 기본형 : `387ms`
+      - 래퍼 클래스 : `4031ms`
+      - 실행 코드 (비공개 레포지토리): https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/lang/wrapper/WrapperVsPrimitive.java
+  - 기본형이 래퍼 클래스보다 훨씬 빠르다...
+    - 기본형은 메모리에서 단순히 그 크기만큼의 공간을 차지한다.
+      - 예) `int`는 보통 4바이트의 메모리를 사용한다.
+    - 래퍼 클래스의 인스턴스는 내부에 필드로 가지고 있는 기본형의 값 뿐만 아니라, 자바에서 객체 자체를 다루는데 필요한 객체 메타데이터를 포함하므로 더 많은 메모리를 사용한다.
+      - 자바 버전과 시스템마다 다르지만 대략 8~16 바이트의 메모리를 추가로 사용한다.
+    - 위 연산은 10억번 수행했을 때 결과이다. 일반적인 경우에는 별 차이가 없다.
+      - 0.3초 나누기 10억 vs 1.5초 나누기 10억이다
+
+  - 기본형, 래퍼 클래스 어떤 것을 사용?
+    - 일반적으론 유지보수하기 더 나은것을 선택.
+      - 성능 테스트를 하다가 문제가 되는 부분이 있으면 기본형을 고려하자.
+        - (수만~ 수십만 이상 연속해서 연산을 수행해야 하는 경우)
+    - 일반적인 애플리케이션을 만드는 관점에서 보면 이런 부분을 최적화해도 사막의 모래알 하나 정도의 차이가 날 뿐 이다.
+
+- 유지보수 vs 최적화
+    - 유지보수가 우선!
+    - 최적화를 한다고 했지만 전체 애플리케이션의 성능 관점에서 보면 불필요한 최적화를 할 가능성이 있다.
+      - 최신 컴퓨터는 매우 빠르기 때문에 메모리 상에서 발생하는 연산을 몇 번 줄인다고해도 실질적인 도움이 되지 않는 경우가 많다.
+      - 성능 최적화는 대부분 복잡함을 요구하고, 더 많은 코드들을 추가로 만들어야 한다.
+      - 특히 웹 애플리케이션의 경우, 메모리 안에서 발생하는 연산 하나보다 네트워크 호출 한 번이 많게는 수십만배 더 오래 걸린다.
+        - 자바 메모리 내부에서 발생하는 연산을 수천번에서 한 번으로 줄이는 것 보다, 네트워크 호출 한 번 을 더 줄이는 것이 더 효과적인 경우가 많다.
+
+### Class 클래스
+
+- 클래스의 정보(메타데이터)를 다루는데 사용된다.
+
+- 지금은 `Class`가 뭔지, 그리고 대략 어떤 기능들을 제공하는지만 알아두면 충분하다.
+  - 이걸 몰라도 당장 개발하는데 문제 없다. 이것보다 중요한 기본기가 많다...
+
+- `Class` 클래스의 주요 기능
+  - 타입 정보 얻기
+    - 클래스의 이름, 슈퍼클래스, 인터페이스, 접근 제한자 등과 같은 정보를 조회할 수 있다.
+  - 리플렉션
+    - 클래스에 정의된 메서드, 필드, 생성자 등을 조회하고, 이들을 통해 객체 인스턴스를 생성하거나 메서드를 호출하는 등의 작업을 할 수 있다.
+  - 동적 로딩과 생성
+    - `Class.forName()` 메서드를 사용하여 클래스를 동적으로 로드하고, `newInstance()` 메서드를 통해 새로운 인스턴스를 생성할 수 있다
+  - 애노테이션 처리
+    - 클래스에 적용된 애노테이션(annotation)을 조회하고 처리하는 기능을 제공한다.    
+
+- 예제코드
+  - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/lang/clazz/ClassMetaMain.java
+  - `Class` 클래스는 다음과 같이 3가지 방법으로 조회할 수 있다.
+    - `Class clazz = String.class;` // 1.클래스에서 조회
+    - `Class clazz = new String().getClass();` // 2.인스턴스에서 조회
+    - `Class clazz = Class.forName("java.lang.String");` // 3.문자열로 조회 
+  - `Class` 클래스의 주요 기능
+    - `getDeclaredFields()`: 클래스의 모든 필드를 조회한다.
+    - `getDeclaredMethods()`: 클래스의 모든 메서드를 조회한다.
+    - `getSuperclass()`: 클래스의 부모 클래스를 조회한다.
+    - `getInterfaces()`: 클래스의 인터페이스들을 조회한다.
+  - `class`는 자바의 예약어다. 따라서 패키지명, 변수명으로 사용할 수 없다.
+    - 대신 `clazz` 라는 이름을 관행으로 사용한다.
+
+### 클래스 생성하기
+
+- Class 클래스에는 클래스의 모든 정보가 들어있다. 
+- 이 정보를 기반으로 인스턴스를 생성하거나, 메서드를 호출하고, 필드의 값도 변경할 수 있다.
+  - 예제코드 (비공개 레포지토리)
+    - hello() 클래스: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/lang/clazz/Hello.java
+    - main 클래스: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/lang/clazz/ClassCreateMain.java
+- `class` 클래스는 대략 보고, 넘어가자. 나중에 다시 다룬다.
+
+### System 클래스
+
+- `System` 클래스는 시스템과 관련된 기본 기능들을 제공한다.
+  - 표준 입력, 출력, 오류 스트림
+    - `System.in` : 표준 입력 스트림
+    - `System.out` : 표준 출력 스트림
+    - `System.err` : 표준 오류 스트림. (잘 사용하지 않는다.)
+  - 시간 측정
+    - `System.currentTimeMillis()` : 현재 시간(밀리초)
+    - `System.nanoTime()` : 현재 시간(나노초)
+  - 환경 변수
+    -  `System.getenv()` : OS에서 설정한 환경 변수의 값
+  - 시스템 속성
+    - 자바에서 사용하는 설정 값
+    - `System.getProperties()` : 현재 시스템 속성
+    - `System.getProperty(String key)` : 특정 속성
+  - 시스템 종료
+    - `System.exit(int status)` : 프로그램을 종료하고, OS에 프로그램 종료의 상태 코드를 전달한다.
+      - 상태 코드 0 : 정상 종료 
+      - 상태 코드 0 이 아님: 오류나 예외적인 종료
+  - 배열 고속 복사
+    - `System.arraycopy()`: 시스템 레벨에서 최적화된 메모리 복사 연산을 사용한다.
+      - 직접 반복문을 사용해서 배열을 복사할 때 보다 수 배 이상 빠른 성능을 제공한다.
+
+- 예제 코드 
+  - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/lang/system/SystemMain.java
+
+### Math, Random 클래스
+
+- Math 클래스
+  - 수학 문제를 해결해주는 클래스
+    - 이런게 있구나 보고, 나중에 필요할 때 찾아보자.
+  - 주요 메서드
+    - 기본 연산
+      - `abs(x)` : 절대값
+      - `max(a, b)` : 최대값
+      - `min(a, b)` : 최소값
+    - 지수 및 로그 연산
+      - `exp(x)` : e^x 계산
+      - `log(x)` : 자연 로그
+      - `log10(x)` : 로그 10
+      - `pow(a, b)` : a의 b 제곱
+    - 반올림 및 정밀도
+      - `ceil(x)` : 올림
+      - `floor(x)` : 내림
+      - `rint(x)` : 가장 가까운 정수로 반올림
+      - `round(x)` : 반올림
+    - 삼각 함수
+      - `sin(x)` : 사인 
+      - `cos(x)` : 코사인 
+      - `tan(x)` : 탄젠트
+    - 기타
+      - `sqrt(x)` : 제곱근 
+      - `cbrt(x)` : 세제곱근 
+      - `random()` : 0.0과 1.0 사이의 무작위 값 생성
+        - 이거말고, `Random` 클래스 사용을 권장한다.
+        - `Math.random()` 도 내부에서는 `Random` 클래스를 사용한다.
+  - 예제 코드:
+    - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/lang/math/MathMain.java
+  - 아주 정밀한 숫자와 반올림 계산이 필요하다면 `BigDecimal`을 검색해보자. (정산 시스템 등에 사용)
+
+- Random 클래스
+  - `Random random = new Random();` : 인스턴스를 생성해서 사용한다.
+    - `random.nextInt();` //-435493522
+    - `random.nextDouble();` //0.0d ~ 1.0d //0.35895881763641546
+    - `random.nextBoolean();` //false
+    - `random.nextInt(10);` //0 ~ 9까지 출력
+      - `random.nextInt(10) + 1;` //1 ~ 10까지 출력
+  - `Random random = new Random(1);` : seed가 같으면 Random의 결과가 같다.
+    - 테스트 시에 사용하면 유용하다.
+  - 예제 코드:
+    - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/lang/math/RandomMain.java
+
+### 문제와 풀이
+
+- 로또 번호 자동 생성기
+  - 조건
+    - 로또 번호는 1~45 사이의 숫자를 6개 뽑아야 한다.
+    - 각 숫자는 중복되면 안된다.
+    - 실행할 때 마다 결과가 달라야 한다.
+  - 실제 코드:
+    - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1/tree/master/src/lang/math/test
 
 ---
 
