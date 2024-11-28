@@ -25,8 +25,8 @@
 - 아래 내용은...
     - 강의 내용을 개인적으로 복습하고자 정리하였습니다.
     - 유료 강의이므로, 실제 작성한 전체 코드는 비공개 합니다. (저작권...)
-      - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1
-        - 링크가 있긴하지만, 저만 볼 수 있습니다. (404 error 뜨는게 정상)
+        - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1
+            - 링크가 있긴하지만, 저만 볼 수 있습니다. (404 error 뜨는게 정상)
 
 - 강의 구성
 
@@ -491,7 +491,7 @@ public class ImmutableMyDate {
     public ImmutableMyDate withYear(int newYear) { //withXXX()
         return new ImmutableMyDate(newYear, month, day);
     }
-    
+
     // 일부 생략
 }
 ```
@@ -499,15 +499,15 @@ public class ImmutableMyDate {
 ### 정리
 
 - 불변 객체 예시
-  - String 클래스
-  - Integer, LocalDate 등
+    - String 클래스
+    - Integer, LocalDate 등
 - **모든 클래스를 불변으로 만드는 것은 아니다.**
-  - 가변 클래스가 더 일반적이고, 불변 클래스는 값을 변경하면 안되는 특별한 경우에 만들어서 사용한다고 생각하면 된다.
+    - 가변 클래스가 더 일반적이고, 불변 클래스는 값을 변경하면 안되는 특별한 경우에 만들어서 사용한다고 생각하면 된다.
 - 클래스를 불변으로 설계하는 이유는 더 많다.
-  - 캐시 안정성
-  - 멀티 쓰레드 안정성
-  - 엔티티의 값 타입
-  - 지금은 불변 클래스의 원리만 이해해도 충분하다. 이런건 나중에 배운다.
+    - 캐시 안정성
+    - 멀티 쓰레드 안정성
+    - 엔티티의 값 타입
+    - 지금은 불변 클래스의 원리만 이해해도 충분하다. 이런건 나중에 배운다.
 
 ---
 
@@ -516,50 +516,50 @@ public class ImmutableMyDate {
 ### String 클래스 - 기본
 
 - 자바에서 문자를 다루는 타입은 `char`, `String`.
-  - `char`를 사용해서 여러 문자를 나열하려면 `char[]`을 사용해야 한다.
-  - `char[]`을 직접 다루는 방법은 매우 불편하다.
-  - 자바는 문자열을 매우 편리하게 다룰 수 있는 `String` 클래스를 제공한다.
+    - `char`를 사용해서 여러 문자를 나열하려면 `char[]`을 사용해야 한다.
+    - `char[]`을 직접 다루는 방법은 매우 불편하다.
+    - 자바는 문자열을 매우 편리하게 다룰 수 있는 `String` 클래스를 제공한다.
 
 - `String` 클래스를 통해 문자열을 생성하는 방법은 2가지가 있다.
-  - `String str1 = "hello";`
-    - 문자열은 매우 자주 사용된다. 그래서 편의상 `str1`과 같이 입력하면, 자바에서 `str2`처럼 변경해준다.
-      - 이 경우 실제로는 성능 최적화를 위해 문자열 풀을 사용하는데, 이 부분은 뒤에서 설명한다.
-  - `String str2 = new String("hello");`
+    - `String str1 = "hello";`
+        - 문자열은 매우 자주 사용된다. 그래서 편의상 `str1`과 같이 입력하면, 자바에서 `str2`처럼 변경해준다.
+            - 이 경우 실제로는 성능 최적화를 위해 문자열 풀을 사용하는데, 이 부분은 뒤에서 설명한다.
+    - `String str2 = new String("hello");`
 
 - `String` 클래스 구조
-  - 다루기 불편한 `char[]`을 내부에 감추고,
-  - 문자열을 다룰 수 있도록 다양한 기능을 제공한다.
+    - 다루기 불편한 `char[]`을 내부에 감추고,
+    - 문자열을 다룰 수 있도록 다양한 기능을 제공한다.
 
 ```java
 public final class String {
-    
+
     //문자열 보관
     //private final char[] value;// 자바 9 이전
     private final byte[] value;// 자바 9 이후
-    
+
     //여러 메서드
     public String concat(String str) {...}
     public int length() {...}
-    
+
     //생략
 }
 ```
 
 - 참고: 자바 9 이후 `String` 클래스 변경 사항
-  - 자바에서 문자 하나를 표현하는 `char`는 `2byte`를 차지한다.
-  - `String` 클래스 변경 사항
-    - 자바 9 이전
-      - `char[]` 사용
-      - 모든 문자에 `2byte` 사용
-    - 자바 9 이후
-      - `byte[]` 사용
-      - 단순 영어, 숫자로만 표현된 경우 `1byte`를 사용하고
-      - 그렇지 않은 경우, `2byte`를 사용한다.
+    - 자바에서 문자 하나를 표현하는 `char`는 `2byte`를 차지한다.
+    - `String` 클래스 변경 사항
+        - 자바 9 이전
+            - `char[]` 사용
+            - 모든 문자에 `2byte` 사용
+        - 자바 9 이후
+            - `byte[]` 사용
+            - 단순 영어, 숫자로만 표현된 경우 `1byte`를 사용하고
+            - 그렇지 않은 경우, `2byte`를 사용한다.
 
 - String 클래스와 참조형
     - `String`은 클래스이고, 참조형이다.
-      - 원칙적으로 `+` 같은 연산을 사용할 수 없다.
-      - 하지만 문자열은 너무 자주 다루어지기 때문에 자바 언어에서 편의상 특별히 `+` 연산을 제공한다.
+        - 원칙적으로 `+` 같은 연산을 사용할 수 없다.
+        - 하지만 문자열은 너무 자주 다루어지기 때문에 자바 언어에서 편의상 특별히 `+` 연산을 제공한다.
 
 ### String 클래스 - 비교
 
@@ -588,83 +588,83 @@ public class StringEqualsMain1 {
 ![문자열 풀](https://github.com/user-attachments/assets/7fa09ce8-804d-4ce5-9216-98dcac5ebea4)
 
 - 문자열 풀 (String Pool)
-  - 문자열 리터럴을 사용하는 경우, 자바는 메모리 효율성과 성능 최적화를 위해 문자열 풀을 사용한다.
-      - 자바가 실행되는 시점에 문자열 풀에 `String` 인스턴스를 미리 만들어둔다.
-      - 같은 문자열이 이미 있으면 만들지 않는다.
-    - 같은 문자를 사용하는 경우, 메모리 사용을 줄이고 문자를 만드는 시간도 줄어들기 때문에 성능도 최적화 할 수 있다.
-  - 문자열 리터럴을 사용하는 경우, 같은 참조값을 가지므로 `==` 비교에 성공한다.
-    - 하지만, `String` 인스턴스를 받는 쪽이 `new String()`으로 만들어진건지 문자열 리터럴로 만들어진것지 확인 할 수 있는 방법이 없다.
-    - 따라서 항상 `equals()`를 사용해서 동등성 비교를 해야한다.
+    - 문자열 리터럴을 사용하는 경우, 자바는 메모리 효율성과 성능 최적화를 위해 문자열 풀을 사용한다.
+        - 자바가 실행되는 시점에 문자열 풀에 `String` 인스턴스를 미리 만들어둔다.
+        - 같은 문자열이 이미 있으면 만들지 않는다.
+        - 같은 문자를 사용하는 경우, 메모리 사용을 줄이고 문자를 만드는 시간도 줄어들기 때문에 성능도 최적화 할 수 있다.
+    - 문자열 리터럴을 사용하는 경우, 같은 참조값을 가지므로 `==` 비교에 성공한다.
+        - 하지만, `String` 인스턴스를 받는 쪽이 `new String()`으로 만들어진건지 문자열 리터럴로 만들어진것지 확인 할 수 있는 방법이 없다.
+        - 따라서 항상 `equals()`를 사용해서 동등성 비교를 해야한다.
 
 ### String 클래스 - 불변 객체
 
 - `String`은 불변 객체이다.
-  - 생성 이후에 절대로 내부의 문자열 값을 변경할 수 없다.
-  - `String.concat()`은 내부에서 새로운 `String` 객체를 만들어서 반환한다.
+    - 생성 이후에 절대로 내부의 문자열 값을 변경할 수 없다.
+    - `String.concat()`은 내부에서 새로운 `String` 객체를 만들어서 반환한다.
 
 - `String`이 불변으로 설계된 이유
-  - `String`은 자바 내부에서 문자열 풀을 통해 최적화를 한다.
-    - 만약 `String` 내부의 값을 변경할 수 있다면, 기존에 문자열 풀에서 같은 문자를 참조하는 변수의 모든 문자가 함께 변경되어 버리는 문제가 발생한다.
-    - `String` 클래스는 불변으로 설계되어서 이런 사이드 이펙트 문제가 발생하지 않는다.
+    - `String`은 자바 내부에서 문자열 풀을 통해 최적화를 한다.
+        - 만약 `String` 내부의 값을 변경할 수 있다면, 기존에 문자열 풀에서 같은 문자를 참조하는 변수의 모든 문자가 함께 변경되어 버리는 문제가 발생한다.
+        - `String` 클래스는 불변으로 설계되어서 이런 사이드 이펙트 문제가 발생하지 않는다.
 
 ### String 클래스 - 주요 메서드
 
 - 외우지 말자. 이런게 있구나 대략 보고, 나중에 필요할때 찾아보자.
 
 - 주요 메서드 목록
-  - 아래 메서드들의 예제 코드들은 비공개. (저작권)
-    - 비공개 레포지토리에서 나만 볼 수 있다...
-  - 문자열 정보 조회
-    - `length()` : 문자열의 길이를 반환한다. 
-    - `isEmpty()` : 문자열이 비어 있는지 확인한다. (길이가 0)
-    - `isBlank()` : 문자열이 비어 있는지 확인한다. (길이가 0이거나 공백(Whitespace)만 있는 경우), 자바 11 
-    - `charAt(int index)` : 지정된 인덱스에 있는 문자를 반환한다.
-    -  비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/lang/string/method/StringInfoMain.java
-  - 문자열 비교
-    - `equals(Object anObject)` : 두 문자열이 동일한지 비교한다. 
-    - `equalsIgnoreCase(String anotherString)` : 두 문자열을 대소문자 구분 없이 비교한다. 
-    - `compareTo(String anotherString)` : 두 문자열을 사전 순으로 비교한다. 
-    - `compareToIgnoreCase(String str)` : 두 문자열을 대소문자 구분 없이 사전적으로 비교한다. 
-    - `startsWith(String prefix)` : 문자열이 특정 접두사로 시작하는지 확인한다. 
-    - `endsWith(String suffix)` : 문자열이 특정 접미사로 끝나는지 확인한다.
-    - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/lang/string/method/StringComparisonMain.java
-  - 문자열 검색
-    - `contains(CharSequence s)` : 문자열이 특정 문자열을 포함하고 있는지 확인한다. 
-      - 참고: `CharSequence` 는 `String`, `StringBuilder` 의 상위 타입이다.
-    - `indexOf(String ch)` / `indexOf(String ch, int fromIndex)` : 문자열이 처음 등장하는 위치를 반환한다. 
-    - `lastIndexOf(String ch)` : 문자열이 마지막으로 등장하는 위치를 반환한다.
-    - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/lang/string/method/StringSearchMain.java
-  - 문자열 조작 및 변환
-    - `substring(int beginIndex)` / `substring(int beginIndex, int endIndex)` : 문자열의 부분 문자열을 반환한다. 
-    - `concat(String str)` : 문자열의 끝에 다른 문자열을 붙인다. 
-    - `replace(CharSequence target, CharSequence replacement)` : 특정 문자열을 새 문자열로 대체한다. 
-    - `replaceAll(String regex, String replacement)` : 문자열에서 정규 표현식과 일치하는 부분을 새 문자열로 대체한다. 
-    - `replaceFirst(String regex, String replacement)` : 문자열에서 정규 표현식과 일치하는 첫 번째 부분을 새 문자열로 대체한다. 
-    - 비공개 레포지토리1: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/lang/string/method/StringUtilsMain1.java
-    - `toLowerCase()` / `toUpperCase()` : 문자열을 소문자나 대문자로 변환한다. 
-    - `trim()` : 문자열 양쪽 끝의 공백을 제거한다. 단순 Whitespace 만 제거할 수 있다. 
-    - `strip()` : Whitespace 와 유니코드 공백을 포함해서 제거한다. 자바 11
-    - 비공개 레포지토리2: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/lang/string/method/StringUtilsMain2.java
-  - 문자열 분할 및 조합
-    - `split(String regex)` : 문자열을 정규 표현식을 기준으로 분할한다. 
-    - `join(CharSequence delimiter, CharSequence... elements)` : 주어진 구분자로 여러 문자열을 결합한다.
-    - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/lang/string/method/StringSplitJoinMain.java
-  - 기타 유틸리티
-    - `valueOf(Object obj)` : 다양한 타입을 문자열로 변환한다. 
-    - `toCharArray()`: 문자열을 문자 배열로 변환한다. 
-    - 비공개 레포지토리1: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/lang/string/method/StringUtilsMain1.java
-    - `format(String format, Object... args)` : 형식 문자열과 인자를 사용하여 새로운 문자열을 생성한다. 
-    - `matches(String regex)` : 문자열이 주어진 정규 표현식과 일치하는지 확인한다.
-    - 비공개 레포지토리2: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/lang/string/method/StringUtilsMain2.java
+    - 아래 메서드들의 예제 코드들은 비공개. (저작권)
+        - 비공개 레포지토리에서 나만 볼 수 있다...
+    - 문자열 정보 조회
+        - `length()` : 문자열의 길이를 반환한다.
+        - `isEmpty()` : 문자열이 비어 있는지 확인한다. (길이가 0)
+        - `isBlank()` : 문자열이 비어 있는지 확인한다. (길이가 0이거나 공백(Whitespace)만 있는 경우), 자바 11
+        - `charAt(int index)` : 지정된 인덱스에 있는 문자를 반환한다.
+        -  비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/lang/string/method/StringInfoMain.java
+    - 문자열 비교
+        - `equals(Object anObject)` : 두 문자열이 동일한지 비교한다.
+        - `equalsIgnoreCase(String anotherString)` : 두 문자열을 대소문자 구분 없이 비교한다.
+        - `compareTo(String anotherString)` : 두 문자열을 사전 순으로 비교한다.
+        - `compareToIgnoreCase(String str)` : 두 문자열을 대소문자 구분 없이 사전적으로 비교한다.
+        - `startsWith(String prefix)` : 문자열이 특정 접두사로 시작하는지 확인한다.
+        - `endsWith(String suffix)` : 문자열이 특정 접미사로 끝나는지 확인한다.
+        - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/lang/string/method/StringComparisonMain.java
+    - 문자열 검색
+        - `contains(CharSequence s)` : 문자열이 특정 문자열을 포함하고 있는지 확인한다.
+            - 참고: `CharSequence` 는 `String`, `StringBuilder` 의 상위 타입이다.
+        - `indexOf(String ch)` / `indexOf(String ch, int fromIndex)` : 문자열이 처음 등장하는 위치를 반환한다.
+        - `lastIndexOf(String ch)` : 문자열이 마지막으로 등장하는 위치를 반환한다.
+        - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/lang/string/method/StringSearchMain.java
+    - 문자열 조작 및 변환
+        - `substring(int beginIndex)` / `substring(int beginIndex, int endIndex)` : 문자열의 부분 문자열을 반환한다.
+        - `concat(String str)` : 문자열의 끝에 다른 문자열을 붙인다.
+        - `replace(CharSequence target, CharSequence replacement)` : 특정 문자열을 새 문자열로 대체한다.
+        - `replaceAll(String regex, String replacement)` : 문자열에서 정규 표현식과 일치하는 부분을 새 문자열로 대체한다.
+        - `replaceFirst(String regex, String replacement)` : 문자열에서 정규 표현식과 일치하는 첫 번째 부분을 새 문자열로 대체한다.
+        - 비공개 레포지토리1: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/lang/string/method/StringUtilsMain1.java
+        - `toLowerCase()` / `toUpperCase()` : 문자열을 소문자나 대문자로 변환한다.
+        - `trim()` : 문자열 양쪽 끝의 공백을 제거한다. 단순 Whitespace 만 제거할 수 있다.
+        - `strip()` : Whitespace 와 유니코드 공백을 포함해서 제거한다. 자바 11
+        - 비공개 레포지토리2: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/lang/string/method/StringUtilsMain2.java
+    - 문자열 분할 및 조합
+        - `split(String regex)` : 문자열을 정규 표현식을 기준으로 분할한다.
+        - `join(CharSequence delimiter, CharSequence... elements)` : 주어진 구분자로 여러 문자열을 결합한다.
+        - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/lang/string/method/StringSplitJoinMain.java
+    - 기타 유틸리티
+        - `valueOf(Object obj)` : 다양한 타입을 문자열로 변환한다.
+        - `toCharArray()`: 문자열을 문자 배열로 변환한다.
+        - 비공개 레포지토리1: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/lang/string/method/StringUtilsMain1.java
+        - `format(String format, Object... args)` : 형식 문자열과 인자를 사용하여 새로운 문자열을 생성한다.
+        - `matches(String regex)` : 문자열이 주어진 정규 표현식과 일치하는지 확인한다.
+        - 비공개 레포지토리2: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/lang/string/method/StringUtilsMain2.java
 
 ### StringBuilder - 가변 String
 
 - 불변인 `String` 클래스의 단점
     - 문자를 더하거나 변경할 때 마다 계속해서 **새로운 객체**를 생성해야 한다.
-      - 문자를 자주 더하거나 변경해야 하는 상황이라면 더 많은 String 객체를 만들고, GC해야 한다.
-      - 결과적으로 컴퓨터의 CPU, 메모리를 자원을 더 많이 사용하게 된다. 
-        - 문자열의 크기가 클수록, 문자열을 더 자주 변경할수록 시스템의 자원을 더 많이 소모한다.
-        
+        - 문자를 자주 더하거나 변경해야 하는 상황이라면 더 많은 String 객체를 만들고, GC해야 한다.
+        - 결과적으로 컴퓨터의 CPU, 메모리를 자원을 더 많이 사용하게 된다.
+            - 문자열의 크기가 클수록, 문자열을 더 자주 변경할수록 시스템의 자원을 더 많이 소모한다.
+
 ```java
 String str = "A" + "B" + "C" + "D";
 String str = String("A") + String("B") + String("C") + String("D");
@@ -676,67 +676,67 @@ String str = new String("ABCD");
 - `StringBuilder`를 사용하면 위 문제들을 해결할 수 있다.
 
 - `StringBuilder`
-  - 가변 `String`이다.
-    - 가변은 내부의 값을 바로 변경하면 되기 때문에 새로운 객체를 생성할 필요가 없다.
-    - 따라서 성능과 메모리 사용면에서 불변보다 더 효율적이다.
+    - 가변 `String`이다.
+        - 가변은 내부의 값을 바로 변경하면 되기 때문에 새로운 객체를 생성할 필요가 없다.
+        - 따라서 성능과 메모리 사용면에서 불변보다 더 효율적이다.
 - `StringBuilder` 메서드 목록
-  - `append(String str)` : 메서드를 사용해 여러 문자열을 추가한다. 
-  - `insert(int index, String str)` : 메서드로 특정 위치에 문자열을 삽입한다. 
-  - `delete(int index1, int index2)` : 메서드로 특정 범위의 문자열을 삭제한다. 
-  - `reverse()` : 메서드로 문자열을 뒤집는다.
-  - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/lang/string/builder/StringBuilderMain1_1.java
+    - `append(String str)` : 메서드를 사용해 여러 문자열을 추가한다.
+    - `insert(int index, String str)` : 메서드로 특정 위치에 문자열을 삽입한다.
+    - `delete(int index1, int index2)` : 메서드로 특정 범위의 문자열을 삭제한다.
+    - `reverse()` : 메서드로 문자열을 뒤집는다.
+    - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/lang/string/builder/StringBuilderMain1_1.java
 
 - `StringBuilder`는 보통 문자열을 변경하는 동안만 사용하다가 문자열 변경이 끝나면 안전한(불변) `String`으로 변환하는 것이 좋다.
 
 ### String 최적화
 
 - 문자열 리터럴 최적화
-  - 자바 컴파일러는 문자열 리터럴을 더하는 부분을 자동으로 합쳐준다.
-      - 컴파일 전 : `String helloWorld = "Hello, " + "World!";`
-      - 컴파일 후 : `String helloWorld = "Hello, World!";`
-      - 런타임에 별도의 문자열 결합 연산을 수행하지 않기 때문에 성능이 향상된다.
+    - 자바 컴파일러는 문자열 리터럴을 더하는 부분을 자동으로 합쳐준다.
+        - 컴파일 전 : `String helloWorld = "Hello, " + "World!";`
+        - 컴파일 후 : `String helloWorld = "Hello, World!";`
+        - 런타임에 별도의 문자열 결합 연산을 수행하지 않기 때문에 성능이 향상된다.
 
 - `String` 변수 최적화
-  - 문자열 변수의 경우 그 안에 어떤 값이 들어있는지 컴파일 시점에는 알 수 없기 때문에 단순하게 합칠 수 없다.
-    - `String result = str1 + str2;`
-    - 이런 경우 다음과 같이 최적화를 수행한다.
-      - `String result = new StringBuilder().append(str1).append(str2).toString();`
-  - 이렇듯 자바가 최적화를 처리해주기 때문에 지금처럼 간단한 경우에는 `StringBuilder`를 사용하지 않아도 된다.
-  - 대신에 문자열 더하기 연산(`+`)을 사용하면 충분하다.
+    - 문자열 변수의 경우 그 안에 어떤 값이 들어있는지 컴파일 시점에는 알 수 없기 때문에 단순하게 합칠 수 없다.
+        - `String result = str1 + str2;`
+        - 이런 경우 다음과 같이 최적화를 수행한다.
+            - `String result = new StringBuilder().append(str1).append(str2).toString();`
+    - 이렇듯 자바가 최적화를 처리해주기 때문에 지금처럼 간단한 경우에는 `StringBuilder`를 사용하지 않아도 된다.
+    - 대신에 문자열 더하기 연산(`+`)을 사용하면 충분하다.
 
 - `String` 최적화가 어려운 경우
-  - 반복문안에서 문자열을 더하는 경우에는 최적화가 이루어지지 않는다.
-    - 반복 횟수만큼 객체를 생성해야 한다.
-    - 반복문 내에서의 문자열 연결은, 런타임에 연결할 문자열의 개수와 내용이 결정된다.
-      - 이런 경우, 컴파일러는 얼마나 많은 반복이 일어날지, 각 반복에서 문자열이 어떻게 변할지 예측할 수 없다.
-  - 반복문 내 문자열 연산 비교. (`String` vs `StringBuilder`)
-    - `String`
-      - 11484ms == 11초
-        - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/lang/string/builder/LoopStringMain.java
-    - `StringBuilder`
-      - 9ms == 0.009초
-        - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/lang/string/builder/LoopStringBuilderMain.java
-    - `StringBuilder`를 사용했을때 압도적으로 빠르다...
+    - 반복문안에서 문자열을 더하는 경우에는 최적화가 이루어지지 않는다.
+        - 반복 횟수만큼 객체를 생성해야 한다.
+        - 반복문 내에서의 문자열 연결은, 런타임에 연결할 문자열의 개수와 내용이 결정된다.
+            - 이런 경우, 컴파일러는 얼마나 많은 반복이 일어날지, 각 반복에서 문자열이 어떻게 변할지 예측할 수 없다.
+    - 반복문 내 문자열 연산 비교. (`String` vs `StringBuilder`)
+        - `String`
+            - 11484ms == 11초
+                - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/lang/string/builder/LoopStringMain.java
+        - `StringBuilder`
+            - 9ms == 0.009초
+                - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/lang/string/builder/LoopStringBuilderMain.java
+        - `StringBuilder`를 사용했을때 압도적으로 빠르다...
 
 - `StringBuilder`를 직접 사용하는 것이 더 좋은 경우
-  - **반복문**에서 반복해서 문자를 연결할 때 
-    - 천번 이상...
-  - **조건문**을 통해 동적으로 문자열을 조합할 때 
-  - **복잡한** 문자열의 특정 부분을 변경해야 할 때 
-  - **매우 긴** 대용량 문자열을 다룰 때
+    - **반복문**에서 반복해서 문자를 연결할 때
+        - 천번 이상...
+    - **조건문**을 통해 동적으로 문자열을 조합할 때
+    - **복잡한** 문자열의 특정 부분을 변경해야 할 때
+    - **매우 긴** 대용량 문자열을 다룰 때
 
 - 참고: `StringBuilder` vs `StringBuffer`
     - `StringBuilder`와 똑같은 기능을 수행하는 `StringBuffer` 클래스도 있다.
-    - `StringBuffer`는 멀티 스레드 상황에서 사용한다. 지금은 몰라도 된다. 
+    - `StringBuffer`는 멀티 스레드 상황에서 사용한다. 지금은 몰라도 된다.
     - 대부분의 경우 `StringBuilder`를 사용한다.
 
 ### 메서드 체인닝 - Method Chaining
 
 - 메서드 체이닝 기법
-  - 코드를 간결하고 읽기 쉽게 만들어준다.
-  - 메서드 체이닝 기법을 사용하기 위해선 자기 자신(`this`)을 반환해야 한다.
-      - 예) `StringBuilder` 에서 문자열을 변경하는 대부분의 메서드
-        - `append()`, `insert()`, `delete()`, `reverse()` 등.
+    - 코드를 간결하고 읽기 쉽게 만들어준다.
+    - 메서드 체이닝 기법을 사용하기 위해선 자기 자신(`this`)을 반환해야 한다.
+        - 예) `StringBuilder` 에서 문자열을 변경하는 대부분의 메서드
+            - `append()`, `insert()`, `delete()`, `reverse()` 등.
 
 ```java
 public StringBuilder append(String str) {
@@ -749,20 +749,20 @@ public StringBuilder append(String str) {
 package lang.string.builder;
 
 public class StringBuilderMain1_2 {
-    
+
     public static void main(String[] args) {
         StringBuilder sb = new StringBuilder();
-        
+
         //메서드 체이닝 사용
         String string = sb.append("A").append("B").append("C").append("D")
-                            .insert(4, "Java")
-                            .delete(4, 8)
-                            .reverse()
-                            .toString();
-        
+                .insert(4, "Java")
+                .delete(4, 8)
+                .reverse()
+                .toString();
+
         System.out.println("string = " + string);
     }
-    
+
 }
 ```
 
@@ -777,18 +777,18 @@ public class StringBuilderMain1_2 {
 ### 래퍼 클래스 - 기본형의 한계
 
 - 기본형의 한계
-  - 객체가 아님
-    - 기본형은 객체가 아니므로 메서드를 제공할 수 없다.
-    - 아래는 나중에 설명
-      - 객체 참조가 필요한 컬렉션 프레임워크를 사용할 수 없다.
-      - 제네릭도 사용할 수 없다.
-  - `null` 값을 가질 수 없음
-    - 기본형은 항상 값을 가진다. 
-    - `없음`이라는 상태를 표현 할 수 없다.
+    - 객체가 아님
+        - 기본형은 객체가 아니므로 메서드를 제공할 수 없다.
+        - 아래는 나중에 설명
+            - 객체 참조가 필요한 컬렉션 프레임워크를 사용할 수 없다.
+            - 제네릭도 사용할 수 없다.
+    - `null` 값을 가질 수 없음
+        - 기본형은 항상 값을 가진다.
+        - `없음`이라는 상태를 표현 할 수 없다.
 
 - 직접 만든 래퍼 클래스
-  - 특정 기본형을 감싸서(Wrap) 만드는 클래스를 래퍼 클래스(Wrapper class)라 한다.
-  - 래퍼클래스를 사용하면 기본형의 한계를 극복 할 수 있다.
+    - 특정 기본형을 감싸서(Wrap) 만드는 클래스를 래퍼 클래스(Wrapper class)라 한다.
+    - 래퍼클래스를 사용하면 기본형의 한계를 극복 할 수 있다.
 
 ```java
 package lang.wrapper;
@@ -850,52 +850,52 @@ public class MyIntegerNullMain1 {
 ### 래퍼 클래스 - 자바 래퍼 클래스
 
 - 자바는 기본형에 대응하는 래퍼 클래스를 기본으로 제공한다.
-  - 래퍼 클래스는 기본형의 객체 버전이다.
-  - 기본적으로 앞글자가 대문자로 바뀐다.
-    - `Integer`와 `Character`는 예외
-    
-    | 기본형     | 래퍼클래스     | 참고      |
-    |---------|-----------|---------|
-    | byte    | Byte      |         |
-    | short   | Short     |         |
-    | int     | Integer   | * 글자 다름 |
-    | long    | Long      |         |
-    | float   | Float     |         |
-    | double  | Double    |         |
-    | char    | Character | * 글자 다름 |
-    | boolean | Boolean   |         |
+    - 래퍼 클래스는 기본형의 객체 버전이다.
+    - 기본적으로 앞글자가 대문자로 바뀐다.
+        - `Integer`와 `Character`는 예외
+
+      | 기본형     | 래퍼클래스     | 참고      |
+          |---------|-----------|---------|
+      | byte    | Byte      |         |
+      | short   | Short     |         |
+      | int     | Integer   | * 글자 다름 |
+      | long    | Long      |         |
+      | float   | Float     |         |
+      | double  | Double    |         |
+      | char    | Character | * 글자 다름 |
+      | boolean | Boolean   |         |
 
 - 래퍼 클래스 특징
-  - 불변이다.
-  - `equals`로 비교해야 한다.
-    - 래퍼 클래스는 객체이기 때문에 `==` 비교를 하면 인스턴스의 참조값을 비교한다.
-      - 래퍼 클래스는 내부의 값을 비교하도록 `equals()` 를 재정의 해두었다.
+    - 불변이다.
+    - `equals`로 비교해야 한다.
+        - 래퍼 클래스는 객체이기 때문에 `==` 비교를 하면 인스턴스의 참조값을 비교한다.
+            - 래퍼 클래스는 내부의 값을 비교하도록 `equals()` 를 재정의 해두었다.
 
 
 - 래퍼 클래스 사용법
-  - **래퍼 클래스 생성 - 박싱(Boxing)**
-    - 기본형을 래퍼 클래스로 변경하는 것을 **박싱(Boxing)** 이라 한다.
-      - `Integer integerObj = Integer.valueOf(10);`
-        - 성능 최적화 기능
-          - 일반적으로 자주 사용하는 `-128` ~ `127` 범위의 `Integer` 클래스를 미리 생성해둔다.
-        - 불변이다.
-        - 내부에서 `new Integer(10)`을 사용해서 객체를 생성하고 반환한다.
-      - `Integer newInteger = new Integer(10);` // 사용을 권장하지 않는다.
-        - 미래에 삭제 예정. 위의 `valueOf()` 사용하자
-    - 다른 타입도 동일하게 사용한다.
-      - `Long longObj = Long.valueOf(100);`
-      - `Double doubleObj = Double.valueOf(10.5);`
-  - **intValue() - 언박싱(Unboxing)**
-    - 래퍼 클래스에 들어있는 기본형 값을 다시 꺼내는 메서드이다.
-      - `int intValue = integerObj.intValue();`
-      - `long longValue = longObj.longValue();`
-  - 래퍼 클래스는 객체를 그대로 출력해도 내부에 있는 값을 문자로 출력하도록 `toString()`을 재정의했다.
-  
+    - **래퍼 클래스 생성 - 박싱(Boxing)**
+        - 기본형을 래퍼 클래스로 변경하는 것을 **박싱(Boxing)** 이라 한다.
+            - `Integer integerObj = Integer.valueOf(10);`
+                - 성능 최적화 기능
+                    - 일반적으로 자주 사용하는 `-128` ~ `127` 범위의 `Integer` 클래스를 미리 생성해둔다.
+                - 불변이다.
+                - 내부에서 `new Integer(10)`을 사용해서 객체를 생성하고 반환한다.
+            - `Integer newInteger = new Integer(10);` // 사용을 권장하지 않는다.
+                - 미래에 삭제 예정. 위의 `valueOf()` 사용하자
+        - 다른 타입도 동일하게 사용한다.
+            - `Long longObj = Long.valueOf(100);`
+            - `Double doubleObj = Double.valueOf(10.5);`
+    - **intValue() - 언박싱(Unboxing)**
+        - 래퍼 클래스에 들어있는 기본형 값을 다시 꺼내는 메서드이다.
+            - `int intValue = integerObj.intValue();`
+            - `long longValue = longObj.longValue();`
+    - 래퍼 클래스는 객체를 그대로 출력해도 내부에 있는 값을 문자로 출력하도록 `toString()`을 재정의했다.
+
 ### 래퍼 클래스 - 오토 박싱
 
 - 기본형을 래퍼 클래스로 변환하거나(`valueOf()`),  래퍼 클래스를 기본형으로 변환하는 일(`intValue()`)이 자주 있는데, 그 과정이 번거롭다.
-  - 자바 1.5부터 오토 박싱(Auto-boxing), 오토 언박싱(Auto-Unboxing)을 지원한다.
-    - 컴파일러가 자동으로 `valueOf()`, `intValue()`를  추가해준다.
+    - 자바 1.5부터 오토 박싱(Auto-boxing), 오토 언박싱(Auto-Unboxing)을 지원한다.
+        - 컴파일러가 자동으로 `valueOf()`, `intValue()`를  추가해준다.
 
 ```java
 Integer boxedValue = 10; //오토 박싱(Auto-boxing)
@@ -908,172 +908,478 @@ int unboxedValue = boxedValue; //오토 언박싱(Auto-Unboxing)
 ### 래퍼 클래스 - 주요 메서드와 성능
 
 - 래퍼 클래스 - 주요 메서드
-  - `valueOf()` : 래퍼 타입을 반환한다. 숫자, 문자열을 모두 지원한다. **(숫자 or 문자열 --> 래퍼)**
-    - 예시) `Integer i1 = Integer.valueOf(10);` //숫자, 래퍼 객체 반환
-    - 예시) `Integer i2 = Integer.valueOf("10");` //문자열, 래퍼 객체 반환
-  - `parseInt()` : 문자열을 기본형으로 변환한다. **(문자열 --> 기본형)**
-    - 예시) `int intValue = Integer.parseInt("10");` //문자열 전용, 기본형 반환
-    - `Long.parseLong()` 처럼 각 타입에 `parseXxx()`가 존재한다.
-  - `compareTo()` : 내 값과 인수로 넘어온 값을 비교한다. 내 값이 크면 `1` , 같으면 `0` , 내 값이 작으면 `-1` 을 반환한다.
-    - 예시) `int compareResult = i1.compareTo(20);` // 10.compareTo(20) --> 10이 20보다 작으므로 -1 반환
-  - `Integer.sum()` , `Integer.min()` , `Integer.max()` : static 메서드이다. 간단한 덧셈, 작은 값, 큰 값 연산을 수행한다
-    - 예시) `Integer.sum(10, 20);` //30
-    - 예시) `Integer.min(10, 20)` //10
-    - 예시) `Integer.max(10, 20)` //20
+    - `valueOf()` : 래퍼 타입을 반환한다. 숫자, 문자열을 모두 지원한다. **(숫자 or 문자열 --> 래퍼)**
+        - 예시) `Integer i1 = Integer.valueOf(10);` //숫자, 래퍼 객체 반환
+        - 예시) `Integer i2 = Integer.valueOf("10");` //문자열, 래퍼 객체 반환
+    - `parseInt()` : 문자열을 기본형으로 변환한다. **(문자열 --> 기본형)**
+        - 예시) `int intValue = Integer.parseInt("10");` //문자열 전용, 기본형 반환
+        - `Long.parseLong()` 처럼 각 타입에 `parseXxx()`가 존재한다.
+    - `compareTo()` : 내 값과 인수로 넘어온 값을 비교한다. 내 값이 크면 `1` , 같으면 `0` , 내 값이 작으면 `-1` 을 반환한다.
+        - 예시) `int compareResult = i1.compareTo(20);` // 10.compareTo(20) --> 10이 20보다 작으므로 -1 반환
+    - `Integer.sum()` , `Integer.min()` , `Integer.max()` : static 메서드이다. 간단한 덧셈, 작은 값, 큰 값 연산을 수행한다
+        - 예시) `Integer.sum(10, 20);` //30
+        - 예시) `Integer.min(10, 20)` //10
+        - 예시) `Integer.max(10, 20)` //20
 
 - 래퍼 클래스와 성능
-  - `1` ~ `1_000_000_000`(10억) 까지 숫자를 더하는 반복문 수행시간 비교
-    - 기본형 vs 래퍼 클래스 
-      - 기본형 : `387ms`
-      - 래퍼 클래스 : `4031ms`
-      - 실행 코드 (비공개 레포지토리): https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/lang/wrapper/WrapperVsPrimitive.java
-  - 기본형이 래퍼 클래스보다 훨씬 빠르다...
-    - 기본형은 메모리에서 단순히 그 크기만큼의 공간을 차지한다.
-      - 예) `int`는 보통 4바이트의 메모리를 사용한다.
-    - 래퍼 클래스의 인스턴스는 내부에 필드로 가지고 있는 기본형의 값 뿐만 아니라, 자바에서 객체 자체를 다루는데 필요한 객체 메타데이터를 포함하므로 더 많은 메모리를 사용한다.
-      - 자바 버전과 시스템마다 다르지만 대략 8~16 바이트의 메모리를 추가로 사용한다.
-    - 위 연산은 10억번 수행했을 때 결과이다. 일반적인 경우에는 별 차이가 없다.
-      - 0.3초 나누기 10억 vs 1.5초 나누기 10억이다
+    - `1` ~ `1_000_000_000`(10억) 까지 숫자를 더하는 반복문 수행시간 비교
+        - 기본형 vs 래퍼 클래스
+            - 기본형 : `387ms`
+            - 래퍼 클래스 : `4031ms`
+            - 실행 코드 (비공개 레포지토리): https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/lang/wrapper/WrapperVsPrimitive.java
+    - 기본형이 래퍼 클래스보다 훨씬 빠르다...
+        - 기본형은 메모리에서 단순히 그 크기만큼의 공간을 차지한다.
+            - 예) `int`는 보통 4바이트의 메모리를 사용한다.
+        - 래퍼 클래스의 인스턴스는 내부에 필드로 가지고 있는 기본형의 값 뿐만 아니라, 자바에서 객체 자체를 다루는데 필요한 객체 메타데이터를 포함하므로 더 많은 메모리를 사용한다.
+            - 자바 버전과 시스템마다 다르지만 대략 8~16 바이트의 메모리를 추가로 사용한다.
+        - 위 연산은 10억번 수행했을 때 결과이다. 일반적인 경우에는 별 차이가 없다.
+            - 0.3초 나누기 10억 vs 1.5초 나누기 10억이다
 
-  - 기본형, 래퍼 클래스 어떤 것을 사용?
-    - 일반적으론 유지보수하기 더 나은것을 선택.
-      - 성능 테스트를 하다가 문제가 되는 부분이 있으면 기본형을 고려하자.
-        - (수만~ 수십만 이상 연속해서 연산을 수행해야 하는 경우)
-    - 일반적인 애플리케이션을 만드는 관점에서 보면 이런 부분을 최적화해도 사막의 모래알 하나 정도의 차이가 날 뿐 이다.
+    - 기본형, 래퍼 클래스 어떤 것을 사용?
+        - 일반적으론 유지보수하기 더 나은것을 선택.
+            - 성능 테스트를 하다가 문제가 되는 부분이 있으면 기본형을 고려하자.
+                - (수만~ 수십만 이상 연속해서 연산을 수행해야 하는 경우)
+        - 일반적인 애플리케이션을 만드는 관점에서 보면 이런 부분을 최적화해도 사막의 모래알 하나 정도의 차이가 날 뿐 이다.
 
 - 유지보수 vs 최적화
     - 유지보수가 우선!
     - 최적화를 한다고 했지만 전체 애플리케이션의 성능 관점에서 보면 불필요한 최적화를 할 가능성이 있다.
-      - 최신 컴퓨터는 매우 빠르기 때문에 메모리 상에서 발생하는 연산을 몇 번 줄인다고해도 실질적인 도움이 되지 않는 경우가 많다.
-      - 성능 최적화는 대부분 복잡함을 요구하고, 더 많은 코드들을 추가로 만들어야 한다.
-      - 특히 웹 애플리케이션의 경우, 메모리 안에서 발생하는 연산 하나보다 네트워크 호출 한 번이 많게는 수십만배 더 오래 걸린다.
-        - 자바 메모리 내부에서 발생하는 연산을 수천번에서 한 번으로 줄이는 것 보다, 네트워크 호출 한 번 을 더 줄이는 것이 더 효과적인 경우가 많다.
+        - 최신 컴퓨터는 매우 빠르기 때문에 메모리 상에서 발생하는 연산을 몇 번 줄인다고해도 실질적인 도움이 되지 않는 경우가 많다.
+        - 성능 최적화는 대부분 복잡함을 요구하고, 더 많은 코드들을 추가로 만들어야 한다.
+        - 특히 웹 애플리케이션의 경우, 메모리 안에서 발생하는 연산 하나보다 네트워크 호출 한 번이 많게는 수십만배 더 오래 걸린다.
+            - 자바 메모리 내부에서 발생하는 연산을 수천번에서 한 번으로 줄이는 것 보다, 네트워크 호출 한 번 을 더 줄이는 것이 더 효과적인 경우가 많다.
 
 ### Class 클래스
 
 - 클래스의 정보(메타데이터)를 다루는데 사용된다.
 
 - 지금은 `Class`가 뭔지, 그리고 대략 어떤 기능들을 제공하는지만 알아두면 충분하다.
-  - 이걸 몰라도 당장 개발하는데 문제 없다. 이것보다 중요한 기본기가 많다...
+    - 이걸 몰라도 당장 개발하는데 문제 없다. 이것보다 중요한 기본기가 많다...
 
 - `Class` 클래스의 주요 기능
-  - 타입 정보 얻기
-    - 클래스의 이름, 슈퍼클래스, 인터페이스, 접근 제한자 등과 같은 정보를 조회할 수 있다.
-  - 리플렉션
-    - 클래스에 정의된 메서드, 필드, 생성자 등을 조회하고, 이들을 통해 객체 인스턴스를 생성하거나 메서드를 호출하는 등의 작업을 할 수 있다.
-  - 동적 로딩과 생성
-    - `Class.forName()` 메서드를 사용하여 클래스를 동적으로 로드하고, `newInstance()` 메서드를 통해 새로운 인스턴스를 생성할 수 있다
-  - 애노테이션 처리
-    - 클래스에 적용된 애노테이션(annotation)을 조회하고 처리하는 기능을 제공한다.    
+    - 타입 정보 얻기
+        - 클래스의 이름, 슈퍼클래스, 인터페이스, 접근 제한자 등과 같은 정보를 조회할 수 있다.
+    - 리플렉션
+        - 클래스에 정의된 메서드, 필드, 생성자 등을 조회하고, 이들을 통해 객체 인스턴스를 생성하거나 메서드를 호출하는 등의 작업을 할 수 있다.
+    - 동적 로딩과 생성
+        - `Class.forName()` 메서드를 사용하여 클래스를 동적으로 로드하고, `newInstance()` 메서드를 통해 새로운 인스턴스를 생성할 수 있다
+    - 애노테이션 처리
+        - 클래스에 적용된 애노테이션(annotation)을 조회하고 처리하는 기능을 제공한다.
 
 - 예제코드
-  - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/lang/clazz/ClassMetaMain.java
-  - `Class` 클래스는 다음과 같이 3가지 방법으로 조회할 수 있다.
-    - `Class clazz = String.class;` // 1.클래스에서 조회
-    - `Class clazz = new String().getClass();` // 2.인스턴스에서 조회
-    - `Class clazz = Class.forName("java.lang.String");` // 3.문자열로 조회 
-  - `Class` 클래스의 주요 기능
-    - `getDeclaredFields()`: 클래스의 모든 필드를 조회한다.
-    - `getDeclaredMethods()`: 클래스의 모든 메서드를 조회한다.
-    - `getSuperclass()`: 클래스의 부모 클래스를 조회한다.
-    - `getInterfaces()`: 클래스의 인터페이스들을 조회한다.
-  - `class`는 자바의 예약어다. 따라서 패키지명, 변수명으로 사용할 수 없다.
-    - 대신 `clazz` 라는 이름을 관행으로 사용한다.
+    - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/lang/clazz/ClassMetaMain.java
+    - `Class` 클래스는 다음과 같이 3가지 방법으로 조회할 수 있다.
+        - `Class clazz = String.class;` // 1.클래스에서 조회
+        - `Class clazz = new String().getClass();` // 2.인스턴스에서 조회
+        - `Class clazz = Class.forName("java.lang.String");` // 3.문자열로 조회
+    - `Class` 클래스의 주요 기능
+        - `getDeclaredFields()`: 클래스의 모든 필드를 조회한다.
+        - `getDeclaredMethods()`: 클래스의 모든 메서드를 조회한다.
+        - `getSuperclass()`: 클래스의 부모 클래스를 조회한다.
+        - `getInterfaces()`: 클래스의 인터페이스들을 조회한다.
+    - `class`는 자바의 예약어다. 따라서 패키지명, 변수명으로 사용할 수 없다.
+        - 대신 `clazz` 라는 이름을 관행으로 사용한다.
 
 - 클래스 생성하기
-  - Class 클래스에는 클래스의 모든 정보가 들어있다. 
-  - 이 정보를 기반으로 인스턴스를 생성하거나, 메서드를 호출하고, 필드의 값도 변경할 수 있다.
-    - 예제코드 (비공개 레포지토리)
-      - hello() 클래스: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/lang/clazz/Hello.java
-      - main 클래스: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/lang/clazz/ClassCreateMain.java
+    - Class 클래스에는 클래스의 모든 정보가 들어있다.
+    - 이 정보를 기반으로 인스턴스를 생성하거나, 메서드를 호출하고, 필드의 값도 변경할 수 있다.
+        - 예제코드 (비공개 레포지토리)
+            - hello() 클래스: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/lang/clazz/Hello.java
+            - main 클래스: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/lang/clazz/ClassCreateMain.java
 - `class` 클래스는 대략 보고, 넘어가자. 나중에 다시 다룬다.
 
 ### System 클래스
 
 - `System` 클래스는 시스템과 관련된 기본 기능들을 제공한다.
-  - 표준 입력, 출력, 오류 스트림
-    - `System.in` : 표준 입력 스트림
-    - `System.out` : 표준 출력 스트림
-    - `System.err` : 표준 오류 스트림. (잘 사용하지 않는다.)
-  - 시간 측정
-    - `System.currentTimeMillis()` : 현재 시간(밀리초)
-    - `System.nanoTime()` : 현재 시간(나노초)
-  - 환경 변수
-    -  `System.getenv()` : OS에서 설정한 환경 변수의 값
-  - 시스템 속성
-    - 자바에서 사용하는 설정 값
-    - `System.getProperties()` : 현재 시스템 속성
-    - `System.getProperty(String key)` : 특정 속성
-  - 시스템 종료
-    - `System.exit(int status)` : 프로그램을 종료하고, OS에 프로그램 종료의 상태 코드를 전달한다.
-      - 상태 코드 0 : 정상 종료 
-      - 상태 코드 0 이 아님: 오류나 예외적인 종료
-  - 배열 고속 복사
-    - `System.arraycopy()`: 시스템 레벨에서 최적화된 메모리 복사 연산을 사용한다.
-      - 직접 반복문을 사용해서 배열을 복사할 때 보다 수 배 이상 빠른 성능을 제공한다.
+    - 표준 입력, 출력, 오류 스트림
+        - `System.in` : 표준 입력 스트림
+        - `System.out` : 표준 출력 스트림
+        - `System.err` : 표준 오류 스트림. (잘 사용하지 않는다.)
+    - 시간 측정
+        - `System.currentTimeMillis()` : 현재 시간(밀리초)
+        - `System.nanoTime()` : 현재 시간(나노초)
+    - 환경 변수
+        -  `System.getenv()` : OS에서 설정한 환경 변수의 값
+    - 시스템 속성
+        - 자바에서 사용하는 설정 값
+        - `System.getProperties()` : 현재 시스템 속성
+        - `System.getProperty(String key)` : 특정 속성
+    - 시스템 종료
+        - `System.exit(int status)` : 프로그램을 종료하고, OS에 프로그램 종료의 상태 코드를 전달한다.
+            - 상태 코드 0 : 정상 종료
+            - 상태 코드 0 이 아님: 오류나 예외적인 종료
+    - 배열 고속 복사
+        - `System.arraycopy()`: 시스템 레벨에서 최적화된 메모리 복사 연산을 사용한다.
+            - 직접 반복문을 사용해서 배열을 복사할 때 보다 수 배 이상 빠른 성능을 제공한다.
 
-- 예제 코드 
-  - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/lang/system/SystemMain.java
+- 예제 코드
+    - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/lang/system/SystemMain.java
 
 ### Math, Random 클래스
 
 - Math 클래스
-  - 수학 문제를 해결해주는 클래스
-    - 이런게 있구나 보고, 나중에 필요할 때 찾아보자.
-  - 주요 메서드
-    - 기본 연산
-      - `abs(x)` : 절대값
-      - `max(a, b)` : 최대값
-      - `min(a, b)` : 최소값
-    - 지수 및 로그 연산
-      - `exp(x)` : e^x 계산
-      - `log(x)` : 자연 로그
-      - `log10(x)` : 로그 10
-      - `pow(a, b)` : a의 b 제곱
-    - 반올림 및 정밀도
-      - `ceil(x)` : 올림
-      - `floor(x)` : 내림
-      - `rint(x)` : 가장 가까운 정수로 반올림
-      - `round(x)` : 반올림
-    - 삼각 함수
-      - `sin(x)` : 사인 
-      - `cos(x)` : 코사인 
-      - `tan(x)` : 탄젠트
-    - 기타
-      - `sqrt(x)` : 제곱근 
-      - `cbrt(x)` : 세제곱근 
-      - `random()` : 0.0과 1.0 사이의 무작위 값 생성
-        - 이거말고, `Random` 클래스 사용을 권장한다.
-        - `Math.random()` 도 내부에서는 `Random` 클래스를 사용한다.
-  - 예제 코드:
-    - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/lang/math/MathMain.java
-  - 아주 정밀한 숫자와 반올림 계산이 필요하다면 `BigDecimal`을 검색해보자. (정산 시스템 등에 사용)
+    - 수학 문제를 해결해주는 클래스
+        - 이런게 있구나 보고, 나중에 필요할 때 찾아보자.
+    - 주요 메서드
+        - 기본 연산
+            - `abs(x)` : 절대값
+            - `max(a, b)` : 최대값
+            - `min(a, b)` : 최소값
+        - 지수 및 로그 연산
+            - `exp(x)` : e^x 계산
+            - `log(x)` : 자연 로그
+            - `log10(x)` : 로그 10
+            - `pow(a, b)` : a의 b 제곱
+        - 반올림 및 정밀도
+            - `ceil(x)` : 올림
+            - `floor(x)` : 내림
+            - `rint(x)` : 가장 가까운 정수로 반올림
+            - `round(x)` : 반올림
+        - 삼각 함수
+            - `sin(x)` : 사인
+            - `cos(x)` : 코사인
+            - `tan(x)` : 탄젠트
+        - 기타
+            - `sqrt(x)` : 제곱근
+            - `cbrt(x)` : 세제곱근
+            - `random()` : 0.0과 1.0 사이의 무작위 값 생성
+                - 이거말고, `Random` 클래스 사용을 권장한다.
+                - `Math.random()` 도 내부에서는 `Random` 클래스를 사용한다.
+    - 예제 코드:
+        - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/lang/math/MathMain.java
+    - 아주 정밀한 숫자와 반올림 계산이 필요하다면 `BigDecimal`을 검색해보자. (정산 시스템 등에 사용)
 
 - Random 클래스
-  - `Random random = new Random();` : 인스턴스를 생성해서 사용한다.
-    - `random.nextInt();` //-435493522
-    - `random.nextDouble();` //0.0d ~ 1.0d //0.35895881763641546
-    - `random.nextBoolean();` //false
-    - `random.nextInt(10);` //0 ~ 9까지 출력
-      - `random.nextInt(10) + 1;` //1 ~ 10까지 출력
-  - `Random random = new Random(1);` : seed가 같으면 Random의 결과가 같다.
-    - 테스트 시에 사용하면 유용하다.
-  - 예제 코드:
-    - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/lang/math/RandomMain.java
+    - `Random random = new Random();` : 인스턴스를 생성해서 사용한다.
+        - `random.nextInt();` //-435493522
+        - `random.nextDouble();` //0.0d ~ 1.0d //0.35895881763641546
+        - `random.nextBoolean();` //false
+        - `random.nextInt(10);` //0 ~ 9까지 출력
+            - `random.nextInt(10) + 1;` //1 ~ 10까지 출력
+    - `Random random = new Random(1);` : seed가 같으면 Random의 결과가 같다.
+        - 테스트 시에 사용하면 유용하다.
+    - 예제 코드:
+        - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/lang/math/RandomMain.java
 
 ### 문제와 풀이
 
 - 로또 번호 자동 생성기
-  - 조건
-    - 로또 번호는 1~45 사이의 숫자를 6개 뽑아야 한다.
-    - 각 숫자는 중복되면 안된다.
-    - 실행할 때 마다 결과가 달라야 한다.
-  - 실제 코드:
-    - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1/tree/master/src/lang/math/test
+    - 조건
+        - 로또 번호는 1~45 사이의 숫자를 6개 뽑아야 한다.
+        - 각 숫자는 중복되면 안된다.
+        - 실행할 때 마다 결과가 달라야 한다.
+    - 실제 코드:
+        - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1/tree/master/src/lang/math/test
 
 ---
 
 ## 6. 열거형 - ENUM
+
+### 문자열과 타입 안전성
+
+- 열거형이 생겨난 이유를 예제를 통해 알아보자.
+
+- 예제 0번
+    - **단순히 문자열을 입력하는 방식**
+    - 예제 코드
+        - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1/tree/master/src/enumeration/ex0
+            - 공통 코드 :  `DiscountService.java`
+            - 정상 작동 : `StringGradeEx0_1.java`
+            - 문제 발생 : `StringGradeEx0_2.java`
+    - 예제에서는 다음과 같은 문제가 발생했다.
+        - 존재하지 않는 `VIP`라는 등급을 입력했다.
+        - 오타: `DIAMOND` 마지막에 `D`가 하나 추가되었다.
+        - 소문자 입력: 등급은 모두 대문자인데, 소문자를 입력했다.
+    - 이런 문제를 해결하려면 특정 범위로 값을 제한해야 한다.
+        - 예를 들어 `BASIC`, `GOLD`, `DIAMOND`라는 정확한 문자만 `discount()` 메서드에 전달되어야 한다.
+        - 하지만 `String`은 어떤 문자열이든 받을 수 있기 때문에 자바 문법 관점에서는 아무런 문제가 없다.
+        - 결국 `String` 타입을 사용해서는 문제를 해결할 수 없다.
+
+- 예제 1번
+    - **문자열 상수 사용**
+        - 미리 정의한 변수명을 사용하기 때문에 문자열보다 안전하다.
+    - 예제 코드
+        - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1/tree/master/src/enumeration/ex1
+            - 공통 코드 :  `DiscountService.java`, `StringGrade.java`
+            - 정상 작동 : `StringGradeEx1_1.java`,
+            - 문제 발생 : `StringGradeEx1_2.java`
+    - 더 나아진 점
+        - 상수의 이름을 잘못 입력하면 컴파일 시점에 오류가 발생한다. 오류를 쉽고 빠르게 찾을 수 있다.
+    - 문제점
+        - `StringGrade`에 있는 문자열 상수를 사용하지 않고, 직접 문자열을 사용해도 막을 수 있는 방법이 없다.
+
+### 타입 안전 열거형 패턴
+
+- `타입 안전 열거형 패턴` (Type-Safe Enum Pattern)
+    - `Enum`
+        - `enumeration`의 줄임말.
+        - `열거`라는 뜻. 어떤 항목을 나열하는 것을 뜻한다.
+        - 예시)
+            - 회원 등급인 `BASIC` , `GOLD` , `DIAMOND`를 나열하는 것.
+    - `타입 안전 열거형 패턴`을 사용하면 미리 나열한 항목만 사용할 수 있다.
+        - 아무런 문자열이나 다 사용할 수 있는 것이 아니라,
+        - 우리가 나열한 항목인 `BASIC`, `GOLD`, `DIAMOND`만 안전하게 사용할 수 있다.
+
+- 직접 구현
+
+```java
+package enumeration.ex2;
+
+//회원 등급을 다루는 클래스를 만들고, 각각의 회원 등급별로 상수를 선언한다.
+public class ClassGrade {
+    public static final ClassGrade BASIC = new ClassGrade(); //x001
+    public static final ClassGrade GOLD = new ClassGrade(); //x002
+    public static final ClassGrade DIAMOND = new ClassGrade(); //x003
+    //각각의 상수마다 별도의 인스턴스를 생성하고, 생성한 인스턴스를 대입한다.
+    //- static을 사용해서 상수를 메서드 영역에 선언한다.
+    //- final을 사용해서 인스턴스(참조값)를 변경할 수 없게 한다.
+
+    //private 생성자 추가: 외부에서 임의로 인스턴스를 생성할 수 있다는 문제를 차단한다.
+    private ClassGrade() {}
+}
+```
+
+- 위 코드 설명
+    - `static` 이므로 애플리케이션 로딩 시점에 3개의 `ClassGrade` 인스턴스가 생성된다.
+        - `getClass()`의 결과는 모두 `ClassGrade`이다.
+    - 각각의 상수는 서로 다른 인스턴스의 참조값을 가진다.
+    - 관련 코드:
+        - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1/tree/master/src/enumeration/ex2
+    - 메모리 구조:
+
+![타입안전열거형패턴_직접구현](https://github.com/user-attachments/assets/978f8314-6cbf-45a4-8ad9-0bd410a1f2b4)
+
+- `타입 안전 열거형 패턴`의 장단점
+    - 장점
+        - 타입 안정성 향상
+            - 정해진 객체만 사용할 수 있기 때문에, 잘못된 값을 입력하는 문제를 컴파일 시점에 방지할 수 있다.
+        - 데이터 일관성 보장
+            - 정해진 객체만 사용하므로, 데이터의 일관성이 보장된다.
+    - 단점
+        - 이 패턴을 구현하려면 많은 코드를 작성해야 한다.
+        - `private` 생성자를 넣어야 하는데, 잊어버릴 수 있다.
+
+### 열거형 - Enum Type
+
+- 자바는 `타입 안전 열거형 패턴`을 매우 편리하게 사용할 수 있는 `열거형`(Enum Type)을 제공한다.
+
+```java
+package enumeration.ex3;
+
+public enum Grade { //열거형을 정의할 때는 class 대신에 enum을 사용한다.
+    BASIC, GOLD, DIAMOND
+    //원하는 상수의 이름을 나열하면 된다.
+    //뒤에 ;를 안붙여도 된다.
+}
+```
+
+위 코드는 아래 코드와 같다.
+
+```java
+public class Grade extends Enum {
+    public static final Grade BASIC = new Grade();
+    public static final Grade GOLD = new Grade();
+    public static final Grade DIAMOND = new Grade();
+    
+    private Grade() {}
+}
+```
+
+- 사용 예시
+
+```java
+package enumeration.ex3;
+
+public class DiscountService {
+
+    public int discount(Grade grade, int price) {
+        int discountPercent = 0;
+
+        if (grade == Grade.BASIC) {
+            discountPercent = 10;
+        } else if (grade == Grade.GOLD) {
+            discountPercent = 20;
+        } else if (grade == Grade.DIAMOND) {
+            discountPercent = 30;
+        } else {
+            System.out.println("할인X");
+        }
+
+        return price * discountPercent / 100;
+    }
+}
+```
+
+```java
+package enumeration.ex3;
+
+
+public class ClassGradeEx3_1 {
+
+    public static void main(String[] args) {
+        int price = 10000;
+
+        DiscountService discountService = new DiscountService();
+        int basic = discountService.discount(Grade.BASIC, price);
+        int gold = discountService.discount(Grade.GOLD, price);
+        int diamond = discountService.discount(Grade.DIAMOND, price);
+
+        System.out.println("BASIC 등급의 할인 금액: " + basic); //1000
+        System.out.println("GOLD 등급의 할인 금액: " + gold); //2000
+        System.out.println("DIAMOND 등급의 할인 금액: " + diamond); //3000
+    }
+}
+```
+
+- 열거형
+  - 열거형도 클래스이다.
+      - 열거형을 제공하기 위해 제약이 추가된 클래스라 생각하면 된다.
+  - 열거형은 자동(강제)으로 `java.lang.Enum`을 상속 받는다.
+    - 따라서 해당 클래스가 제공하는 기능들을 사용할 수 있다.
+  - 외부에서 임의로 생성할 수 없다. (`private` 생성자 역할)
+  - 장점
+    - 타입 안정성 향상
+      - 열거형은 사전에 정의된 상수들로만 구성되므로, 유효하지 않은 값이 입력될 가능성이 없다.
+      - 이런 경우 컴파일 오류가 발생한다.
+    - 간결성 및 일관성
+      - 열거형을 사용하면 코드가 더 간결하고 명확해지며, 데이터의 일관성이 보장된다.
+    - 확장성
+      - 새로운 회원 등급을 타입을 추가하고 싶을 때, ENUM에 새로운 상수를 추가하기만 하면 된다.
+  - `static import`를 사용하면 더 읽기 좋은 코드를 만들 수 있다.
+  - 열거형은 인터페이스를 구현할 수 있다. 
+  - 열거형에 추상 메서드를 선언하고, 구현할 수 있다.
+    - 이 경우 익명 클래스와 같은 방식을 사용한다. 익명 클래스는 뒤에서 다룬다.
+
+### 열거형 - 주요 메서드
+
+- ENUM - 주요 메서드
+  - `values()`: 모든 ENUM 상수를 포함하는 배열을 반환한다. 
+  - `valueOf(String name)`: 주어진 이름과 일치하는 ENUM 상수를 반환한다. 
+  - `name()`: ENUM 상수의 이름을 문자열로 반환한다.
+  - `ordinal()`: ENUM 상수의 선언 순서(0부터 시작)를 반환한다.
+    - 가급적 사용하지 않는 것이 좋다.
+      - 전설적인 에러를 야기할 수 있다...
+      - 이 값을 사용하다가 중간에 상수를 선언하는 위치가 변경되면 전체 상수의 위치가 모두 변경될 수 있다.
+  - `toString()`: ENUM 상수의 이름을 문자열로 반환한다.
+    - `name()` 메서드와 유사하지만, `toString()`은 직접 오버라이딩 할 수 있다.
+
+- `Arrays.toString()`: 배열 내부의 값을 출력할 때 사용한다.
+
+```java
+package enumeration.ex3;
+
+import java.util.Arrays;
+
+public class EnumMethodMain {
+
+    public static void main(String[] args) {
+
+        //모든 ENUM 반환
+        Grade[] values = Grade.values();
+        System.out.println("values = " + Arrays.toString(values));
+        
+        for (Grade value : values) {
+            System.out.println("name = " + value.name() + ", ordinal=" + value.ordinal());
+        }
+
+        //String -> ENUM 변환, 잘못된 문자면 IllegalArgumentException 발생
+        String input = "GOLD";
+        Grade gold = Grade.valueOf(input);
+        System.out.println("gold = " + gold); //toString() 오버라이딩 가능
+    }
+}
+
+/*
+values = [BASIC, GOLD, DIAMOND]
+
+name = BASIC, ordinal=0
+name = GOLD, ordinal=1
+name = DIAMOND, ordinal=2
+
+gold = GOLD
+*/
+```
+
+### 열거형 - 리팩토링
+
+- 주요 리펙토링 내용
+  - 회원 등급 클래스가 할인율(`discountPercent`)을 가지고 관리하도록 변경.
+    - 객체지향 캡슐화 적용
+  - `DiscountService` 제거
+    - `Grade`가 스스로 할인율을 계산하면서 `DiscountService` 클래스가 더는 필요하지 않다.
+  - 새로운 등급이 추가되더라도 `main()` 코드의 변경없도록 변경
+  - 출력 부분의 중복 제거.
+
+```java
+package enumeration.ref3;
+
+public enum Grade {
+    BASIC(10), GOLD(20), DIAMOND(30);
+
+    private final int discountPercent;
+
+    Grade(int discountPercent) { //private이 생략되어있음
+        this.discountPercent = discountPercent;
+    }
+
+    public int getDiscountPercent() {
+        return discountPercent;
+    }
+
+    public int discount(int price) {
+        return price * discountPercent / 100;
+    }
+}
+```
+
+```java
+package enumeration.ref3;
+
+public class EnumRefMain3_4 {
+
+    public static void main(String[] args) {
+        int price = 10000;
+        
+        //새로운 등급이 추가되더라도 main() 코드의 변경없도록 변경
+        Grade[] grades = Grade.values();
+        for (Grade grade : grades) {
+            printDiscount(grade, price);
+        }
+    }
+
+    private static void printDiscount(Grade grade, int price) { //출력 부분의 중복 제거
+        System.out.println(grade.name() + " 등급의 할인 금액: " + grade.discount(price));
+    }
+}
+
+/*
+BASIC 등급의 할인 금액: 1000
+GOLD 등급의 할인 금액: 2000
+DIAMOND 등급의 할인 금액: 3000
+*/
+```
+
+### 문제와 풀이
+
+- 인증 등급따라 볼 수 있는 페이지 출력
+  - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1/tree/master/src/enumeration/test
+
+    ```
+    당신의 등급을 입력하세요[GUEST, LOGIN, ADMIN]: LOGIN
+    당신의 등급은 로그인 회원입니다.
+    ==메뉴 목록==
+    - 메인 화면
+    - 이메일 관리 화면 
+    ```
+
+- 입력된 HTTP code의 상태코드, 상태메시지 성공여부 출력
+    - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1/tree/master/src/enumeration/test/http
+
+       ```
+       HTTP CODE: 400
+       400 Bad Request
+       isSuccess = false
+       ```
 
 ---
 
