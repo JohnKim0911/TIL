@@ -1,19 +1,19 @@
 # (복습) 김영한의 실전 자바 - 중급 1편
 
-|    | 제목                                   | 복습일        |
-|----|--------------------------------------|------------|
-| 1  | [강의 소개와 자료](#1-강의-소개와-자료)            | 2024-11-24 |
-| 2  | [Object 클래스](#2-object-클래스)          | 2024-11-24 |
-| 3  | [불변 객체](#3-불변-객체)                    | 2024-11-25 |
-| 4  | [String 클래스](#4-string-클래스)          | 2024-11-25 |
-| 5  | [래퍼, Class 클래스](#5-래퍼-class-클래스)     | 2024-11-26 |
-| 6  | [열거형 - ENUM](#6-열거형---enum)          | 2024-11-26 |
-| 7  | [날짜와 시간](#7-날짜와-시간)                  |            |
-| 8  | [중첩 클래스, 내부 클래스1](#8-중첩-클래스-내부-클래스1) |            |
-| 9  | [중첩 클래스, 내부 클래스2](#9-중첩-클래스-내부-클래스2) |            |
-| 10 | [예외 처리1 - 이론](#10-예외-처리1---이론)       |            |
-| 11 | [예외 처리2 - 실습](#11-예외-처리2---실습)       |            |
-| 12 | [다음으로](#12-다음으로)                     |            |
+|    | 제목                                   | 복습일             |
+|----|--------------------------------------|-----------------|
+| 1  | [강의 소개와 자료](#1-강의-소개와-자료)            | 2024-11-24      |
+| 2  | [Object 클래스](#2-object-클래스)          | 2024-11-24      |
+| 3  | [불변 객체](#3-불변-객체)                    | 2024-11-25      |
+| 4  | [String 클래스](#4-string-클래스)          | 2024-11-25      |
+| 5  | [래퍼, Class 클래스](#5-래퍼-class-클래스)     | 2024-11-26      |
+| 6  | [열거형 - ENUM](#6-열거형---enum)          | 2024-11-26      |
+| 7  | [날짜와 시간](#7-날짜와-시간)                  | 2024-11-28 ~ 30 |
+| 8  | [중첩 클래스, 내부 클래스1](#8-중첩-클래스-내부-클래스1) |                 |
+| 9  | [중첩 클래스, 내부 클래스2](#9-중첩-클래스-내부-클래스2) |                 |
+| 10 | [예외 처리1 - 이론](#10-예외-처리1---이론)       |                 |
+| 11 | [예외 처리2 - 실습](#11-예외-처리2---실습)       |                 |
+| 12 | [다음으로](#12-다음으로)                     |                 |
 
 ---
 
@@ -1384,6 +1384,729 @@ DIAMOND 등급의 할인 금액: 3000
 ---
 
 ## 7. 날짜와 시간
+
+### 날짜와 시간 라이브러리가 필요한 이유
+
+- 직접 계산하기 복잡하고 어렵다. 자바 시간 라이브러리를 사용하자.
+  - 왜 어렵나?
+    - 날짜
+      - 어떤달은 28일, 30일, 31일...
+    - 윤년
+      - 4년마다 하루(2월 29일)를 추가하는 윤년 + 윤년 관련 다른 규칙들...
+    - 일광 절약 시간 (Daylight Saving Time, `DST`)
+      - 썸머타임... 해 뜨는 시간따라 시간이 바뀐다. 한국은 해당없음.
+    - 타임존
+      - 세계는 다양한 타임존으로 나눠져 있고, 각 타임존은 `UTC`(협정 세계시)로부터의 시간 차이로 정의된다.
+      - 일광 절약 시간이 적용되는 경우, 타임존 차이가 변할 수 있다.
+
+- 용어
+  - 역사적으로 `GMT`가 국제적인 시간 표준으로 사용되었고, `UTC`가 나중에 이를 대체하기 위해 도입되었다.
+    - `UTC`(협정 세계시, Universal Time Coordinated)
+      - **원자 시계**를 사용하여 측정한 국제적으로 합의된 시간 체계.
+      - 지구의 자전 속도가 변화하는 것을 고려하여 윤초를 추가하거나 빼는 방식으로 시간을 조정함으로써, **보다 정확한 시간**을 유지한다.
+    - `GMT` (그리니치 평균시, Greenwich Mean Time)
+    - 둘 다 경도 0°에 위치한 영국의 그리니치 천문대를 기준으로 하며, 이로 인해 실질적으로 같은 시간대를 나타낸다.
+    - `GMT`와 `UTC`는 거의 차이가 없으나, 정밀한 시간 측정과 국제적인 표준에 관해서는 `UTC`가 선호된다.
+
+- 자바 날짜와 시간 라이브러리의 역사
+  1. 자바 표준 라이브러리는 사용성이 너무 떨어지고, 문제가 많았다.
+     - JDK 1.0 (java.util.Date) 
+     - JDK 1.1 (java.util.Calendar)
+  2. `Joda-Time`이라는 오픈소스 라이브러리가 등장한다. 편리함과 사용성 덕분에 크게 대중화 되었다.
+  3. 자바는 `Joda-Time`을 만든 개발자를 데려와서, 새로운 자바 표준 날짜와 시간 라이브러리를 정의한다.
+     - JDK 8(1.8) (java.time 패키지)
+  - 자세한 내용은 교재 참고 (p.4)
+
+### 자바 날짜와 시간 라이브러리 소개
+
+![날짜와시간 라이브러리 표](https://github.com/user-attachments/assets/e25c440f-d0af-4af6-8e06-225b43aeda72)
+
+- `LocalDate`, `LocalTime`, `LocalDateTime` ⭐⭐
+  - 특정 지역의 날짜와 시간만 고려할 때 사용한다.
+    - 세계 시간대를 고려하지 않는다.
+    - 국내 서비스만 할때 사용.
+      - 가장 많이 사용하게 될 타입이다.
+  - `LocalDate`
+    - 날짜만 표현할 때 사용 (년, 월, 일)
+    - 예시) `2013-11-21`
+  - `LocalTime`
+    - 시간만 표현할 때 사용 (시, 분, 초)
+    - 예시) `08:20:30.213`
+      - 초는 밀리초, 나노초 단위도 포함할 수 있다.
+  - `LocalDateTime`
+    - `LocalDate`와 `LocalTime`을 합한 개념
+    - 예시) `2013-11-21T08:20:30.213`
+
+- `ZonedDateTime`, `OffsetDateTime`
+  - 세계 시간대를 고려 할 때 사용한다.
+  - `ZonedDateTime` ⭐
+    - 타임존이 포함된다.
+        - 이 타임존을 알면 오프셋과 일광 절약 시간제에 대한 정보를 알 수 있다
+    - 예시) `2013-11-21T08:20:30.213+9:00[Asia/Seoul]`
+      - `+9:00` 은 `UTC`(협정 세계시)로 부터의 시간대 차이이다. 오프셋이라 한다.
+      - `Asia/Seoul`은 타임존이라 한다.
+  - `OffsetDateTime` : 잘안쓴다...
+    - 타임존은 없고, `UTC`로 부터의 시간대 차이인 고정된 오프셋만 포함한다.
+    - 예시) `2013-11-21T08:20:30.213+9:00`
+    - 일광 절약 시간제가 적용되지 않는다.
+
+- `Year`, `Month`, `YearMonth`, `MonthDay` : 잘안쓴다...
+  - 년, 월, 년월, 달일을 각각 다룰 때 사용한다.
+
+- `Instant`: 특이한 경우에만 쓰인다.
+  - 1970년 1월 1일 0시 0분 0초(`UTC`)를 기준으로 경과한 시간으로 계산된다.
+  - 초 데이터만 들어있다. 계산에 사용할 때는 적합하지 않다.
+
+- `Period`, `Duration` ⭐⭐
+  - **시간의 양(amount of time)** 을 표현하는데 사용된다.
+    - `Period`
+      - 두 날짜 사이의 간격
+      - 년, 월, 일 단위
+      - 예시) "이 프로젝트는 3개월 남았어."
+    - `Duration`
+      - 두 시간 사이의 간격
+      - 시, 분, 초(나노초) 단위
+      - 예시) "라면은 3분 동안 끓어야 해."
+- 모든 날짜 클래스는 불변이다. ⭐⭐
+  - 따라서 변경이 발생하는 경우 새로운 객체를 생성해서 반환하므로 **반환값**을 꼭 받아야 한다.
+
+### 기본 날짜와 시간 - LocalDateTime
+
+- `LocalDate`, `LocalTime`
+  - 관련 메서드
+    - `now()`: 현재 시간을 기준으로 생성
+    - `of(...)`: 특정 날짜를 기준으로 생성
+    - `plusDays()`: 특정 일을 더한다.
+      - 다양한 `plusXxx()` 메서드가 존재한다.
+
+```java
+package time;
+
+import java.time.LocalDate;
+
+public class LocalDataMain {
+    
+    public static void main(String[] args) {
+        LocalDate nowDate = LocalDate.now();
+        LocalDate ofDate = LocalDate.of(2013, 11, 21);
+        System.out.println("오늘 날짜= " + nowDate); //2024-11-28
+        System.out.println("지정 날짜= " + ofDate); //2013-11-21
+
+        //계산(불변)
+        LocalDate plusDays = ofDate.plusDays(10);
+        System.out.println("지정 날짜+10d= " + plusDays); //2013-12-01
+    }
+}
+```
+
+```java
+package time;
+
+import java.time.LocalTime;
+
+public class LocalTimeMain {
+    
+    public static void main(String[] args) {
+        LocalTime nowTime = LocalTime.now();
+        LocalTime ofTime = LocalTime.of(9, 10, 30);
+
+        System.out.println("현재 시간 = " + nowTime); //14:34:30.819218100
+        System.out.println("지정 시간 = " + ofTime); //09:10:30
+
+        //계산(불변)
+        LocalTime ofTimePlus = ofTime.plusSeconds(30);
+        System.out.println("지정 시간+30s = " + ofTimePlus); //09:11
+    }
+}
+```
+
+- `LocalDateTime`
+  - `LocalDateTime`은 `LocalDate`와 `LocalTime`을 내부에 가진다.
+      ```java
+      public class LocalDateTime {
+          private final LocalDate date;
+          private final LocalTime time;
+          ...
+      }
+      ```
+  - 관련 메서드
+    - `now()`: 현재 날짜와 시간을 기준으로 생성
+    - `of(...)`: 특정 날짜와 시간을 기준으로 생성
+    - `toXxx()`: `LocalDate`, `LocalTime`로 분리
+    - `LocalDateTime.of(localDate, localTime)`: 합체
+    - `plusXxx()`: 특정 날짜와 시간을 더한다.
+    - `isBefore()`, `isAfter()`, `isEqual()`: 비교하여 `true`/`false` 반환
+  - `isEqual()` vs `equals()` 비교
+    - `isEqual()`: 시간을 계산해서 시간으로만 둘을 비교한다.
+      - 예시) 서울의 9시와 UTC의 0시는 시간적으로 같다. `true`를 반환한다.
+    - `equals()`: 객체의 타입, 타임존 등등 내부 데이터의 모든 구성요소가 같아야 `true`를 반환한다.
+      - 예시) 서울의 9시와 UTC의 0시는 시간적으로 같지만, 타임존의 데이터가 다르기 때문에 `false`를 반환한다.
+
+```java
+package time;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+
+public class LocalDateTimeMain {
+
+    public static void main(String[] args) {
+        LocalDateTime nowDt = LocalDateTime.now();
+        LocalDateTime ofDt = LocalDateTime.of(2016, 8, 16, 8, 10, 1);
+        System.out.println("현재 날짜시간 = " + nowDt); //2024-11-28T14:37:49.404287900
+        System.out.println("지정 날짜시간 = " + ofDt); //2016-08-16T08:10:01
+
+        //날짜와 시간 분리
+        LocalDate localDate = ofDt.toLocalDate();
+        LocalTime localTime = ofDt.toLocalTime();
+        System.out.println("localDate = " + localDate); //2016-08-16
+        System.out.println("localTime = " + localTime); //08:10:01
+
+        //날짜와 시간 합체
+        LocalDateTime localDateTime = LocalDateTime.of(localDate, localTime);
+        System.out.println("localDateTime = " + localDateTime); //2016-08-16T08:10:01
+
+        //계산(불변)
+        LocalDateTime ofDtPlus = ofDt.plusDays(1000);
+        System.out.println("지정 날짜시간+1000d = " + ofDtPlus); //2019-05-13T08:10:01
+        LocalDateTime ofDtPlus1Year = ofDt.plusYears(1);
+        System.out.println("지정 날짜시간+1년 = " + ofDtPlus1Year); //2017-08-16T08:10:01
+
+        //비교
+        System.out.println("현재 날짜시간이 지정 날짜시간보다 이전인가? " + nowDt.isBefore(ofDt)); //false
+        System.out.println("현재 날짜시간이 지정 날짜시간보다 이후인가? " + nowDt.isAfter(ofDt)); //true
+        System.out.println("현재 날짜시간이 지정 날짜시간과 같은가? " + nowDt.isEqual(ofDt)); //false
+    }
+}
+```
+
+### 타임존 - ZonedDateTime
+- 글로벌 서비스를 하지 않으면 잘 사용하지 않는다.
+  - 너무 깊이있게 파기 보다는 대략 이런 것이 있다 정도로만 알아두면 된다.
+  - 나중에 필요할때 깊이있게 학습하면 된다.
+
+- `ZoneId`
+  - 자바는 타임존을 `ZoneId` 클래스로 제공한다.
+  - `ZoneId.getAvailableZoneIds()`: 사용가능한 `ZoneId`들을 문자열 형태로 반환한다.
+  - `ZoneId.systemDefault()`: 시스템이 사용하는 기본 `ZoneId`를 반환한다.
+  - `ZoneId.of()` : 타임존을 직접 제공해서 `ZoneId` 인스턴스를 반환한다.
+  - 예시 코드:
+    - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/time/ZoneIdMain.java
+
+- `ZonedDateTime`
+  - `LocalDateTime`에 시간대 정보인 `ZoneId`가 합쳐진 것이다.
+      ```java
+      public class ZonedDateTime {
+          private final LocalDateTime dateTime;
+          private final ZoneOffset offset;
+          private final ZoneId zone;
+      }
+      ```
+  - 관련 메서드
+    - `now()`: 현재 날짜와 시간을 기준으로 생성한다.
+    - `of(...)` : 특정 날짜와 시간을 기준으로 생성한다. `ZoneId`를 추가해야 한다.
+      - `LocalDateTime`에 `ZoneId`를 추가해서 생성할 수 있다.
+    - `withZoneSameInstant(ZoneId)` : 타임존을 변경한다. 타임존에 맞추어 시간도 함께 변경된다.
+      - 지금 다른 나라는 몇 시 인지 확인일 수 있다.
+    - 사용 예시:
+      - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/time/ZonedDateTimeMain.java
+
+- `OffsetDateTime`
+  - `LocalDateTime`에 UTC 오프셋 정보인 `ZoneOffset`이 합쳐진 것이다.
+    ```java
+    public class OffsetDateTime {
+        private final LocalDateTime dateTime;
+        private final ZoneOffset offset;
+    }
+    ```
+  - 사용 예시:
+    - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/time/OffsetDateTimeMain.java
+
+### 기계 중심의 시간 - Instant
+
+- `Instant` 내부에는 초 데이터만 들어있다. (나노초 포함)
+    ```java
+    public class Instant {
+        private final long seconds;
+        private final int nanos;
+        ...
+    }
+    ```
+  - 예시) UTC 기준 1970년 1월 1일,
+      - 0시 0분 0초라면 `seconds`에 `0`이 들어간다.
+      - 0시 0분 10초라면 `seconds` 에 `10`이 들어간다.
+      - 0시 1분 0초라면 `seconds` 에 `60`이 들어간다.
+
+- Epoch 시간 (에포크 시간)
+  - Epoch time, 또는 Unix timestamp는 컴퓨터 시스템에서 시간을 나타내는 방법 중 하나이다.
+  - 1970년 1월 1일 00:00:00 UTC부터 현재까지 경과된 시간을 초 단위로 표현한 것이다.
+  - 시간대에 영향을 받지 않는 절대적인 시간 표현 방식이다. 
+    - 전 세계 어디서나 동일한 시점을 가리키는데 유용하다.
+      - 예시) 항상 UTC 기준이므로 전세계 모든 서버 시간을 똑같이 맞출 수 있음.
+        - 한국에 있는 `Instant`, 미국에 있는 `Instant`의 시간이 똑같음.
+  - Epoch의 뜻: 어떤 중요한 사건이 발생한 시점을 기준으로 삼는 시작점.
+  - `Instant`는 바로 이 Epoch 시간을 다루는 클래스이다.
+
+- `Instant` 사용 예시
+  - 전 세계적으로 일관된 시점을 표현할 때.
+    - 예시) 로그 기록, 트랜잭션 타임스탬프, 서버 간의 시간 동기화 등
+  - 시간대의 변화 없이 순수하게 시간의 흐름만을 다루고 싶을 때.
+    - 예시) 지속 시간 계산
+  - 데이터베이스에 날짜와 시간 정보를 저장하거나, 다른 시스템과 날짜와 시간 정보를 교환할 때.
+    - 모든 시스템에서 동일한 기준점(UTC)을 사용하게 되므로 데이터의 일관성을 유지하기 쉽다.
+
+- 관련 메서드
+  - `now()` : UTC를 기준 현재 시간의 `Instant`를 생성한다. 
+  - `from()` : 다른 타입의 날짜와 시간을 기준으로 `Instant`를 생성한다.
+    - 참고로 `Instant`는 UTC를 기준으로 하기 때문에 시간대 정보가 필요하다. 따라서 `LocalDateTime`은 사용할 수 없다.
+  - `ofEpochSecond()` : 에포크 시간을 기준으로 `Instant`를 생성한다.
+    - 0초를 선택하면 에포크 시간인 1970년 1월 1일 0시 0분 0초로 생성된다.
+  - `plusSeconds()` : 초를 더한다.
+    - 초, 밀리초, 나노초 정도만 더하는 간단한 메서드가 제공된다.
+  - `getEpochSecond()`: 에포크 시간를 기준으로 흐른 초를 반환한다.
+    - UTC 1970년 1월 1일 0시 0분 0초부터 얼마나 시간이 흘렀는지.
+  - 예시 코드:
+    - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/time/InstantMain.java
+
+### 기간, 시간의 간격 - Duration, Period
+
+- 시간의 개념은 크게 2가지로 표현할 수 있다.
+  - 특정 시점의 시간(시각)
+    - 예) "이 프로젝트는 2013년 8월 16일 까지 완료해야해."
+  - 시간의 간격(기간)
+    - 예) "이 프로젝트는 3개월 남았어."
+    - `Period`, `Duration`은 시간의 간격(기간)을 표현하는데 사용된다.
+      - `Period`: 날짜 (년, 월, 일)
+      - `Duration`: 시간 (시간, 분, 초, 나노초)
+
+- `Period`
+    - 년, 월, 일 포함.
+    ```java
+    public class Period {
+        private final int years;
+        private final int months;
+        private final int days;
+    }
+    ```
+    - 관련 메서드
+      - `of()` : 특정 기간을 지정해서 `Period`를 생성한다.
+        - `of(년, 월, 일)`
+        - `ofDays()`
+        - `ofMonths()`
+        - `ofYears()`
+      - 계산에 사용
+        - 예시) `Period`를 사용하여 특정 날짜에 10일이라는 기간을 더 할 수 있다.
+      - `Period.between(startDate, endDate)`: 특정 날짜의 차이를 `Period`로 반환한다.
+      - `getYears()`, `getMonths()`, `getDays()`
+
+```java
+package time;
+
+import java.time.LocalDate;
+import java.time.Period;
+
+public class PeriodMain {
+
+    public static void main(String[] args) {
+        //생성
+        Period period = Period.ofDays(10);
+        System.out.println("period = " + period); //P10D
+
+        //계산에 사용
+        LocalDate currentDate = LocalDate.of(2030, 1, 1);
+        LocalDate plusDate = currentDate.plus(period);
+        System.out.println("currentDate = " + currentDate); //2030-01-01
+        System.out.println("plusDate = " + plusDate); //2030-01-11
+
+        //기간 차이
+        LocalDate startDate = LocalDate.of(2023, 1, 1);
+        LocalDate endDate = LocalDate.of(2023, 4, 2);
+        Period between = Period.between(startDate, endDate);
+        System.out.println("between = " + between); //P3M1D
+        System.out.println("기간: " + between.getMonths() + "개월 " + between.getDays() + "일"); //3개월 1일
+    }
+
+}
+```
+
+- `Duration`
+    - 시, 분, 초 포함.
+    ```java
+    public class Duration {
+        private final long seconds;
+        private final int nanos;
+    }
+    ```
+    - 관련 메서드
+      - `of()` : 특정 시간을 지정해서 `Duration`를 생성한다. 
+        - `of(지정)`
+        - `ofSeconds()`
+        - `ofMinutes()`
+        - `ofHours()`
+      - 계산에 사용
+        - `Duration`를 사용하여 특정 시간에 30분이라는 시간(시간의 간격)을 더할 수 있다.
+      - `Duration.between(start, end)`: 특정 시간의 차이를 `Duration`으로 반환한다.
+      - `getSeconds()`, `getNano()`와 `toHours()`, `toMinutes()`
+        - `Duration`은 내부에서 초를 기반으로 계산해서 사용한다. 
+          - 그래서 시, 분에 대한 메서드명이 특이함!
+    - 참고
+      - 1분 = 60초
+      - 1시간 = 3600초 (60분 x 60초)
+
+```java
+package time;
+
+import java.time.Duration;
+import java.time.LocalTime;
+
+public class DurationMain {
+
+    public static void main(String[] args) {
+        Duration duration = Duration.ofMinutes(30);
+        System.out.println("duration = " + duration); //PT30M
+
+        LocalTime lt = LocalTime.of(1, 0);
+        System.out.println("lt = " + lt); //01:00
+
+        //계산에 사용
+        LocalTime plusTime = lt.plus(duration);
+        System.out.println("더한 시간: " + plusTime); //01:30
+
+        //시간 차이
+        LocalTime start = LocalTime.of(9, 0);
+        LocalTime end = LocalTime.of(10, 0);
+        Duration between = Duration.between(start, end);
+        System.out.println("차이: " + between.getSeconds() + "초"); //3600초
+        System.out.println("근무 시간: " + between.toHours() + "시간" + between.toMinutesPart() + "분"); //1시간0분
+    }
+}
+```
+
+### 날짜와 시간의 핵심 인터페이스
+
+![날짜와 시간의 핵심 인터페이스](https://github.com/user-attachments/assets/20def9e5-e794-4e5e-a63a-04cf97d1c173)
+
+- 날짜와 시간은 2가지로 나눌 수 있다.
+  - 특정 시점의 시간 (시각)
+    - `Temporal` (`TemporalAccessor`포함) 인터페이스를 구현한다.
+      - `TemporalAccessor` : 조회용 기능 제공
+      - `Temporal` : 조회 & 조작용 기능 제공
+    - 구현: `LocalDateTime`, `LocalDate`, `LocalTime`, `ZonedDateTime` , `OffsetDateTime`, `Instant` 등
+    - 참고) 인터페이스끼리는 상속관계이다.
+  - 시간의 간격 (기간)
+    - `TemporalAmount` 인터페이스를 구현한다.
+      - 시간의 양을 나타내고, 특정 날짜에 일정 기간을 더하거나 빼는 데 사용된다.
+    - 구현: `Period`, `Duration`
+
+![시간의 단위와 시간 필드](https://github.com/user-attachments/assets/9af9fbcc-2d56-4e19-84fa-e9937020ba74)
+
+- 시간의 단위(`TemporalUnit`, `ChronoUnit`)와 시간 필드(`TemporalField`, `ChronoField`)
+  - ✅ 단독으로 사용하기 보다는 주로 날짜와 시간을 조회하거나 조작할 때 사용한다.
+  - ✅ 차이점
+    - 시간의 단위(`TemporalUnit`, `ChronoUnit`)
+      - 단순히 날짜나 시간을 나타낸다.
+    - 시간 필드(`TemporalField`, `ChronoField`)
+      - ⭐ 날짜나 시간의 특정 필드를 나타낸다.
+  - ✅ 시간의 단위 - `TemporalUnit`, `ChronoUnit`
+    - `TemporalUnit` 인터페이스는 날짜와 시간을 측정하는 단위를 나타내며,
+    - 주로 사용되는 구현체는 `java.time.temporal.ChronoUnit` 열거형으로 구현되어 있다.
+    - `ChronoUnit`은 다양한 시간 단위를 제공한다.
+      - 시간 단위
+        - `ChronoUnit.NANOS`: 나노초
+        - `ChronoUnit.MICROS`: 마이크로초
+        - `ChronoUnit.MILLIS`: 밀리초
+        - `ChronoUnit.SECONDS`: 초 ✔️
+        - `ChronoUnit.MINUTES`: 분 ✔️
+        - `ChronoUnit.HOURS`: 시간 ✔️
+      - 날짜 단위
+        - `ChronoUnit.DAYS`: 일 ✔️
+        - `ChronoUnit.WEEKS`: 주 ✔️
+        - `ChronoUnit.MONTHS`: 월 ✔️
+        - `ChronoUnit.YEARS`: 년 ✔️
+        - `ChronoUnit.DECADES`: 10년
+        - `ChronoUnit.CENTURIES`: 세기
+        - `ChronoUnit.MILLENNIA`: 천년
+      - 기타 단위
+        - `ERAS`: 시대
+        - `FOREVER`: 무한대
+    - `ChronoUnit` 주요 메서드
+      - `between(Temporal, Temporal)`: 두 `Temporal` 객체 사이의 시간을 현재 `ChronoUnit` 단위로 측정하여 반환한다.
+      - `isDateBased()`: 현재 `ChronoUnit`이 날짜 기반 단위인지 (예: 일, 주, 월, 년) 여부를 반환한다.
+      - `isTimeBased()`: 현재 `ChronoUnit`이 시간 기반 단위인지 (예: 시, 분, 초) 여부를 반환한다.
+      - `isSupportedBy(Temporal)`: 주어진 `Temporal` 객체가 현재 `ChronoUnit` 단위를 지원하는지 여부를 반환한다.
+      - `getDuration()`: 현재 `ChronoUnit`의 기간을 `Duration` 객체로 반환한다.
+    - 예제코드:
+      - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/time/ChronoUnitMain.java
+  - ✅ 시간 필드 - `TemporalField`, `ChronoField`
+    - `TemporalField` 인터페이스는 날짜와 시간을 나타내는데 사용된다.
+    - 주로 사용되는 구현체는 `java.time.temporal.ChronoField` 열거형으로 구현되어 있다.
+      - ⭐ `ChronoField`는 다양한 필드를 통해 날짜와 시간의 특정 부분을 나타낸다. 
+          - 여기서 필드(`Field`)라는 뜻이 날짜와 시간 중에 있는 특정 필드들을 뜻한다.
+          - 예시) 2024년 8월 16일이라고 하면 각각의 필드는 다음과 같다.
+            - `YEAR`: 2024
+            - `MONTH_OF_YEAR`: 8
+            - `DAY_OF_MONTH`: 16
+          - 단순히 시간의 단위 하나하나를 뜻하는 `ChronoUnit`과는 다른 것을 알 수 있다.
+            - `ChronoField`를 사용해야 날짜와 시간의 각 필드 중에 원하는 데이터를 조회할 수 있다.
+    - `ChronoField`의 필드
+      - 연도 관련 필드
+        - `ERA`: 연대, 예를 들어 서기(AD) 또는 기원전(BC)
+        - `YEAR_OF_ERA`: 연대 내의 연도
+        - `YEAR`: 연도
+        - `EPOCH_DAY`: 1970-01-01부터의 일 수
+      - 월 관련 필드
+        - `MONTH_OF_YEAR`: 월 (1월 = 1) ✔️
+        - `PROLEPTIC_MONTH`: 연도를 월로 확장한 값
+      - 주 및 일 관련 필드
+        - `DAY_OF_WEEK`: 요일 (월요일 = 1)
+        - `ALIGNED_DAY_OF_WEEK_IN_MONTH`: 월의 첫 번째 요일을 기준으로 정렬된 요일
+        - `ALIGNED_DAY_OF_WEEK_IN_YEAR`: 연의 첫 번째 요일을 기준으로 정렬된 요일
+        - `DAY_OF_MONTH`: 월의 일 (1일 = 1) ✔️
+        - `DAY_OF_YEAR`: 연의 일 (1월 1일 = 1)
+        - `EPOCH_DAY`: 유닉스 에폭(1970-01-01)부터의 일 수
+      - 시간 관련 필드
+        - `HOUR_OF_DAY`: 시간 (0-23)
+        - `CLOCK_HOUR_OF_DAY`: 시계 시간 (1-24)
+        - `HOUR_OF_AMPM`: 오전/오후 시간 (0-11)
+        - `CLOCK_HOUR_OF_AMPM`: 오전/오후 시계 시간 (1-12)
+        - `MINUTE_OF_HOUR `: 분 (0-59)
+        - `SECOND_OF_MINUTE`: 초 (0-59)
+        - `NANO_OF_SECOND`: 초의 나노초 (0-999,999,999)
+        - `MICRO_OF_SECOND`: 초의 마이크로초 (0-999,999)
+        - `MILLI_OF_SECOND`: 초의 밀리초 (0-999)
+      - 기타 필드
+        - `AMPM_OF_DAY`: 하루의 AM/PM 부분
+        - `INSTANT_SECONDS`: 초를 기준으로 한 시간
+        - `OFFSET_SECONDS`: UTC/GMT에서의 시간 오프셋 초
+    - `ChronoField`의 주요 메서드
+      - `getBaseUnit()`: 필드의 기본 단위를 반환한다.
+        - 예) 분 필드의 기본 단위는 `ChronoUnit.MINUTES`이다.
+      - `getRangeUnit()`: 필드의 범위 단위를 반환한다.
+        - 예) `MONTH_OF_YEAR`의 범위 단위는 `ChronoUnit.YEARS`이다.
+      - `isDateBased()`: 필드가 주로 날짜를 기반으로 하는지 여부를 나타낸다.
+        - 예) `YEAR`와 같은 날짜 기반 필드는 `true`를 반환한다.
+      - `isTimeBased()`: 필드가 주로 시간을 기반으로 하는지 여부를 나타낸다.
+        - 예) `HOUR_OF_DAY`와 같은 시간 기반 필드는 `true`를 반환한다.
+      - `range()`: 필드가 가질 수 있는 값의 유효 범위를 `ValueRange` 객체로 반환한다. ✔️
+        - 객체는 최소값과 최대값을 제공한다.
+    - 예제코드:
+      - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/time/ChronoFieldMain.java
+    
+### 날짜와 시간 조회하고 조작하기1
+
+- 날짜와 시간 조회하기
+  - 날짜와 시간을 조회하려면, 날짜와 시간 항목중에 어떤 필드를 조회할 지 선택해야 한다.
+    - 이때 날짜와 시간의 필드를 뜻 하는 `ChronoField`가 사용된다.
+  - 편의 메서드를 사용 하면 편하다.
+      - 예) `dt.get(ChronoField.DAY_OF_MONTH))` --> `dt.getDayOfMonth()`
+    - 자주 사용하지 않는 기능은 편의 메서드를 제공하지 않는다.
+
+```java
+package time;
+
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoField;
+
+public class GetTimeMain {
+
+    public static void main(String[] args) {
+        LocalDateTime dt = LocalDateTime.of(2030, 1, 1, 13, 30, 59);
+        
+        System.out.println("YEAR = " + dt.get(ChronoField.YEAR)); //2030
+        System.out.println("MONTH_OF_YEAR = " + dt.get(ChronoField.MONTH_OF_YEAR)); //1
+        System.out.println("DAY_OF_MONTH = " + dt.get(ChronoField.DAY_OF_MONTH)); //1
+        System.out.println("HOUR_OF_DAY = " + dt.get(ChronoField.HOUR_OF_DAY)); //13
+        System.out.println("MINUTE_OF_HOUR = " + dt.get(ChronoField.MINUTE_OF_HOUR)); //30
+        System.out.println("SECOND_OF_MINUTE = " + dt.get(ChronoField.SECOND_OF_MINUTE)); //59
+
+        System.out.println("편의 메서드 제공");
+        System.out.println("YEAR = " + dt.getYear()); //2030
+        System.out.println("MONTH_OF_YEAR = " + dt.getMonthValue()); //1
+        System.out.println("DAY_OF_MONTH = " + dt.getDayOfMonth()); //1
+        System.out.println("HOUR_OF_DAY = " + dt.getHour()); //13
+        System.out.println("MINUTE_OF_HOUR = " + dt.getMinute()); //30
+        System.out.println("SECOND_OF_MINUTE = " + dt.getSecond()); //59
+
+        System.out.println("편의 메서드에 없음");
+        System.out.println("MINUTE_OF_DAY = " + dt.get(ChronoField.MINUTE_OF_DAY)); //810
+        System.out.println("SECOND_OF_DAY = " + dt.get(ChronoField.SECOND_OF_DAY)); //48659
+    }
+}
+```
+
+- 날짜와 시간 조작하기
+  - 날짜와 시간을 조작하려면, 어떤 시간 단위(Unit)를 변경할 지 선택해야 한다.
+    - 이때 날짜와 시간의 단위를 뜻하는 `ChronoUnit`이 사용된다.
+  - 편의 메서드를 사용 하면 편하다.
+    - `dt.plus(10, ChronoUnit.YEARS)` --> `dt.plusYears(10)`
+  - 참고로 `minus()`도 존재한다.
+
+```java
+package time;
+
+import java.time.LocalDateTime;
+import java.time.Period;
+import java.time.temporal.ChronoUnit;
+
+public class ChangeTimePlusMain {
+
+    public static void main(String[] args) {
+        LocalDateTime dt = LocalDateTime.of(2018, 1, 1, 13, 30, 59);
+        System.out.println("dt = " + dt); //2018-01-01T13:30:59
+
+        LocalDateTime plusDt1 = dt.plus(10, ChronoUnit.YEARS);
+        System.out.println("plusDt1 = " + plusDt1); //2028-01-01T13:30:59
+
+        LocalDateTime plusDt2 = dt.plusYears(10);
+        System.out.println("plusDt2 = " + plusDt2); //2028-01-01T13:30:59
+
+        Period period = Period.ofYears(10);
+        LocalDateTime plusDt3 = dt.plus(period);
+        System.out.println("plusDt3 = " + plusDt3); //2028-01-01T13:30:59
+    }
+}
+```
+
+- 정리
+  - 특정 구현 클래스와 무관하게 아주 일관성 있는 시간 조회, 조작 기능을 제공한다.
+    - `TemporalAccessor.get()`, `Temporal.plus()`와 같은 인터페이스 덕분.
+  - 하지만 모든 시간 필드를 다 조회할 수 있는 것은 아니다.
+    - 예시) `LocalDate`는 날짜 정보만 가지고 있는데, 분에 접근 하는 경우.
+      - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/time/IsSupportedMain1.java
+  - 이런 문제를 예방하기 위해 인터페이스는 현재 타입에서 특정 시간 단위나 필드를 사용할 수 있는지 확인할 수 있는 메서드를 제공한다.
+    - `TemporalAccessor` 인터페이스
+      - `boolean isSupported(TemporalField field);`
+    - `Temporal` 인터페이스
+      - `boolean isSupported(TemporalUnit unit);`
+    - 예시)
+      - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/time/IsSupportedMain2.java
+
+### 날짜와 시간 조회하고 조작하기2
+
+- 날짜와 시간을 조작하는 `with()` 메서드
+  - `Temporal.with()`를 사용하면 날짜와 시간의 특정 필드의 값만 변경할 수 있다.
+  - 자주 사용하는 메서드는 편의 메서드가 제공된다.
+    - `dt.with(ChronoField.YEAR, 2020)` --> `dt.withYear(2020)`
+    - `with()` 는 아주 단순한 날짜만 변경할 수 있다.
+  - 복잡한 날짜는 `TemporalAdjuster`를 사용하면 된다.
+    - 예시) 다음 금요일, 이번 달의 마지막 일요일
+    - 자바는 이미 필요한 구현체들을 `TemporalAdjusters`에 다 만들어두었다.
+      - 우리는 단순히 구현체들을 모아둔 `TemporalAdjusters`를 사용하면 된다.
+
+```java
+package time;
+
+import java.time.DayOfWeek;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoField;
+import java.time.temporal.TemporalAdjusters;
+
+public class ChangeTimeWithMain {
+
+    public static void main(String[] args) {
+        LocalDateTime dt = LocalDateTime.of(2018, 1, 1, 13, 30, 59);
+        System.out.println("dt = " + dt); //2018-01-01T13:30:59
+
+        LocalDateTime changedDt1 = dt.with(ChronoField.YEAR, 2020);
+        System.out.println("changedDt1 = " + changedDt1); //2020-01-01T13:30:59
+
+        LocalDateTime changedDt2 = dt.withYear(2020);
+        System.out.println("changedDt2 = " + changedDt2); //2020-01-01T13:30:59
+
+        //TemporalAdjuster 사용
+        //다음주 금요일
+        LocalDateTime with1 = dt.with(TemporalAdjusters.next(DayOfWeek.FRIDAY));
+        System.out.println("기준 날짜: " + dt); //2018-01-01T13:30:59
+        System.out.println("다음 금요일: " + with1); //2018-01-05T13:30:59
+
+        //이번 달의 마지막 일요일
+        LocalDateTime with2 = dt.with(TemporalAdjusters.lastInMonth(DayOfWeek.SUNDAY));
+        System.out.println("같은 달의 마지막 일요일 = " + with2); //2018-01-28T13:30:59
+    }
+}
+```
+
+- `DayOfWeek`
+  - 월, 화, 수, 목, 금, 토, 일을 나타내는 열거형.
+
+- `TemporalAdjusters` 클래스가 제공하는 주요 기능
+  - `dayOfWeekInMonth`: 주어진 요일이 몇 번째인지에 따라 날짜를 조정한다.
+  - `firstDayOfMonth`: 해당 월의 첫째 날로 조정한다.
+  - `firstDayOfNextMonth`: 다음 달의 첫째 날로 조정한다.
+  - `firstDayOfNextYear`: 다음 해의 첫째 날로 조정한다.
+  - `firstDayOfYear`: 해당 해의 첫째 날로 조정한다.
+  - `firstInMonth`: 주어진 요일 중 해당 월의 첫 번째 요일로 조정한다.
+  - `lastDayOfMonth`: 해당 월의 마지막 날로 조정한다.
+  - `lastDayOfNextMonth`: 다음 달의 마지막 날로 조정한다.
+  - `lastDayOfNextYear`: 다음 해의 마지막 날로 조정한다.
+  - `lastDayOfYear`: 해당 해의 마지막 날로 조정한다.
+  - `lastInMonth`: 주어진 요일 중 해당 월의 마지막 요일로 조정한다. ✔️
+  - `next`: 주어진 요일 이후의 가장 가까운 요일로 조정한다. ✔️
+  - `nextOrSame`: 주어진 요일 이후의 가장 가까운 요일로 조정하되, 현재 날짜가 주어진 요일인 경우 현재 날짜를 반환한다. ✔️
+  - `previous`: 주어진 요일 이전의 가장 가까운 요일로 조정한다.
+  - `previousOrSame`: 주어진 요일 이전의 가장 가까운 요일로 조정하되, 현재 날짜가 주어진 요일인 경우 현재 날짜를 반환한다.
+
+### 날짜와 시간 문자열 파싱과 포맷팅
+
+- 정의
+  - 포맷팅: `Date` --> `String`로 변경하는 것
+  - 파싱: `String` --> `Date`로 변경하는 것
+
+- 예시1) 날짜만.
+
+```java
+package time;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
+public class FormattingMain1 {
+
+    public static void main(String[] args) {
+        // 포맷팅: 날짜를 문자로
+        LocalDate date = LocalDate.of(2024, 12, 31);
+        System.out.println("date = " + date); //2024-12-31
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일");
+        String formattedDate = date.format(formatter);
+        System.out.println("날짜와 시간 포맷팅 = " + formattedDate); //2024년 12월 31일
+
+        // 파싱: 문자를 날짜로
+        String input = "2030년 01월 01일";
+        LocalDate parsedDate = LocalDate.parse(input, formatter);
+        System.out.println("문자열 파싱 날짜와 시간: " + parsedDate); //2030-01-01
+    }
+}
+```
+
+- 예시2) 시간 포함.
+  - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/time/FormattingMain2.java
+
+- `DateTimeFormatter` 패턴
+  - 교재 참고 (p.41)
+  - or 공식사이트
+    - https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#patterns
+
+### 문제와 풀이
+
+- 문제1 - 날짜 더하기
+  - 2024년 1월 1일 0시 0분 0초에 1년 2개월 3일 4시간 후의 시각을 찾아라.
+    - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/time/test/TestPlus.java
+- 문제2 - 날짜 간격 반복 출력하기
+  - 2024년 1월 1일 부터 2주 간격으로 5번 반복하여 날짜를 출력해라.
+    - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/time/test/TestLoopPlus.java
+- 문제3 - 디데이 구하기
+  - 시작 날짜와 목표 날짜를 입력해서 남은 기간과 디데이를 구해라.
+    - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/time/test/TestBetween.java
+- 문제4 - 시작 요일, 마지막 요일 구하기
+  - 입력 받은 월의 첫날 요일과 마지막날 요일을 구해라.
+    - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/time/test/TestAdjusters.java
+- 문제5 - 국제 회의 시간
+  - 서울의 회의 시간은 2024년 1월 1일 오전 9시다. 이때 런던, 뉴욕의 회의 시간을 구해라.
+    - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/time/test/TestZone.java
+- 문제6 - 달력 출력하기 ⭐
+  - 입력한 년 & 월에 맞춰 달력을 출력해라.
+    - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/time/test/TestCalendarPrinterAnswer.java
 
 ---
 
