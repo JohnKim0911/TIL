@@ -9,7 +9,7 @@
 | 5  | [래퍼, Class 클래스](#5-래퍼-class-클래스)     | 2024-11-26      |
 | 6  | [열거형 - ENUM](#6-열거형---enum)          | 2024-11-26      |
 | 7  | [날짜와 시간](#7-날짜와-시간)                  | 2024-11-28 ~ 30 |
-| 8  | [중첩 클래스, 내부 클래스1](#8-중첩-클래스-내부-클래스1) |                 |
+| 8  | [중첩 클래스, 내부 클래스1](#8-중첩-클래스-내부-클래스1) | 2024-12-01 |
 | 9  | [중첩 클래스, 내부 클래스2](#9-중첩-클래스-내부-클래스2) |                 |
 | 10 | [예외 처리1 - 이론](#10-예외-처리1---이론)       |                 |
 | 11 | [예외 처리2 - 실습](#11-예외-처리2---실습)       |                 |
@@ -2111,6 +2111,186 @@ public class FormattingMain1 {
 ---
 
 ## 8. 중첩 클래스, 내부 클래스1
+
+### 중첩 클래스, 내부 클래스란?
+
+- 중첩 클래스?
+  - 클래스 안에 클래스를 정의하는 것
+
+    ```java
+    class Outer {
+        ...
+        
+        class Nested { //중첩 클래스
+            ...
+        }
+    }
+    ```
+
+- 중첩 클래스 종류
+  - 크게 2가지로 분류한다.
+    - `정적 중첩 클래스`
+      - 바깥 클래스의 안에 있지만, 바깥 클래스와 관계 없는 전혀 다른 클래스다.
+    - `내부 클래스`
+      - 바깥 클래스의 인스턴스 내부에서 구성 요소로 사용된다.
+  - 세부적으론 4가지로 분류한다.
+    - `정적 중첩 클래스`
+    - `내부 클래스`
+    - `지역 클래스` 
+    - `익명 클래스`
+  - 클래스를 정의하는 위치에 따라 분류한다.
+
+![중첩 클래스 종류](https://github.com/user-attachments/assets/1fd34553-d814-4324-97c6-20842efd3f46)
+
+- 중첩 클래스는 언제 사용?
+    - 특정 클래스가 하나의 클래스 안에서만 사용되거나, 둘이 아주 긴밀하게 연결되어 있는 특별한 경우에만 사용해야 한다.
+
+- 중첩 클래스를 사용하는 이유?
+  - 논리적 그룹화
+    - 특정 클래스가 다른 하나의 클래스 안에서만 사용되는 경우 해당 클래스 안에 포함하는 것이 논리적으로 더 그룹화 된다.
+    - 패키지를 열었을 때, 다른 곳에서 사용될 필요가 없는 중첩 클래스가 외부에 노출되지 않는다.
+  - 캡슐화
+    - 불필요한 `public` 메서드를 제거할 수 있다.
+      - 중첩 클래스는 바깥 클래스의 `private` 멤버에 접근할 수 있기 때문.
+
+### 정적 중첩 클래스
+
+```java
+package nested.nested;
+
+public class NestedOuter { // 바깥 클래스
+
+    private static int outClassValue = 3;
+    private int outInstanceValue = 2;
+
+    static class Nested { // 정적 중첩 클래스 ⭐
+        private int nestedInstanceValue = 1;
+
+        public void print() {
+            // 자신의 멤버에 접근
+            System.out.println(nestedInstanceValue); //1
+
+            // 바깥 클래스의 인스턴스 멤버에 접근에는 접근할 수 없다.
+            //System.out.println(outInstanceValue);
+
+            // 바깥 클래스의 클래스 멤버에는 접근할 수 있다. private도 접근 가능
+            System.out.println(NestedOuter.outClassValue); //NestedOuter 없이 써도 됨. //3
+        }
+    }
+}
+```
+
+- 정적 중첩 클래스
+  - 앞에 `static`이 붙는다.
+  - 바깥 클래스의 인스턴스 멤버에는 접근할 수 없다.
+   
+    ![바깥 클래스의 멤버에 접근](https://github.com/user-attachments/assets/c5fb9e22-a87f-4dca-a6b5-3929133238af)
+  
+  - 바깥 클래스 생성없이, 정적 중첩 클래스의 인스턴스만 따로 생성해도 된다.
+
+```java
+package nested.nested;
+
+public class NestedOuterMain {
+
+    public static void main(String[] args) {
+        //NestedOuter outer = new NestedOuter(); //바깥 클래스 생성 안해도 됨.
+        NestedOuter.Nested nested = new NestedOuter.Nested(); //정적 중첩 클래스의 인스턴스 생성
+        nested.print();
+
+        System.out.println("nestedClass = " + nested.getClass()); //class nested.nested.NestedOuter$Nested
+        //중첩 클래스의 이름은 "바깥 클래스 이름" + "$" + "중첩 클래스 이름" 으로 구성된다. --> NestedOuter$Nested
+    }
+}
+```
+
+### 정적 중첩 클래스의 활용
+
+![정적 중첩 클래스 리팩토링](https://github.com/user-attachments/assets/e6207441-27e6-4445-b843-6f63a4829dff)
+
+- `ex1`를 `ex2`처럼 리팩토링 했다.
+  - `ex1`을 열어본 개발자는 `Network`와 `NetworkMessage`를 둘다 사용해야하나 의문이 든다.
+    - 코드를 다 읽어보아야 한다.
+    - 실제로는 `NetworkMessage`가 `Network`에서만 쓰인다.
+  - `ex2`에서는 `NetworkMessage`를 `Network`안에 넣었다.
+    - 개발자는 한눈에 `Network`만 사용하면 된다는 걸 `ex2`를 열자마자 인지할 수 있다.
+  - 실제 코드:
+    - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/nested/nested/ex2/Network.java
+
+### 내부 클래스
+
+```java
+package nested.inner;
+
+public class InnerOuter { // 바깥 클래스
+
+    private static int outClassValue = 3;
+    private int outInstanceValue = 2;
+
+    class Inner { // 내부 클래스 ⭐
+        private int innerInstanceValue = 1;
+
+        public void print() {
+            // 자기 자신에 접근
+            System.out.println(innerInstanceValue); //1
+
+            // 외부 클래스의 인스턴스 멤버에 접근 가능, private도 접근 가능
+            System.out.println(outInstanceValue); //2
+
+            // 외부 클래스의 클래스 멤버에 접근 가능, private도 접근 가능
+            System.out.println(outClassValue); //3
+        }
+    }
+}
+```
+
+```java
+package nested.inner;
+
+public class InnerOuterMain {
+
+    public static void main(String[] args) {
+        InnerOuter outer = new InnerOuter(); 
+        InnerOuter.Inner inner = outer.new Inner(); //내부 클래스를 생성할 때, 바깥 클래스의 인스턴스 참조가 필요하다.
+        inner.print();
+
+        System.out.println("innerClass = " + inner.getClass()); //class nested.inner.InnerOuter$Inner
+    }
+}
+```
+
+- 내부 클래스
+  - 내부 클래스는 바깥 클래스의 인스턴스에 소속된다.
+    - 내부 클래스를 생성할 때, 바깥 클래스의 인스턴스 참조가 필요하다.
+
+- 내부 클래스 메모리 구조
+  - `개념`상 인스턴스 안에 생성된다고 이해하면 충분하지만,
+  - `실제`로 내부 인스턴스가 바깥 인스턴스 안에 생성되는 것은 아니다.
+
+| 개념                                                                                                | 실제                                                                                                |
+|---------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------|
+| ![내부 클래스의 생성_개념](https://github.com/user-attachments/assets/d65de71e-6b0b-45ba-bb6b-6c20649af586) | ![내부 클래스의 생성_실제](https://github.com/user-attachments/assets/1d52c93b-b3ca-44f6-9a9f-4b07431ef85b) |
+
+### 내부 클래스의 활용
+
+![내부 클래스 리팩토링](https://github.com/user-attachments/assets/f7a8b8fc-03a8-4bfa-9220-86b68a25538c)
+
+- `ex1`를 `ex2`처럼 리팩토링 했다.
+  - `ex1`에서 `Engine`과 `Car`가 분리되어 있어서, 어쩔수 없이 `public`으로 노출해야하는 메서드가 있었는데,
+  - `ex2`에서 `Engine`을 `Car`에 내부클래스로 넣어서, 꼭 필요한 메서드만 외부에 노출시키게 하였다. 
+    - 캡슐화를 높임!
+  - 실제 코드:
+    - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/nested/inner/ex2/Car.java
+
+### 같은 이름의 바깥 변수 접근
+
+- 바깥 클래스와 내부 클래스의 변수 이름이 같으면?
+  - 가까운 범위가 우선순위를 갖는다.
+    - 지역변수 > 내부 클래스의 인스턴스 변수 > 바깥 클래스의 인스턴스 변수
+    - 이렇게 다른 변수들을 가려서 보이지 않게 하는 것을 `섀도잉(Shadowing)`이라 한다.
+  - 처음부터 이름을 서로 다르게 지어서 명확하게 구분하는 것이 더 나은 방법이다.
+- 관련 코드:
+  - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/nested/ShadowingMain.java
 
 ---
 
