@@ -9,8 +9,8 @@
 | 5  | [래퍼, Class 클래스](#5-래퍼-class-클래스)     | 2024-11-26      |
 | 6  | [열거형 - ENUM](#6-열거형---enum)          | 2024-11-26      |
 | 7  | [날짜와 시간](#7-날짜와-시간)                  | 2024-11-28 ~ 30 |
-| 8  | [중첩 클래스, 내부 클래스1](#8-중첩-클래스-내부-클래스1) | 2024-12-01 |
-| 9  | [중첩 클래스, 내부 클래스2](#9-중첩-클래스-내부-클래스2) |                 |
+| 8  | [중첩 클래스, 내부 클래스1](#8-중첩-클래스-내부-클래스1) | 2024-12-01      |
+| 9  | [중첩 클래스, 내부 클래스2](#9-중첩-클래스-내부-클래스2) | 2024-12-02      |
 | 10 | [예외 처리1 - 이론](#10-예외-처리1---이론)       |                 |
 | 11 | [예외 처리2 - 실습](#11-예외-처리2---실습)       |                 |
 | 12 | [다음으로](#12-다음으로)                     |                 |
@@ -2295,6 +2295,153 @@ public class InnerOuterMain {
 ---
 
 ## 9. 중첩 클래스, 내부 클래스2
+
+### 지역 클래스 - 시작
+
+- 지역 클래스(Local class)는 내부 클래스의 특별한 종류의 하나이다.
+  - 따라서 내부 클래스의 특징을 그대로 가진다.
+
+```java
+package nested.local;
+
+public class LocalOuterV2 { //바깥 클래스
+
+    private int outInstanceVar = 3; //바깥 클래스의 인스턴스 멤버
+
+    public void process(int paramVar) { //자신이 속한 코드 블럭의 매개변수. //매개변수도 지역 변수의 한 종류이다.
+        int localVar = 1; //자신이 속한 코드 블럭의 지역 변수
+
+        class LocalPrinter implements Printer { //지역 클래스⭐ //인터페이스를 구현할 수 있다.
+
+            int value = 0; //자신의 인스턴스 변수
+
+            @Override
+            public void print() {
+                System.out.println("value = " + value); //0
+                System.out.println("localVar = " + localVar); //1
+                System.out.println("paramVar = " + paramVar); //2
+                System.out.println("outInstanceVar = " + outInstanceVar); //3
+            }
+        }
+
+        LocalPrinter printer = new LocalPrinter();
+        printer.print();
+    }
+
+    public static void main(String[] args) {
+        LocalOuterV2 localOuter = new LocalOuterV2();
+        localOuter.process(2);
+    }
+}
+```
+
+```java
+package nested.local;
+
+public interface Printer {
+    void print();
+}
+```
+
+### 지역 클래스 - 지역 변수 캡처
+
+- 지역 변수 캡처
+  - 너무 깊이있게 이해하지 않아도 된다.
+  - `지역 클래스가 접근하는 지역 변수의 값은 변경하면 안된다` 정도로 이해하면 충분하다.
+- 예제 코드:
+  - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/nested/local/LocalOuterV3.java
+  - 문제점: 제거된 지역변수(`paramVar`, `localVar`)에 접근할 수 없어야 하는데, 왜 잘 실행되나?...
+  
+    ![지역 변수 캡쳐](https://github.com/user-attachments/assets/883ff0f0-770e-4421-b82c-e3c7c6dc6b2d)
+
+  - 실제: 캡처한 지역변수를 사용한다.
+
+    ![지역 변수 캡쳐_실제](https://github.com/user-attachments/assets/dc675392-4165-4737-97e6-8de4cd6475e8)
+
+  - 캡처 변수의 값을 변경하지 못하는 이유
+    - 캡처 변수의 값을 변경하면 여러 문제들이 파생될 수 있다.
+    - 자바는 캡처한 지역 변수의 값을 변하지 못하게 막아서 이런 복잡한 문제들을 근본적으로 차단한다.
+    - 자세한 내용은 교재 참고 (p.14) 
+
+- 정리
+  - 지역 클래스는 인스턴스를 생성할 때, 필요한 지역 변수를 먼저 캡처해서 인스턴스에 보관한다.
+  - 지역 변수에 접근하면, 실제로는 지역 변수에 접근하는 것이 아니라 인스턴스에 있는 캡처한 캡처 변수에 접근한다.
+  
+### 익명 클래스 - 시작
+
+- 익명 클래스(anonymous class)
+  - 이름이 없는 지역 클래스이다.
+  - 클래스의 선언과 생성을 한번에 처리할 수 있다. 코드가 간결해진다.
+  - 복잡하거나 재사용이 필요한 경우에는 익명 클래스가 아닌, 별도의 클래스를 정의하는 것이 좋다.
+  - 익명 클래스는 부모 클래스를 상속 받거나, 또는 인터페이스를 구현해야 한다.
+
+```java
+package nested.anonymous;
+
+import nested.local.Printer;
+
+public class AnonymousOuter { //바깥 클래스
+
+    private int outInstanceVar = 3;
+
+    public void process(int paramVar) {
+
+        int localVar = 1;
+
+        Printer printer = new Printer() { //익명클래스
+            // 인터페이스를 생성하는 것이 아니고, 인터페이스를 구현한 익명 클래스를 생성하는 것이다.
+            
+            int value = 0;
+
+            @Override
+            public void print() {
+                System.out.println("value = " + value); //0
+                System.out.println("localVar = " + localVar); //1
+                System.out.println("paramVar = " + paramVar); //2
+                System.out.println("outInstanceVar = " + outInstanceVar); //3
+            }
+        };
+
+        printer.print();
+        System.out.println("printer.class=" + printer.getClass()); //class nested.anonymous.AnonymousOuter$1
+        //바깥 클래스 이름 + $ + 숫자로 정의된다. (AnonymousOuter$1)
+    }
+
+    public static void main(String[] args) {
+        AnonymousOuter localOuter = new AnonymousOuter();
+        localOuter.process(2);
+    }
+}
+```
+
+### 익명 클래스 활용
+
+- 공통 메서드를 만들어 중복을 제거.
+  - 변하지 않는 부분은 공통메서드에 넣고, 변하는 부분만 외부로 부터 메서드의 인수로 받아서 처리한다.
+    - 예제 1) 인자가 문자열인 경우
+      - 비공개 레포지토리:
+        - 리팩토링 전: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/nested/anonymous/ex/Ex0Main.java
+        - 리팩토링 후: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/nested/anonymous/ex/Ex0RefMain.java
+    - 예제 2) 인자가 코드 조각인 경우
+      - 메서드를 바로 전달 할 수 없다.
+        - 대신에 인스턴스를 전달하고, 인스턴스에 있는 메서드를 호출하면 된다.
+      - 비공개 레포지토리:
+        - 리팩토링 전: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/nested/anonymous/ex/Ex1Main.java
+        - 리팩토링 후
+          - 1번) 중첩 클래스 사용: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/nested/anonymous/ex/Ex1RefMainV1.java
+          - 2번) 지역 클래스 사용: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/nested/anonymous/ex/Ex1RefMainV2.java
+          - 3번) 익명 클래스 사용1: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/nested/anonymous/ex/Ex1RefMainV3.java
+          - 4번) 익명 클래스 사용2: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/nested/anonymous/ex/Ex1RefMainV4.java
+            - 익명 클래스의 참조값을 변수에 담아둘 필요 없이, 인수로 바로 전달할 수 있다.
+          - 5번) 람다(Lambda) 사용: https://github.com/JohnKim0911/kyh_java-mid1/blob/master/src/nested/anonymous/ex/Ex1RefMainV5.java
+            - 클래스나 인스턴스를 정의하지 않고, 메서드(더 정확히는 함수)의 코드 블럭을 직접 전달할 수 있다.
+            - 람다에 대한 자세한 내용은 나중에 별도로 다룬다.
+
+### 문제와 풀이
+
+- 도서 관리 시스템
+  - 코드:
+    - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_java-mid1/tree/master/src/nested/nested/test/ex1
 
 ---
 
