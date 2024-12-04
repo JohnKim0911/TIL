@@ -4,7 +4,7 @@
 |----|------------------------------------------------------------------|------------|
 | 1  | [강의 소개와 자료](#1-강의-소개와-자료)                                        | 2024-12-03 |
 | 2  | [제네릭 - Generic1](#2-제네릭---generic1)                              | 2024-12-03 |
-| 3  | [제네릭 - Generic2](#3-제네릭---generic2)                              |            |
+| 3  | [제네릭 - Generic2](#3-제네릭---generic2)                              | 2024-12-04 |
 | 4  | [컬렉션 프레임워크 - ArrayList](#4-컬렉션-프레임워크---arraylist)                |            |
 | 5  | [컬렉션 프레임워크 - LinkedList](#5-컬렉션-프레임워크---linkedlist)              |            |
 | 6  | [컬렉션 프레임워크 - List](#6-컬렉션-프레임워크---list)                          |            |
@@ -24,11 +24,11 @@
 
 - 아래 내용은...
     - 강의 내용을 개인적으로 복습하고자 정리하였습니다.
-      - 제 기억을 살리기 위한 용도이다보니, 아래 글만으로는 이해가 어려울 수 있습니다.
-        - 필요하시다면, 위 강의를 직접 수강하시는 것을 추천드립니다.
-      - 방식:
-        - 강의를 들으면서 코드를 직접 치고, 
-        - 강의가 끝나면 다시 교재를 보면서 중요 내용 위주로 정리하였습니다.
+        - 제 기억을 살리기 위한 용도이다보니, 아래 글만으로는 이해가 어려울 수 있습니다.
+            - 필요하시다면, 위 강의를 직접 수강하시는 것을 추천드립니다.
+        - 방식:
+            - 강의를 들으면서 코드를 직접 치고,
+            - 강의가 끝나면 다시 교재를 보면서 중요 내용 위주로 정리하였습니다.
     - 유료 강의이므로, 실제 작성한 전체 코드는 비공개 합니다. (저작권...)
         - 비공개 레포지토리: https://github.com/JohnKim0911/kyh-java-mid2
             - 링크가 있긴하지만, 저만 볼 수 있습니다. (404 error 뜨는게 정상)
@@ -50,28 +50,28 @@
 - 예제를 통해 알아본다.
 
 - 예제 1 (`BoxMain1.java`)
-  - 소스코드 (비공개 레포지토리): https://github.com/JohnKim0911/kyh-java-mid2/tree/master/src/generic/ex1
-  - `IntegerBox.java`: 숫자를 보관하고 꺼낼 수 있는 단순한 기능을 제공한다.
-  - `StringBox.java`: 문자열을 보관하고 꺼낼 수 있는 단순한 기능을 제공한다.
-  - 문제점
-    - 이후에 `Double`, `Boolean`을 포함한 다양한 타입을 담는 박스가 필요하다면, 각각의 타입별로 `DoubleBox`, `BooleanBox`와 같이 클래스를 새로 만들어야 한다.
-    - 담는 타입이 수십개라면, 수십개의 `XxxBox` 클래스를 만들어야 한다.
+    - 소스코드 (비공개 레포지토리): https://github.com/JohnKim0911/kyh-java-mid2/tree/master/src/generic/ex1
+    - `IntegerBox.java`: 숫자를 보관하고 꺼낼 수 있는 단순한 기능을 제공한다.
+    - `StringBox.java`: 문자열을 보관하고 꺼낼 수 있는 단순한 기능을 제공한다.
+    - 문제점
+        - 이후에 `Double`, `Boolean`을 포함한 다양한 타입을 담는 박스가 필요하다면, 각각의 타입별로 `DoubleBox`, `BooleanBox`와 같이 클래스를 새로 만들어야 한다.
+        - 담는 타입이 수십개라면, 수십개의 `XxxBox` 클래스를 만들어야 한다.
 
 ### 다형성을 통한 중복 해결 시도
 
 - `Object`는 모든 타입의 부모이다. 다형성(다형적 참조)를 사용해서 중복을 해결하도록 시도해본다.
 - 예제 2 (`BoxMain2`)
-  - 소스코드 (비공개 레포지토리): https://github.com/JohnKim0911/kyh-java-mid2/tree/master/src/generic/ex1
-  - `ObjectBox.java`
-    - `Object`는 모든 타입의 부모이다. 다형성(다형적 참조)를 사용해서 모든 타입을 `ObjectBox`에 보관할 수 있다.
-  - 문제점
-    - 반환 타입이 맞지 않는 문제
-      - `Object`를 반환하므로 다운 캐스팅을 해줘야 한다.
-    - 잘못된 타입의 인수 전달 문제
-      - 아무 타입이나 전달되어도 컴파일러가 잡아주지 못한다.
-      - 잘못된 타입의 값을 전달하면, 값을 꺼낼 때 에러가 발생한다.
-        - 예시) `Integer result = (Integer) "문자100";` // 캐스팅 에러발생
-- 결과적으로 이 방식은 타입 안전성이 떨어진다.    
+    - 소스코드 (비공개 레포지토리): https://github.com/JohnKim0911/kyh-java-mid2/tree/master/src/generic/ex1
+    - `ObjectBox.java`
+        - `Object`는 모든 타입의 부모이다. 다형성(다형적 참조)를 사용해서 모든 타입을 `ObjectBox`에 보관할 수 있다.
+    - 문제점
+        - 반환 타입이 맞지 않는 문제
+            - `Object`를 반환하므로 다운 캐스팅을 해줘야 한다.
+        - 잘못된 타입의 인수 전달 문제
+            - 아무 타입이나 전달되어도 컴파일러가 잡아주지 못한다.
+            - 잘못된 타입의 값을 전달하면, 값을 꺼낼 때 에러가 발생한다.
+                - 예시) `Integer result = (Integer) "문자100";` // 캐스팅 에러발생
+- 결과적으로 이 방식은 타입 안전성이 떨어진다.
 
 ### 제네릭 적용
 
@@ -108,7 +108,7 @@ public class BoxMain3 {
         System.out.println("integer = " + integer); //10
 
         //... 생략
-        
+
         //타입 추론: 생성하는 제네릭 타입 생략 가능
         GenericBox<Integer> integerBox2 = new GenericBox<>();
     }
@@ -116,11 +116,11 @@ public class BoxMain3 {
 ```
 
 - 전체 소스 코드 (비공개 레포지토리): https://github.com/JohnKim0911/kyh-java-mid2/tree/master/src/generic/ex1
-  - `GenericBox.java`, `BoxMain3.java` 참고
+    - `GenericBox.java`, `BoxMain3.java` 참고
 
 ### 제네릭 용어와 관례
 
-- 메서드의 매개변수와 인자 
+- 메서드의 매개변수와 인자
 
     ```java
     void method(String param); //매개변수
@@ -131,74 +131,399 @@ public class BoxMain3 {
     }
     ```
 
-  - 매개변수(`Parameter`): String param 
-  - 인자, 인수(`Argument`): arg
+    - 매개변수(`Parameter`): String param
+    - 인자, 인수(`Argument`): arg
 
 - 메서드 vs 제네릭 클래스
-  - 메서드는 `매개변수`에 `인자`를 전달해서 사용할 값을 결정한다.
-  - 제네릭 클래스는 `타입 매개변수`에 `타입 인자`를 전달해서 사용할 타입을 결정한다.
+    - 메서드는 `매개변수`에 `인자`를 전달해서 사용할 값을 결정한다.
+    - 제네릭 클래스는 `타입 매개변수`에 `타입 인자`를 전달해서 사용할 타입을 결정한다.
 
 - 용어 정리
-  - 제네릭 (Generic) 단어
-    - 영어단어 뜻: 일반적인, 범용적인
-    - 특정 타입에 속한 것이 아니라 일반적으로, 범용적으로 사용할 수 있다는 뜻
-  - 제네릭 타입  (Generic Type)
-    - 클래스나 인터페이스를 정의할 때 타입 매개변수를 사용하는 것을 말한다.
-    - 제네릭 클래스, 제네릭 인터페이스를 모두 합쳐서 제네릭 타입이라 한다.
-    - 예시) `GenericBox<T>`
-  - 타입 매개변수 (Type Parameter)
-    - 예시) `GenericBox<T>`에서 `T` //제네릭 타입이나 메서드에서 사용되는 변수
-  - 타입 인자 (Type Argument)
-    - 예시) `GenericBox<Integer>`에서 `Integer` //제네릭 타입을 사용할 때 제공되는 실제 타입.
+    - 제네릭 (Generic) 단어
+        - 영어단어 뜻: 일반적인, 범용적인
+        - 특정 타입에 속한 것이 아니라 일반적으로, 범용적으로 사용할 수 있다는 뜻
+    - 제네릭 타입  (Generic Type)
+        - 클래스나 인터페이스를 정의할 때 타입 매개변수를 사용하는 것을 말한다.
+        - 제네릭 클래스, 제네릭 인터페이스를 모두 합쳐서 제네릭 타입이라 한다.
+        - 예시) `GenericBox<T>`
+    - 타입 매개변수 (Type Parameter)
+        - 예시) `GenericBox<T>`에서 `T` //제네릭 타입이나 메서드에서 사용되는 변수
+    - 타입 인자 (Type Argument)
+        - 예시) `GenericBox<Integer>`에서 `Integer` //제네릭 타입을 사용할 때 제공되는 실제 타입.
 
 - 제네릭 명명 관례
-  - 여러 글자나, 소문자를 사용해도 상관은 없다.
-  - 하지만 대부분 관례를 따른다.
-    - 관례 - 일반적으로 대문자를 사용하고, 용도에 맞는 단어의 첫글자를 사용
-    - 주로 사용하는 키워드
-      - `E`: Element 
-      - `K`: Key 
-      - `N`: Number 
-      - `T`: Type 
-      - `V`: Value 
-      - `S`,`U`,`V` etc.: 2nd, 3rd, 4th types
+    - 여러 글자나, 소문자를 사용해도 상관은 없다.
+    - 하지만 대부분 관례를 따른다.
+        - 관례 - 일반적으로 대문자를 사용하고, 용도에 맞는 단어의 첫글자를 사용
+        - 주로 사용하는 키워드
+            - `E`: Element
+            - `K`: Key
+            - `N`: Number
+            - `T`: Type
+            - `V`: Value
+            - `S`,`U`,`V` etc.: 2nd, 3rd, 4th types
 
 - 한번에 여러 타입 매개변수를 선언할 수 있다.
-  - 예) `class Data<K, V> { ... }`
+    - 예) `class Data<K, V> { ... }`
 
 - 제네릭의 타입 인자로 기본형(`int`, `double`, ...)은 사용 불가
-  - 래퍼 클래스(`Integer`, `Double`)를 사용하기!
+    - 래퍼 클래스(`Integer`, `Double`)를 사용하기!
 
 - 로 타입 (raw type)
-  - `GenericBox integerBox = new GenericBox();` // 로 타입 (raw type) 혹은 원시타입이라 한다.
-    - 실제론 이와 같이 작동한다: `GenericBox<Object> integerBox = new GenericBox<>();`
-  - 로 타입은 하위 호환을 위해 남겨둔 것. 사용하지 말자.
+    - `GenericBox integerBox = new GenericBox();` // 로 타입 (raw type) 혹은 원시타입이라 한다.
+        - 실제론 이와 같이 작동한다: `GenericBox<Object> integerBox = new GenericBox<>();`
+    - 로 타입은 하위 호환을 위해 남겨둔 것. 사용하지 말자.
 
 ### 제네릭 활용 예제
 
 - 소스 코드 (비공개 레포지토리): https://github.com/JohnKim0911/kyh-java-mid2/tree/master/src/generic
-  - `animal`, `ex2` 패키지 참조
-    - `animal` 패키지
-      - `Dog`, `Cat`은 `Animal`을 상속받는다. 
-    - `ex2` 패키지
-      - `AnimalMain1.java`: 
-        - 제네릭으로 `Box`클래스 만들고 (`Box.java`),
-        - 타입 매개변수에 `Animal`, `Dog`, `Cat` 넣어서 `animalBox`, `dogBox`, `catBox`를 만든다.
-      - `AnimalMain2.java`:
-        - `set(Animal value)`이므로 `set()`에 `Animal`의 하위 타입인 `Dog`, `Cat`도 전달할 수 있다.
+    - `animal`, `ex2` 패키지 참조
+        - `animal` 패키지
+            - `Dog`, `Cat`은 `Animal`을 상속받는다.
+        - `ex2` 패키지
+            - `AnimalMain1.java`:
+                - 제네릭으로 `Box`클래스 만들고 (`Box.java`),
+                - 타입 매개변수에 `Animal`, `Dog`, `Cat` 넣어서 `animalBox`, `dogBox`, `catBox`를 만든다.
+            - `AnimalMain2.java`:
+                - `set(Animal value)`이므로 `set()`에 `Animal`의 하위 타입인 `Dog`, `Cat`도 전달할 수 있다.
 
 ### 문제와 풀이
 
 - 문제1 - 제네릭 기본1
-  - `ContainerTest.java`를 참고해서`Container.java`를 만들어라. (제네릭 사용)
-  - 소스 코드 (비공개 레포지토리): https://github.com/JohnKim0911/kyh-java-mid2/tree/master/src/generic/test/ex1
+    - `ContainerTest.java`를 참고해서`Container.java`를 만들어라. (제네릭 사용)
+    - 소스 코드 (비공개 레포지토리): https://github.com/JohnKim0911/kyh-java-mid2/tree/master/src/generic/test/ex1
 - 문제2 - 제네릭 기본2
-  - `PairTest.java`를 참고해서`Pair.java`를 만들어라. (제네릭 사용)
-  - 소스 코드 (비공개 레포지토리): https://github.com/JohnKim0911/kyh-java-mid2/tree/master/src/generic/test/ex2
+    - `PairTest.java`를 참고해서`Pair.java`를 만들어라. (제네릭 사용)
+    - 소스 코드 (비공개 레포지토리): https://github.com/JohnKim0911/kyh-java-mid2/tree/master/src/generic/test/ex2
 
 ---
 
 ## 3. 제네릭 - Generic2
+
+### 타입 매개변수 제한1 - 시작
+
+- 예제 1) 동물병원 만들기
+    - 소스코드 (비공개 레포지토리): https://github.com/JohnKim0911/kyh-java-mid2/tree/master/src/generic/ex3
+        - `DogHospital`, `CatHospital`, `AnimalHospitalMainV0` 참고
+    - 문제점
+        - 코드 재사용 X:
+            - 개 병원과 고양이 병원은 중복이 많이 보인다.
+                - `DogHospital`, `CatHospital`를 따로 작성해서 중복되는 코드가 많다.
+        - 타입 안전성 O:
+            - 타입 안전성이 명확하게 지켜진다.
+                - 개 병원은 개만 받을 수 있고, 고양이 병원은 고양이만 받을 수 있다.
+
+### 타입 매개변수 제한2 - 다형성 시도
+
+- 예제 2) 동물병원 만들기 - 리팩토링
+    - `Dog`, `Cat`은 `Animal`이라는 부모타입이 있다. 다형성을 사용해서 중복을 제거해보자.
+    - 소스코드 (비공개 레포지토리): https://github.com/JohnKim0911/kyh-java-mid2/tree/master/src/generic/ex3
+        - `AnimalHospitalV1`, `AnimalHospitalMainV1` 참고
+    - 문제점
+        - 코드 재사용 O:
+            - 다형성을 통해 `AnimalHospitalV1` 하나로 개와 고양이를 모두 처리한다.
+                - 기존 `DogHospital`, `CatHospital`로 따로 작성했던 것을 `AnimalHospitalV1` 하나로 처리 할 수 있다.
+        - 타입 안전성 X:
+            - 개 병원에 고양이를 전달하는 문제가 발생한다.
+            - `Animal` 타입을 반환하기 때문에 다운 캐스팅을 해야 한다.
+            - 실수로 고양이를 입력했는데, 개를 반환하는 상황이라면 캐스팅 예외가 발생한다.
+
+### 타입 매개변수 제한3 - 제네릭 도입과 실패
+
+- 예제 3) 동물병원 만들기 - 리팩토링
+    - 제네릭을 도입해서 코드 재사용은 늘리고, 타입 안전성 문제도 해결해보자.
+    - 소스코드 (비공개 레포지토리): https://github.com/JohnKim0911/kyh-java-mid2/tree/master/src/generic/ex3
+        - `AnimalHospitalV2`, `AnimalHospitalMainV2` 참고
+    - 문제점
+        - 컴파일시, 자바 컴파일러는 타입 매개변수에 어떤 타입이 들어올 지 알 수 없기 때문에 모든 객체의 최종 부모인 `Object` 타입으로 가정한다.
+        - 따라서 `AnimalHospitalV2`에서는 `Object`가 제공하는 메서드만 호출할 수 있다.
+        - 동물 병원에 `Integer`, `Object` 같은 동물과 전혀 관계 없는 타입을 타입 인자로 전달 할 수 있다.
+
+### 타입 매개변수 제한4 - 타입 매개변수 제한
+
+- 예제 4) 동물병원 만들기 - 리팩토링
+    - 타입 매개변수를 특정 타입으로 제한할 수 있다.
+    - 소스코드 (비공개 레포지토리): https://github.com/JohnKim0911/kyh-java-mid2/tree/master/src/generic/ex3
+        - `AnimalHospitalV3`, `AnimalHospitalMainV3` 참고
+
+      ```java
+      public class AnimalHospitalV3<T extends Animal> { ... } // extends를 사용하여 Animal 타입만 사용할 수 있도록 제한.
+      ```
+
+    - 정리
+        - 제네릭에 `타입 매개변수 상한`을 사용해서 타입 안전성을 지키면서 상위 타입의 원하는 기능까지 사용할 수 있었다.
+        - 덕분에 코드 재사용과 타입 안전성이라는 두 마리 토끼를 동시에 잡을 수 있었다.
+
+### 제네릭 메서드
+
+- 제네릭 메서드는 클래스 전체가 아니라, 특정 메서드 단위로 제네릭을 도입할 때 사용한다.
+    - 소스코드 (비공개 레포지토리): https://github.com/JohnKim0911/kyh-java-mid2/tree/master/src/generic/ex4
+        - `GenericMethod`, `MethodMain1` 참고
+
+- 제네릭 타입 vs 제네릭 메서드
+    - 제네릭 타입
+        - 타입 인자 전달: 객체를 생성하는 시점
+      ```java
+      public class AnimalHospitalV3<T extends Animal> { //제네릭 타입
+          private T animal;
+      
+          public void set(T animal) {
+            // 생략
+          }
+      }
+      ```
+    - 제네릭 메서드
+        - 타입 인자 전달: 메서드를 호출하는 시점
+      ```java
+      public class GenericMethod {
+          public static <T extends Number> T numberMethod(T t) { //제네릭 메서드
+              // 생략
+              return t;
+          }
+      }
+      ```
+
+- 참고
+    - 제네릭 메서드는 인스턴스 메서드와 static 메서드에 모두 적용할 수 있다.
+      ```java
+      class Box<T> { //제네릭 타입
+          static <V> V staticMethod2(V t) {} //static 메서드에 제네릭 메서드 도입 가능
+          <Z> Z instanceMethod2(Z z) {} //인스턴스 메서드에 제네릭 메서드 도입 가능
+      }
+      ```
+    - 제네릭 타입은 static 메서드에 타입 매개변수를 사용할 수 없다.
+        - 제네릭 타입은 객체를 생성하는 시점에 타입이 정해진다.
+        - 그런데 static 메서드는 인스턴스 단위가 아니라 클래스 단위로 작동하기 때문에 제네릭 타입과는 무관하다.
+        - 따라서 static 메서드에 제네릭을 도입하려면 제네릭 메서드를 사용해야 한다.
+      ```java
+      class Box<T> {
+          T instanceMethod(T t) {} //가능
+          static T staticMethod1(T t) {} //제네릭 타입의 T 사용 불가능
+      }
+      ```
+
+- 제네릭 메서드 타입 매개변수 제한
+    - 제네릭 타입과 마찬가지로 타입 매개변수를 제한할 수 있다.
+        - 예시) `public static <T extends Number> T numberMethod(T t) {...}`
+            - `extends`로 `Number` 타입만 받을 수 있도록 제한한다.
+
+- 제네릭 메서드 타입 추론
+    - 제네릭 메서드를 호출할 때 이 타입 인자를 계속 전달하는 것은 매우 불편하다.
+        - 예시) `Integer result = GenericMethod.<Integer>genericMethod(10);` //<Integer> 넣어주는 것 불편
+    - 자바 컴파일러가 타입 인자를 추론하여 자동으로 해당 타입 인자를 넣어준다.
+        - 개발자는 타입 인자를 생략하고 다음과 같이 사용하면 된다.
+        - 예시) `Integer result2 = GenericMethod.genericMethod(10);` //<Integer> 생략 가능!
+
+### 제네릭 메서드 활용
+
+- 앞서 제네릭 타입으로 만들었던 `AnimalHospitalV3`의 주요 기능을 **제네릭 메서드**로 다시 만들어보자.
+    - 소스코드 (비공개 레포지토리): https://github.com/JohnKim0911/kyh-java-mid2/tree/master/src/generic/ex4
+        - `AnimalMethod`, `MethodMain2` 참고
+
+- 제네릭 타입과 제네릭 메서드의 우선순위
+    - 제네릭 타입과 제네릭 메서드의 타입 매개변수를 같은 이름으로 사용하면 어떻게 될까?
+        - 결론: 제네릭 타입보다 제네릭 메서드가 높은 우선순위를 가진다.
+        - 소스코드 (비공개 레포지토리): https://github.com/JohnKim0911/kyh-java-mid2/tree/master/src/generic/ex4
+            - `ComplexBox`, `MethodMain3` 참고
+    - 프로그래밍에서 이렇게 모호한 것은 좋지 않다.
+        - 이름이 겹치면 둘줄 하나를 다른 이름으로 바꾸자.
+
+### 와일드카드1
+
+- 와일드카드는 제네릭 타입이나, 제네릭 메서드를 선언하는 것이 아니다.
+    - 와일드카드는 이미 만들어진 제네릭 타입을 활용할 때 사용한다.
+- 소스코드 (비공개 레포지토리): https://github.com/JohnKim0911/kyh-java-mid2/tree/master/src/generic/ex5
+    - `Box`, `WildcardEx`, `WildcardMain1` 참고
+        - `WildcardEx`를 자세히 보자.
+            - 제네릭 메서드와 와일드 카드를 비교하였다.
+            - 와일드카드는 `?` 를 사용해서 정의한다.
+
+```java
+package generic.ex5;
+
+import generic.animal.Animal;
+
+public class WildcardEx {
+
+    static <T> void printGenericV1(Box<T> box) { //제네릭 메서드
+        System.out.println("T = " + box.get());
+    }
+
+    static void printWildcardV1(Box<?> box) { //일반 메서드 + 비제한 와일드카드
+        System.out.println("? = " + box.get());
+    }
+
+    static <T extends Animal> void printGenericV2(Box<T> box) { //제네릭 메서드 + 타입 매개변수 제한
+        T t = box.get();
+        System.out.println("이름 = " + t.getName());
+    }
+
+    static  void printWildcardV2(Box<? extends Animal> box) { //일반 메서드 + 상한 와일드카드
+        Animal animal = box.get();
+        System.out.println("이름 = " + animal.getName());
+    }
+
+    //생략
+}
+```
+
+- 비제한 와일드카드
+    - `?` 만 사용해서 제한 없이 모든 타입을 다 받을 수 있는 와일드카드
+
+- 제네릭 메서드 vs 와일드카드
+    - 꼭 필요한 상황이 아니라면, 더 단순한 와일드카드 사용을 권장한다.
+    - 제네릭 메서드
+        - 제네릭 메서드에는 타입 매개변수가 존재한다.
+        - 그리고 특정 시점에 타입 매개변수에 타입 인자를 전달해서 타입을 결정해야 한다.
+        - 이런 과정은 매우 복잡하다.
+    - 와일드 카드
+        - 제네릭 메서드처럼 타입을 결정하거나 복잡하게 작동하지 않는다.
+        - 단순히 일반 메서드에 제네릭 타입을 받을 수 있는 매개변수가 하나 있는 것 뿐이다.
+
+### 와일드카드2
+
+- 상한 와일드카드
+    - "와일드카드1"의 예시 참고.
+    - 예시) `static void printWildcardV2(Box<? extends Animal> box) {...}`
+        - 와일드카드(`?`)뒤에 `extends`로 `Animal`과 그 하위 타입만 받을 수 있도록 상한 제한을 두었다.
+
+- 타입 매개변수가 꼭 필요한 경우
+
+```java
+package generic.ex5;
+
+import generic.animal.Animal;
+
+public class WildcardEx {
+    //생략
+
+    static <T extends Animal> T printAndReturnGeneric(Box<T> box) { //제네릭 메서드
+        T t = box.get(); //타입 매개변수를 사용하면 전달한 타입을 그대로 받을 수 있다.
+        System.out.println("이름 = " + t.getName());
+        return t;
+    }
+
+    static Animal printAndReturnWildcard(Box<? extends Animal> box) { //일반 메서드 + 상한 와일드카드
+        Animal animal = box.get(); //와일드카드를 사용하면 전달한 타입을 그대로 받을 수 없다. 상한 걸어둔 타입으로 받게된다.
+        System.out.println("이름 = " + animal.getName());
+        return animal;
+    }
+}
+```
+
+- 하한 와일드 카드
+    - 와일드카드는 상한 뿐만 아니라 하한도 지정할 수 있다.
+    - 소스코드 (비공개 레포지토리): https://github.com/JohnKim0911/kyh-java-mid2/tree/master/src/generic/ex5
+        - `WildcardMain2` 참고
+            - `static void writeBox(Box<? super Animal> box) { ... }` // `super`로 하한을 지정한다.
+                - `?` 가 `Animal` 타입을 포함한 상위 타입만 입력 받을 수 있다는 뜻.
+
+### 타입 이레이저
+
+- 이레이저(eraser): 지우개
+- 제네릭은 자바 컴파일 단계에서만 사용되고, 컴파일 이후에는 제네릭 정보가 지워진다. --> 타입 이레이저
+    - 컴파일 전인 `.java` 에는 제네릭의 타입 매개변수가 존재하지만,
+    - 컴파일 이후인 자바 바이트코드 `.class` 에는 타입 매개변수가 존재하지 않는다.
+    - 예시) 100% 정확한 코드는 아니고 대략 이런 방식으로 작동한다고 이해하면 충분하다.
+        - 컴파일 전
+          ```java
+          public class GenericBox<T> { //타입 매개변수 존재
+              private T value;
+            
+              public void set(T value) {
+                  this.value = value;
+              }
+            
+              public T get() {
+                  return value;
+              }
+          }
+          ```
+          ```java
+          void main() {
+              GenericBox<Integer> box = new GenericBox<Integer>();
+              box.set(10);
+              Integer result = box.get();
+          }
+          ```      
+        - 컴파일 후
+          ```java
+          public class GenericBox { //타입 매개변수 삭제
+              private Object value;
+            
+              public void set(Object value) {
+                  this.value = value;
+              }
+            
+              public Object get() {
+                  return value;
+              }
+          }
+          ```
+          ```java
+          void main() {
+              GenericBox box = new GenericBox();
+              box.set(10);
+              Integer result = (Integer) box.get(); //자바 컴파일러는 제네릭에서 타입 인자로 지정한 타입(Integer)으로 캐스팅하는 코드를 추가해준다.
+          }
+          ```
+
+- 타입 매개변수 제한의 경우
+    - 타입 매개변수를 제한하면 제한한 타입으로 코드를 변경한다.
+    - 예시)
+        - 컴파일 전
+          ```java
+          public class AnimalHospitalV3<T extends Animal> { //Animal로 타입 매개변수 제한
+              private T animal;
+              //생략
+          }
+          ```
+        - 컴파일 후
+          ```java
+          public class AnimalHospitalV3 {
+              private Animal animal; //제한한 타입으로 코드를 변경 (T -> Animal)
+              //생략
+          }
+          ```
+
+- 타입 이레이저 방식의 한계
+    - 런타임에는 제네릭으로 지정한 타입 정보가 모두 제거된다.
+    - 따라서, 런타임에 타입을 활용하는 다음과 같은 코드는 작성할 수 없다.
+        ```java
+        class EraserBox<T> {
+            public boolean instanceCheck(Object param) {
+                return param instanceof T; //오류 //컴파일후에는 T가 Object로 변경된다. 항상 true가 되기때문에 사용할 수 없다.
+            }
+            public void create() {
+                return new T(); //오류 //컴파일후에는 new Object()로 변경된다. 개발자가 의도한것과는 다르게 된다.
+            }
+        }
+        ```
+    - 위 주석과 같은 이유로 자바는 타입 매개변수에 `instanceof` 혹은 `new`를 허용하지 않는다.
+
+### 문제와 풀이
+
+- 스타크래프트 유닛 만들기
+  - 소스 코드 (비공개 레포지토리): https://github.com/JohnKim0911/kyh-java-mid2/tree/master/src/generic/test/ex3
+    - 공통 소스 생성: `unit` 패키지 참고 (`BioUnit`, `Marine`, `Zealot`, `Zergling`)
+    - 문제와 풀이1 - 제네릭 메서드와 상한 (`UnitUtilTest`, `UnitUtil`)
+    - 문제와 풀이2 - 제네릭 타입과 상한 (`ShuttleTest`, `Shuttle`)
+    - 문제와 풀이3 - 제네릭 메서드와 와일드카드 (`UnitPrinterTest`, `UnitPrinter`)
+
+### 정리
+
+- 실무에서 직접 제네릭을 사용해서 무언가를 설계하거나 만드는 일은 드물다.
+  - 그것보다는 대부분 이미 제네릭을 통해 만들어진 프레임워크나 라이브러리들을 가져다 사용하는 경우가 훨씬 많다.
+  - 그래서 이미 만들어진 코드의 제네릭을 읽고 이해하는 정도면 충분하다.
+  - 실무에서 직접 제네릭을 사용하더라도 어렵고 복잡하게 사용하기 보다는 보통 단순하게 사용한다.
+  - 지금까지 학습한 정도면 실무에 필요한 제네릭은 충분히 이해했다고 볼 수 있다.
+
+- 제네릭은 지금까지 설명한 내용보다 더 복잡하고 어려운 개념들도 있다.
+  - 예) 공변(covariant), 반공변(contravariant)
+  - 이런 부분은 실무에서 많은 경험을 쌓고, 본인이 필요하다고 느껴질 때 따로 공부하는 것을 권장한다.
+
+- 제네릭은 컬렉션 프레임워크에서 가장 많이 사용된다.
+  - 따라서 컬렉션 프레임워크를 통해서 제네릭이 어떻게 활용되는지 자연스럽게 학습할 수 있다.
 
 ---
 
