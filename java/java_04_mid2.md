@@ -7,7 +7,7 @@
 | 3  | [제네릭 - Generic2](#3-제네릭---generic2)                              | 2024-12-04      |
 | 4  | [컬렉션 프레임워크 - ArrayList](#4-컬렉션-프레임워크---arraylist)                | 2024-12-04 ~ 05 |
 | 5  | [컬렉션 프레임워크 - LinkedList](#5-컬렉션-프레임워크---linkedlist)              | 2024-12-06      |
-| 6  | [컬렉션 프레임워크 - List](#6-컬렉션-프레임워크---list)                          |                 |
+| 6  | [컬렉션 프레임워크 - List](#6-컬렉션-프레임워크---list)                          | 2024-12-07 ~ 09 |
 | 7  | [컬렉션 프레임워크 - 해시(Hash)](#7-컬렉션-프레임워크---해시hash)                    |                 |
 | 8  | [컬렉션 프레임워크 - HashSet](#8-컬렉션-프레임워크---hashset)                    |                 |
 | 9  | [컬렉션 프레임워크 - Set](#9-컬렉션-프레임워크---set)                            |                 |
@@ -824,6 +824,191 @@ public class WildcardEx {
 ---
 
 ## 6. 컬렉션 프레임워크 - List
+
+### 리스트 추상화1 - 인터페이스 도입
+
+- 개요
+  - 위 강의에서 작성했던 `MyArrayListV4`, `MyLinkedListV3`를 복사해서
+  - 새로운 `MyArrayList`, `MyLinkedList`를 만들고, `MyList` 인터페이스를 구현하도록 함.
+
+- 소스코드 (비공개 레포지토리): https://github.com/JohnKim0911/kyh-java-mid2/tree/master/src/collection/list
+  - `MyList`, `MyArrayList`, `MyLinkedList` 참고
+
+### 리스트 추상화2 - 의존관계 주입
+
+- `MyArrayList`에서 데이터를 리스트 앞 부분에 추가 할 때 더 효율적인`MyLinkedList`로 변경하고자 함.
+  - 구체적인 리스트에 의존하는 것을 추상적인 리스트에 의존하도록 변경
+  - 소스코드 (비공개 레포지토리): https://github.com/JohnKim0911/kyh-java-mid2/tree/master/src/collection/list
+    - `BatchProcessor`, `BatchProcessorMain` 참고
+  - 변경 전:
+    - 구체적인 `MyArrayList`, `MyLinkedList`에 의존하는 `BatchProcessor` 예시
+      - 구체적인 클래스에 직접 의존하면 `MyArrayList`를 `MyLinkedList`로 변경할 때 마다 여기에 의존하는 `BatchProcessor`의 코드도 함께 수정해야 한다.
+  - 변경 후:
+    - 추상적인 `MyList`에 의존하는 `BatchProcessor` 예시
+      - `BatchProcessor`가 추상적인 `MyList` 인터페이스에 의존하는 방법
+      - `BatchProcessor`를 생성하는 시점에 생성자를 통해 원하는 리스트 전략(알고리즘)을 선택해서 전달하면 된다.
+
+      - `MyList`를 사용하는 클라이언트 코드인 `BatchProcessor`를 전혀 변경하지 않고, 원하는 리스트 전략을 런타임에 지정할 수 있다.
+  - 정리
+    - 다형성과 추상화를 활용하면 `BatchProcessor` 코드를 전혀 변경하지 않고 리스트 전략(알고리즘)을
+      `MyArrayList`에서 `MyLinkedList` 로 변경할 수 있다.
+    - 의존관계 주입 (Dependency Injection, DI)
+      - 의존성 주입이라고도 부른다.
+      - `BatchProcessor`의 외부에서 의존관계가 결정되어서 `BatchProcessor` 인스턴스에 들어오는 것 같다. 
+      - 마치 의존관계가 외부에서 주입되는 것 같다고 해서 이것을 `의존관계 주입`이라 한다.
+      - 생성자를 통해서 의존관계를 주입했기 때문에 `생성자 의존관계 주입`이라 한다.
+    - `MyLinkedList`를 사용한 덕분에 `O(n)` -> `O(1)`로 훨씬 더 성능이 개선 되었다.
+
+### 리스트 추상화3 - 컴파일 타임, 런타임 의존관계
+
+- `컴파일 타임 의존관계` vs `런타임 의존관계`
+  - `컴파일 타임 의존관계`
+    - 자바 컴파일러가 보는 의존관계
+    - 클래스에 바로 보이는 의존관계
+    - 실행하지 않은 소스 코드에 정적으로 나타나는 의존관계
+  - `런타임 의존관계`
+    - 실제 프로그램이 작동할 때 보이는 의존관계
+    - 주로 생성된 인스턴스와 그것을 참조하는 의존관계
+    - 프로그램이 실행될 때 인스턴스 간에 의존관계
+    - 런타임 의존관계는 프로그램 실행 중에 계속 변할 수 있다.
+
+- 위 예제 다시 한번 설명
+  - `BatchProcessor` 클래스는 구체적인 `MyArrayList`나 `MyLinkedList` 에 의존하는 것이 아니라 추상적인 `MyList` 에 의존한다.
+    - 따라서 런타임에 `MyList` 의 구현체를 얼마든지 선택할 수 있다.
+    - 클라이언트 코드의 변경 없이, 구현 알고리즘인 `MyList` 인터페이스의 구현을 자유롭게 확장할 수 있다.
+    - 생성자를 통해 `런타임 의존관계`를 주입하는 것을 `생성자 의존관계 주입` 또는 줄여서 `생성자 주입`이라 한다.
+  - `전략 패턴`(Strategy Pattern)
+    - 디자인 패턴 중에 가장 중요한 패턴을 하나 뽑으라고 하면 `전략 패턴`을 뽑을 수 있다.
+    - `전략 패턴`은 알고리즘을 클라이언트 코드의 변경 없이 쉽게 교체할 수 있다.
+    - 방금 설명한 코드가 바로 `전략 패턴`을 사용한 코드이다.
+      - `MyList` 인터페이스가 바로 전략을 정의하는 인터페이스가 되고,
+      - 각각의 구현체인 `MyArrayList`, `MyLinkedList`가 전략의 구체적인 구현이 된다.
+      - 그리고 전략을 클라이언트 코드(`BatchProcessor`)의 변경 없이 손쉽게 교체할 수 있다
+
+### 직접 구현한 리스트의 성능 비교
+
+- 소스코드 (비공개 레포지토리): https://github.com/JohnKim0911/kyh-java-mid2/blob/master/src/collection/list/MyListPerformanceTest.java
+
+  - 직접 구현한 리스트의 성능 비교 표
+    
+    | 기능        | 배열 리스트          | 연결 리스트          |
+    |-----------|-----------------|-----------------|
+    | 앞에 추가(삭제) | O(n) - 1369ms   | `O(1)` - 2ms    |
+    | 평균 추가(삭제) | O(n) - 651ms    | O(n) - 1112ms   |
+    | 뒤에 추가(삭제) | `O(1)` - 2ms    | O(n) - 2195ms   |
+    | 인덱스 조회    | `O(1)` - 1ms    | O(n) - 평균 438ms |
+    | 검색        | O(n) - 평균 115ms | O(n) - 평균 492ms |
+
+- 시간 복잡도와 실제 성능
+  - 이론적으로 `MyLinkedList`의 평균 추가(중간 삽입) 연산은 `MyArrayList` 보다 빠를 수 있다고 생각 할 수 있지만, 실제 성능은 그렇지 않다.
+  - 실제 성능은 요소의 순차적 접근 속도, 메모리 할당 및 해제 비용, CPU 캐시 활용도 등 다양한 요소에 의해 영향을 받는다.
+    - `MyArrayList`는 요소들이 메모리 상에서 연속적으로 위치하여 CPU 캐시 효율이 좋고, 메모리 접근 속도가 빠르다.
+    - 반면, `MyLinkedList`는 각 요소가 별도의 객체로 존재하고 다음 요소의 참조를 저장하기 때문에 CPU 캐시 효율이 떨어지고, 메모리 접근 속도가 상대적으로 느릴 수 있다.
+
+### 자바 리스트
+
+- 리스트와 관련된 컬렉션 프레임워크는 다음 구조를 가진다.
+  - `Collection` 인터페이스는 `java.util` 패키지의 컬렉션 프레임워크의 핵심 인터페이스 중 하나이다.
+
+![컬렉션 프레임워크 - 리스트](https://github.com/user-attachments/assets/03f383af-cdda-49e6-b49d-b2c090cafe2c)
+
+- `List` 인터페이스의 주요 메서드
+  - `add(E e)` ⭐: 리스트의 끝에 지정된 요소를 추가한다.
+  - `add(int index, E element)` ⭐: 리스트의 지정된 위치에 요소를 삽입한다.
+  - `addAll(Collection<? extends E> c)` ⭐: 지정된 컬렉션의 모든 요소를 리스트의 끝에 추가한다.
+  - `addAll(int index, Collection<? extends E> c)` : 지정된 컬렉션의 모든 요소를 리스트의 지정된 위치에 추가한다.
+  - `get(int index)` ⭐: 리스트에서 지정된 위치의 요소를 반환한다.
+  - `set(int index, E element)` : 지정한 위치의 요소를 변경하고, 이전 요소를 반환한다.
+  - `remove(int index)` : 리스트에서 지정된 위치의 요소를 제거하고 그 요소를 반환한다.
+  - `remove(Object o)` : 리스트에서 지정된 첫 번째 요소를 제거한다.
+  - `clear()` ⭐: 리스트에서 모든 요소를 제거한다.
+  - `indexOf(Object o)`: 리스트에서 지정된 요소의 첫 번째 인덱스를 반환한다.
+  - `lastIndexOf(Object o)` : 리스트에서 지정된 요소의 마지막 인덱스를 반환한다.
+  - `contains(Object o)` ⭐: 리스트가 지정된 요소를 포함하고 있는지 여부를 반환한다.
+  - `sort(Comparator<? super E> c)` : 리스트의 요소를 지정된 비교자에 따라 정렬한다.
+  - `subList(int fromIndex, int toIndex)` : 리스트의 일부분의 뷰를 반환한다.
+  - `size()` ⭐: 리스트의 요소 수를 반환한다.
+  - `isEmpty()` ⭐: 리스트가 비어있는지 여부를 반환한다.
+  - `iterator()` : 리스트의 요소에 대한 반복자를 반환한다.
+  - `toArray()` : 리스트의 모든 요소를 배열로 반환한다.
+  - `toArray(T[] a)` : 리스트의 모든 요소를 지정된 배열로 반환한다.
+
+- 자바 `ArrayList`
+  - `java.util.ArrayList` 
+  - 자바가 제공하는 `ArrayList`는 우리가 직접 만든 `MyArrayList`와 거의 비슷하다.
+  - 자바 `ArrayList`의 특징
+    - 배열을 사용해서 데이터를 관리한다.
+    - 기본 `CAPACITY`는 10이다.
+      - `CAPACITY`를 넘어가면 배열을 50% 증가한다.
+    - 메모리 고속 복사 연산을 사용한다.
+      - 모든 요소를 한 칸씩 이동 해야할 때 사용.
+      - 내부적으로 `System.arraycopy()`를 사용
+
+- 자바 `LinkedList`
+  - `java.util.LinkedList`
+  - 자바가 제공하는 `LinkedList`는 우리가 직접 만든 `MyLinkedList`와 거의 비슷하다.
+  - 자바의 `LinkedList` 특징
+    - 이중 연결 리스트 구조
+    - 첫 번째 노드와 마지막 노드 둘다 참조
+    - 이전 노드로 이동할 수 있기 때문에, 마지막 노드부터 앞으로 조회할 수 있다.
+    - 인덱스 조회 성능을 최적화 할 수 있다.
+      - 인덱스로 조회하는 경우
+        - 인덱스가 사이즈의 절반 이하라면 처음부터 찾아서 올라가고,
+        - 인덱스가 사이즈의 절반을 넘으면 마지막 노드 부터 역방향으로 조회해서 성능을 최적화 할 수 있다.
+
+    ![이중 연결 리스트](https://github.com/user-attachments/assets/775094ec-9b75-40d7-bb7f-5d87ed119cc4)
+
+### 자바 리스트의 성능 비교
+
+- 기존에 만들었던 `MyListPerformanceTest`를 복사해서 자바의 리스트를 사용하도록 일부 수정하였다.
+  - 소스코드 (비공개 레포지토리) : https://github.com/JohnKim0911/kyh-java-mid2/blob/master/src/collection/list/JavaListPerformanceTest.java
+
+- 성능 비교 표 (직접 구현한 리스트 vs 자바 리스트)
+  - 직접 구현한 리스트
+
+    | 기능        | 배열 리스트          | 연결 리스트          |
+    |-----------|-----------------|-----------------|
+    | 앞에 추가(삭제) | O(n) - 1369ms   | `O(1)` - 2ms    |
+    | 평균 추가(삭제) | O(n) - 651ms    | O(n) - 1112ms   |
+    | 뒤에 추가(삭제) | `O(1)` - 2ms    | O(n) - 2195ms   |
+    | 인덱스 조회    | `O(1)` - 1ms    | O(n) - 평균 438ms |
+    | 검색        | O(n) - 평균 115ms | O(n) - 평균 492ms |
+
+  - 자바 리스트
+  
+    | 기능        | 배열 리스트           | 연결 리스트          |
+    |-----------|------------------|-----------------|
+    | 앞에 추가(삭제) | O(n) - 106ms ✔️  | `O(1)` - 2ms    |
+    | 평균 추가(삭제) | O(n) - 49ms ✔️️️ | O(n) - 1116ms   |
+    | 뒤에 추가(삭제) | `O(1)` - 1ms     | `O(1)` - 2ms ✔️ |
+    | 인덱스 조회    | `O(1)` - 1ms     | O(n) - 평균 439ms |
+    | 검색        | O(n) - 평균 104ms  | O(n) - 평균 473ms |
+
+  - 데이터를 추가할 때 자바 `ArrayList`가 직접 구현한 `MyArrayList`보다 빠른 이유
+    - 자바의 배열 리스트는 이때 메모리 고속 복사를 사용하기 때문에 성능이 최적화된다.
+  - 자바 연결 리스트는 마지막 노드 정보도 가지고 있어서, 뒤에 추가(삭제) 성능이 좋다. 
+
+- `배열 리스트` vs `연결 리스트`
+    - 대부분의 경우 `배열 리스트`가 성능상 유리하다.
+        - 이런 이유로 실무에서는 주로 `배열 리스트`를 기본으로 사용한다.
+    - 만약 데이터를 앞쪽에서 자주 추가하거나 삭제할 일이 있다면 `연결 리스트`를 고려하자.
+
+### 문제와 풀이1
+
+- 소스코드 (비공개 레포지토리) : https://github.com/JohnKim0911/kyh-java-mid2/tree/master/src/collection/list/test/ex1
+- 문제1 - 배열을 리스트로 변경하기 : `ArrayEx1`를 참고하여 -> `ListEx1`를 새로 작성
+- 문제2 - 리스트의 입력과 출력 : `ListEx2`
+- 문제3 - 합계와 평균: `ListEx3`
+
+### 문제와 풀이2
+
+- 문제 - 리스트를 사용한 쇼핑 카트
+  - 소스코드 (비공개 레포지토리) : https://github.com/JohnKim0911/kyh-java-mid2/tree/master/src/collection/list/test/ex2
+  - `Item`, `ShoppingCartMain`를 참고하여 -> `ShoppingCart`를 새로 작성
+  - 단순 배열 사용시와 리스트 사용시 코드 비교 분석: 교재 p.40 참고
+    - 리스트의 이점
+      - 배열처럼 입력 가능한 크기를 미리 정하지 않아도 된다.
+      - 배열에 몇개의 데이터가 추가 되었는지 추척하는 변수를 제거할 수 있다.
 
 ---
 
