@@ -1241,6 +1241,7 @@ public class WildcardEx {
       - `'A'`; `65`
       - `'B'`: `66`
       - `"AB"` : 65 + 66 = `131`
+        - 참고로, 자바의 해시 함수는 단순히 문자들을 더하기만 하는 것이 아니라, 더 복잡한 연산을 사용해서 해시 코드를 구한다.
   - ASCII 코드 표
     - 컴퓨터는 문자를 직접 이해하지는 못한다. 대신에 각 문자에 고유한 숫자를 할당해서 인식한다.
     - 모든 문자가 고유한 숫자를 가지고 있다.
@@ -1274,6 +1275,9 @@ public class WildcardEx {
 - 코드로 구현
   - 소스코드 (비공개 레포지토리): 
     - `Member`: https://github.com/JohnKim0911/kyh-java-mid2/blob/master/src/collection/set/member/Member.java
+      - `Member`의 경우 회원의 `id`가 같으면 논리적으로 같은 회원으로 표현할 수 있다.
+        - 회원 `id`를 기반으로 동등성을 비교하도록 `equals`를 재정의해야 한다.
+        - 회원 `id`를 기반으로 해시 코드를 생성해야 한다.
     - `JavaHashCodeMain`: https://github.com/JohnKim0911/kyh-java-mid2/blob/master/src/collection/set/JavaHashCodeMain.java
 
 - `Object`의 해시 코드 비교
@@ -1289,11 +1293,6 @@ public class WildcardEx {
   - 동일성(Identity): `==` 연산자 사용. 두 객체의 참조가 동일한 객체를 가리키고 있는지 확인
   - 동등성(Equality): `equals()` 메서드 사용. 두 객체가 논리적으로 동등한지 확인
 
-- 직접 구현하는 해시 코드
-  - `Member`의 경우 회원의 `id`가 같으면 논리적으로 같은 회원으로 표현할 수 있다.
-    - 따라서 회원 `id`를 기반으로 동등성을 비교하도록 `equals`를 재정의해야 한다.
-    - 따라서 회원 `id`를 기반으로 해시 코드를 생성해야 한다.
-
 - 정리
   - 자바가 기본으로 제공하는 클래스 대부분은 `hashCode()`를 재정의해두었다.
   - 객체를 직접 만들어야 하는 경우에 `hashCode()`를 재정의하면 된다.
@@ -1304,6 +1303,92 @@ public class WildcardEx {
   - 기존 제네릭을 `Integer`에서 `Object`로 변경.
   - 소스코드 (비공개 레포지토리): https://github.com/JohnKim0911/kyh-java-mid2/tree/master/src/collection/set
     - `MyHashSetV2`, `MyHashSetV2Main1` 참고
+    - `set`에 문자열 넣어서 테스트함.
+
+### 직접 구현하는 Set3 - 직접 만든 객체 보관
+
+- 직접 만든 객체를 `Set`에 보관
+  - `MyHashSetV2`는 `Object`를 받을 수 있다. 따라서 직접 만든 `Member`와 같은 객체도 보관할 수 있다.
+    - 소스코드 (비공개 레포지토리) `MyHashSetV2Main2` : https://github.com/JohnKim0911/kyh-java-mid2/blob/master/src/collection/set/MyHashSetV2Main2.java
+  - 주의할 점
+    - 직접 만든 객체가 `hashCode()`, `equals()` 두 메서드를 반드시 구현해야 한다.
+
+### equals, hashCode의 중요성1
+
+- 해시 자료 구조를 사용하려면 `hashCode()`도 중요하지만, 해시 인덱스가 충돌할 경우를 대비해서 `equals()`도 반드시 재정의해야 한다.
+  - 해시 인덱스가 충돌할 경우, 같은 해시 인덱스에 있는 데이터들을 하나하나 비교해서 찾아야한다.
+    - 이때 `equals()`를 사용해서 비교한다.
+  - 해시 인덱스가 같아도 실제 저장된 데이터는 다를 수 있다.
+    - 따라서 특정 인덱스에 데이터가 하나만 있어도 `equals()`로 찾는 데이터가 맞는지 검증해야 한다.
+
+- `hashCode`, `equals`를 제대로 구현하지 않은 경우, 어떤 문제들이 발생하는지 하나씩 알아보자.
+  - `hashCode`, `equals`를 모두 구현하지 않은 경우
+  - `hashCode`는 구현했지만 `equals`를 구현하지 않은 경우 
+  - `hashCode`와 `equals`를 모두 구현한 경우
+
+- `hashCode`, `equals`를 모두 구현하지 않은 경우
+  - 소스코드 (비공개 레포지토리): https://github.com/JohnKim0911/kyh-java-mid2/tree/master/src/collection/set/member
+    - `MemberNoHashNoEq`, `HashAndEqualsMain1` 참고
+    - 데이터 중복 등록
+      - `hashCode`를 오버라이딩 하지 않아서, 인스턴스의 참조값을 사용하게 된다.
+      - 안에 가지고 있는 실제 데이터 값이 같더라도, 인스턴스의 참조값이 다르기 때문에 서로 다른 위치에 저장된다.
+
+      ![no hashCode, no equals_saving problem](https://github.com/user-attachments/assets/2792f10a-9592-4cac-9c5b-d246adef11e4)
+    
+    - 데이터 검색 실패
+      - 마찬가지로, 참조값이 다르기 때문에 다른 위치에서 데이터를 찾게 되고, 검색에 실패한다.
+
+      ![no hashCode, no equals_finding problem](https://github.com/user-attachments/assets/11a70265-b690-45ec-8807-608a69e741f4)
+
+### equals, hashCode의 중요성2
+
+- `hashCode`는 구현했지만, `equals`를 구현하지 않은 경우
+  - 소스코드 (비공개 레포지토리): https://github.com/JohnKim0911/kyh-java-mid2/tree/master/src/collection/set/member
+    - `MemberOnlyHash`, `HashAndEqualsMain2` 참고
+    - 데이터 중복 등록
+      - 구현된 `hashCode` 덕분에 같은 해시 인덱스를 구할 수 있지만, `equals`가 구현되지 않아서 같은 데이터로 구별하지 못함.
+        - 데이터를 넣기전에 해당 인덱스에 이미 해당 데이터가 있는지 `equals`로 확인을 하게 되는데, `equals`를 구현하지 않으면 default인 `==` 비교를 하게됨.
+        - `==` 비교는 단순 인스턴스의 참조값을 비교하므로 `false`를 반환하게됨.
+        - 결국, 논리적으로 같은 값이 같은 인덱스에 2번 이상 들어가는 문제가 발생됨.
+
+      ![only hash_add](https://github.com/user-attachments/assets/0daaaa6b-8a2c-4f5e-bff0-5d1549cf5259)
+
+    - 데이터 검색 실패
+      - 마찬가지로, 해당 인덱스에 논리적으로 같은 값이 있음에도 불구하고, 참조값이 다르기 때문에 같은 값으로 인식하지 못함.
+
+      ![only hash_find](https://github.com/user-attachments/assets/b58f20ac-ccd7-4cde-a25b-b0b3275f69fc)
+
+- `hashCode`와 `equals`를 모두 구현한 경우
+  - 소스코드 (비공개 레포지토리): https://github.com/JohnKim0911/kyh-java-mid2/tree/master/src/collection/set/member
+    - 기존에 작성한 `Member` 클래스 사용.
+    - 새로 작성한 `HashAndEqualsMain3` 참고
+  - 데이터 중복 등록 안됨
+    - 같은 해시 인덱스에 해당 데이터가 이미 있는지 확인함.
+    - 결과적으로 중복된 데이터를 추가하지 않음.
+
+    ![hash, equals_add](https://github.com/user-attachments/assets/aaa1d0a9-7e5e-404f-920f-74435e875de1)
+
+  - 데이터 검색 성공
+    - 해당 해시 인덱스에 해당 데이터를 성공적으로 찾음!
+
+    ![hash, equals_find](https://github.com/user-attachments/assets/2fcccf45-9193-449e-9d92-6227226fb28f)
+
+- 정리
+  - `hashCode()`를 항상 재정의해야 하는 것은 아니다.
+    -  하지만 해시 자료 구조를 사용하는 경우, `hashCode()`와  `equals()`를 반드시 함께 재정의해야 한다.
+
+- 참고 
+  - 자바가 제공하는 해시 함수을 사용하면 최적화 된 해시 코드를 구할 수 있다.
+    - 자바 해시 함수는 해시 코드가 최대한 충돌하지 않도록 설계되어 있음.
+
+### 직접 구현하는 Set4 - 제네릭과 인터페이스 도입
+
+- 지금까지 만든 해시 셋에 제네릭을 도입해서 타입 안전성을 높여보자.
+  - 소스코드 (비공개 레포지토리) : https://github.com/JohnKim0911/kyh-java-mid2/tree/master/src/collection/set
+      - `MySet`, `MyHashSetV3`, `MyHashSetV3Main` 참고
+        - `MySet`: 핵심 기능을 `MySet` 인터페이스로 뽑았다.
+        - `MyHashSetV3` : `MySet` 인터페이스를 구현한다.
+          - 또한, 이전 코드에서 `Object`로 다루던 부분들을 제네릭의 타입 매개변수 `E`로 변경했다.
 
 ---
 
