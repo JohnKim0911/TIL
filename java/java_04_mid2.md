@@ -11,7 +11,7 @@
 | 7  | [컬렉션 프레임워크 - 해시(Hash)](#7-컬렉션-프레임워크---해시hash)                    | 2024-12-09      |
 | 8  | [컬렉션 프레임워크 - HashSet](#8-컬렉션-프레임워크---hashset)                    | 2024-12-10      |
 | 9  | [컬렉션 프레임워크 - Set](#9-컬렉션-프레임워크---set)                            | 2024-12-11      |
-| 10 | [컬렉션 프레임워크 - Map, Stack, Queue](#10-컬렉션-프레임워크---map-stack-queue) |                 |
+| 10 | [컬렉션 프레임워크 - Map, Stack, Queue](#10-컬렉션-프레임워크---map-stack-queue) | 2024-12-11      |
 | 11 | [컬렉션 프레임워크 - 순회, 정렬, 전체 정리](#11-컬렉션-프레임워크---순회-정렬-전체-정리)         |                 |
 | 12 | [다음으로](#12-다음으로)                                                 |                 |
 
@@ -1555,6 +1555,233 @@ class Node {
 ---
 
 ## 10. 컬렉션 프레임워크 - Map, Stack, Queue
+
+### 컬렉션 프레임워크 - Map 소개1
+
+![map](https://github.com/user-attachments/assets/1df4893b-f353-40ca-9465-580f99cf9036)
+
+- `Map`
+  - 키-값의 쌍을 저장하는 자료 구조
+  - 키는 중복 안됨. 값은 중복 가능.
+  - 순서 보장하지 않음.
+
+- 컬렉션 프레임워크 - `Map`
+
+    ![컬렉션 프레임워크-Map](https://github.com/user-attachments/assets/7832800e-568f-4893-8881-8ab2e516ab47)
+  
+  - `Collection`이 아닌 별도의 `Map` 인터페이스를 구현한다.
+  - 자바는 `HashMap`, `TreeMap`, `LinkedHashMap` 등 다양한 `Map` 구현체를 제공한다.
+    - 이 중에 `HashMap`을 가장 많이 사용한다.
+
+- `Map` 인터페이스의 주요 메서드
+  - `put(K key, V value)` ⭐: 지정된 키와 값을 맵에 저장한다. (같은 키가 있으면 값을 변경)
+  - `putAll(Map<? extends K,? extends V> m)` : 지정된 맵의 모든 매핑을 현재 맵에 복사한다.
+  - `putIfAbsent(K key, V value)` ⭐: 지정된 키가 없는 경우에 키와 값을 맵에 저장한다.
+  - `get(Object key)` ⭐: 지정된 키에 연결된 값을 반환한다.
+  - `getOrDefault(Object key, V defaultValue)` ⭐: 지정된 키에 연결된 값을 반환한다. 키가 없는 경우 `defaultValue`로 지정한 값을 대신 반환한다.
+  - `remove(Object key)` ⭐: 지정된 키와 그에 연결된 값을 맵에서 제거한다.
+  - `clear()` : 맵에서 모든 키와 값을 제거한다.
+  - `containsKey(Object key)` ⭐: 맵이 지정된 키를 포함하고 있는지 여부를 반환한다.
+  - `containsValue(Object value)` : 맵이 하나 이상의 키에 지정된 값을 연결하고 있는지 여부를 반환한다.
+  - `keySet()` ⭐: 맵의 키들을 `Set` 형태로 반환한다.
+  - `values()` : 맵의 값들을 `Collection` 형태로 반환한다.
+  - `entrySet()` ⭐: 맵의 키-값 쌍을 `Set<Map.Entry<K,V>>` 형태로 반환한다.
+  - `size()` : 맵에 있는 키-값 쌍의 개수를 반환한다.
+  - `isEmpty()` : 맵이 비어 있는지 여부를 반환한다.
+
+- `HashMap` 사용법 예제코드
+  - 소스코드 (비공개 레포지토리) `MapMain1`: https://github.com/JohnKim0911/kyh-java-mid2/blob/master/src/collection/map/MapMain1.java
+
+- 키 목록 조회
+  - `Set<String> keySet = studentMap.keySet()`
+  - `Map`의 모든 키 목록을 조회하는 `keySet()`을 호출하면, 중복을 허용하지 않는 자료 구조인 `Set`을 반환한다.
+    - `Map`의 키는 중복을 허용하지 않기 때문에 `Set`을 반환함.
+
+- 키와 값 목록 조회
+
+  ![Entry Key-Value Pair](https://github.com/user-attachments/assets/57df5d93-7c20-4e6e-85b5-a094fffeba28)
+
+    - `Entry`는 키-값의 쌍으로 이루어진 간단한 객체이다.
+    - `Map`에 키와 값으로 데이터를 저장하면, 내부에서 키와 값을 하나로 묶는 `Entry` 객체를 만들어서 보관한다
+    - 하나의 `Map`에 여러 `Entry`가 저장될 수 있다.
+
+### 컬렉션 프레임워크 - Map 소개2
+
+- `Map`에 값을 저장할 때 같은 키에 다른 값을 저장하면 기존 값을 교체한다.
+  - 소스 코드 (비공개 레포지토리) `MapMain2`: https://github.com/JohnKim0911/kyh-java-mid2/blob/master/src/collection/map/MapMain2.java
+
+- `Map`에 해당 키가 없는 경우에만 저장: `putIfAbsent()` 메서드 사용
+  - 소스 코드 (비공개 레포지토리) `MapMain3`: https://github.com/JohnKim0911/kyh-java-mid2/blob/master/src/collection/map/MapMain3.java
+
+### 컬렉션 프레임워크 - Map 구현체
+
+- `Map`은 인터페이스이기 때문에, 직접 인스턴스를 생성 할 수는 없다.
+  - 구현체인 `HashMap`, `TreeMap`, `LinkedHashMap`를 사용하자.
+
+- `Map` vs `Set`
+
+  ![map vs set](https://github.com/user-attachments/assets/51c2261e-9059-4ac2-a5e5-74bb80916c3b)
+
+  - `Map`과 `Set`은 거의 같다. 단지 옆에 `Value`를 가지고 있는가 없는가의 차이가 있을 뿐이다.
+    - 참고) 자바 `HashSet`의 구현은 대부분 `HashMap`의 구현을 가져다 사용한다.
+      - `Map`에서 `Value`만 비워두면 `Set`으로 사용할 수 있다.
+  - 이런 이유로 `Set`과 `Map`의 구현체는 거의 같다.
+    - `HashSet` -> `HashMap`
+    - `LinkedHashSet` -> `LinkedHashMap`
+    - `TreeSet` -> `TreeMap`
+
+- `Map` 구현체별 특징
+  - `HashMap`
+    - 해시를 사용해서 요소를 저장한다.
+    - 삽입, 삭제, 검색 작업은 상수 시간(`O(1)`)의 복잡도를 가진다.
+    - 순서를 보장하지 않는다.
+  - `LinkedHashMap`
+    - `HashMap`과 유사하지만, 연결 리스트를 사용하여 삽입 순서를 유지한다.
+    - 대부분의 작업은 `O(1)`의 시간 복잡도를 가진다.
+      - 입력 순서를 링크로 유지해야 하므로 `HashMap` 보다 조금 더 무겁다.
+    - 입력 순서를 보장한다.
+  - `TreeMap`
+    - 주요 작업들은 `O(log n)`의 시간 복잡도를 가진다.
+    - 키는 정렬된 순서로 저장된다.
+  - `HashMap`, `LinkedHashMap`, `TreeMap`의 특징 코드로 확인
+    - 소스코드 (비공개 레포지토리) `JavaMapMain`: https://github.com/JohnKim0911/kyh-java-mid2/blob/master/src/collection/map/JavaMapMain.java
+      - `HashMap` : 입력한 순서를 보장하지 않는다.
+      - `LinkedHashMap` : 키를 기준으로 입력한 순서를 보장한다.
+      - `TreeMap` : 키 자체의 데이터 값을 기준으로 정렬한다.
+
+- 자바 `HashMap` 작동 원리
+  - `HashSet`과 거의 같다.
+  - `Key`뿐만 아니라 값(`Value`)을 추가로 저장해야 하기 때문에, `Entry`를 사용해서 `Key`, `Value`를 하나로 묶어서 저장한다.
+
+  ![hashmap](https://github.com/user-attachments/assets/9a6ae8d6-cc09-42fa-bd85-70f817d53327)
+
+    - 이렇게 해시를 사용해서 키와 값을 저장하는 자료 구조를 일반적으로 `해시 테이블`이라 한다.
+
+- 주의 ⚠️
+  - `Map`의 `Key`로 사용되는 객체는 `hashCode()`, `equals()`를 반드시 구현해야 한다.
+
+- 정리
+  - 실무에서는 `Map`이 필요한 경우 `HashMap`을 많이 사용한다.
+    - 순서 유지, 정렬의 필요에 따라서 `LinkedHashMap`, `TreeMap`을 선택하면 된다.
+
+### 스택 자료 구조
+
+- 스택(`Stack`) 구조
+  - 나중에 넣은 것이 가장 먼저 나온다.
+    - 후입 선출 (LIFO, Last In First Out)
+  - 데이터 넣기 (`push`)
+
+      ![stack_push](https://github.com/user-attachments/assets/f768e19d-6001-4622-aa86-07333a98c224)
+
+  - 데이터 꺼내기 (`pop`)
+
+      ![stack_pop](https://github.com/user-attachments/assets/ffae1340-de76-4aa5-9e4b-7706e4ae7ee4)
+
+  - 소스 코드 (비공개 레포지토리) `StackMain`: https://github.com/JohnKim0911/kyh-java-mid2/blob/master/src/collection/deque/StackMain.java
+  - 주의 ⚠️
+    - `Stack` 클래스는 사용하지 말자. 대신 `Deque`를 사용하자.
+
+### 큐(`Queue`) 자료 구조
+
+- 가장 먼저 넣은 것이 가장 먼저 나온다.
+  - 선입 선출 (FIFO, First In First Out)
+- 데이터 넣기 (`offer`)
+- 데이터 꺼내기 (`poll`)
+  
+![queue](https://github.com/user-attachments/assets/73b5eb48-6dd7-41a4-9221-f3020fb62065)
+
+- 컬렉션 프레임워크 - `Queue`
+  - `Queue` 인터페이스는 `List`, `Set` 과 같이 `Collection`의 자식이다.
+  - `Queue`의 대표적인 구현체는 `ArrayDeque`, `LinkedList`가 있다.
+    - `ArrayDeque`를 쓰자. `LinkedList`보다 빠르다.
+    - 참고로 `LinkedList`는 `Deque` 와 `List` 인터페이스를 모두 구현한다.
+
+  ![queue deque](https://github.com/user-attachments/assets/d47e3cf0-2890-4730-9dee-75d95b70fd48)
+
+- `ArrayDeque`를 통해 `Queue`를 사용해보자.
+  - 소스코드 (비공개 레포지토리) `QueueMain`: https://github.com/JohnKim0911/kyh-java-mid2/blob/master/src/collection/deque/QueueMain.java
+
+### Deque 자료 구조
+
+- `Deque`
+
+  ![Deque](https://github.com/user-attachments/assets/f4c3df3e-5834-4584-a2c2-6df67b1c266f)
+  
+  - 양쪽 끝에서 요소를 추가하거나 제거할 수 있다.
+    - `Deque`는 "Double Ended Queue"의 약자
+  - 일반적인 큐(`Queue`)와 스택(`Stack`)의 기능을 모두 포함하고 있어, 매우 유연한 자료 구조이다.
+  - `데크`, `덱` 등으로 부른다.
+  - 메서드
+    - `offerFirst()` : 앞에 추가한다.
+    - `offerLast()` : 뒤에 추가한다.
+    - `pollFirst()` : 앞에서 꺼낸다.
+    - `pollLast()` : 뒤에서 꺼낸다.
+  - 소스코드 (비공개 레포지토리) `DequeMain`: https://github.com/JohnKim0911/kyh-java-mid2/blob/master/src/collection/deque/DequeMain.java
+    
+- `Deque` 구현체와 성능 테스트
+  - 구현체 `ArrayDeque`가 모든 면에서 `LinkedList` 보다  더 빠르다.
+    - 100만 건 입력(앞, 뒤 평균)
+      - `ArrayDeque` : 110ms
+      - `LinkedList` : 480ms
+    - 100만 건 조회(앞, 뒤 평균)
+      - `ArrayDeque` : 9ms
+      - `LinkedList` : 20ms
+
+### Deque와 Stack, Queue
+
+- `Deque`는 양쪽으로 데이터를 입력하고 출력할 수 있으므로, `스택`과 `큐`의 역할을 모두 수행할 수 있다.
+- `Deque`를 `Stack`과 `Queue`로 사용하기 위한 메서드 이름까지 제공한다.
+  - `Deque` - `Stack`
+
+      ![Deque - Stack](https://github.com/user-attachments/assets/b0d86840-8438-40ea-853d-d074b28d8cd8)
+
+    - 소스코드 (비공개 레포지토리) `DequeStackMain`: https://github.com/JohnKim0911/kyh-java-mid2/blob/master/src/collection/deque/DequeStackMain.java
+  - `Deque` - `Queue`
+
+      ![Deque - Queue](https://github.com/user-attachments/assets/931cce2a-0a8d-486b-9e76-4b68bc16316b)
+
+    - 소스코드 (비공개 레포지토리) `DequeQueueMain`: https://github.com/JohnKim0911/kyh-java-mid2/blob/master/src/collection/deque/DequeQueueMain.java
+
+### 문제와 풀이1 - Map1
+
+- 소스코드 (비공개 레포지토리) : https://github.com/JohnKim0911/kyh-java-mid2/tree/master/src/collection/map/test
+  - 문제1 - 배열을 맵으로 전환 : `ArrayToMapTest` 참고
+  - 문제2 - 공통의 합 : `CommonKeyValueSum1`, `CommonKeyValueSum2` 참고
+    - `CommonKeyValueSum2`에서 `Map.of()` 사용해서 Map 생성 (불변)
+  - 문제3 - 같은 단어가 나타난 수 : `WordFrequencyTest1`, `WordFrequencyTest2` 참고
+    - `WordFrequencyTest2`에서 `getOrDefault()` 사용.
+  - 문제4 - 값으로 검색 : `ItemPriceTest` 참고
+    - `entrySet` 사용
+
+### 문제와 풀이2 - Map2
+
+- 문제5 - 영어 사전 만들기
+  - 소스코드 (비공개 레포지토리) `DictionaryTest`: https://github.com/JohnKim0911/kyh-java-mid2/blob/master/src/collection/map/test/DictionaryTest.java
+
+- 문제6 - 회원 관리 저장소
+  - 소스코드 (비공개 레포지토리) : https://github.com/JohnKim0911/kyh-java-mid2/tree/master/src/collection/map/test/member
+  - `Member`, `MemberRepositoryMain` 참고해서 `MemberRepository` 작성하기
+
+- 문제7 - 장바구니
+  - 소스코드 (비공개 레포지토리) : https://github.com/JohnKim0911/kyh-java-mid2/tree/master/src/collection/map/test/cart
+  - `CartMain`과 실행 결과를 참고해서 `Product`, `Cart` 클래스를 작성하기
+  - `Map`의 `Key`로 `Product`가 사용된다. 따라서 반드시 `hashCode()`, `equals()`를 재정의해야 한다.
+
+### 문제와 풀이3 - Stack
+
+- 문제1 - 간단한 히스토리 확인
+  - 소스코드 (비공개 레포지토리) `SimpleHistoryTest`: https://github.com/JohnKim0911/kyh-java-mid2/blob/master/src/collection/deque/test/stack/SimpleHistoryTest.java
+
+- 문제2 - 브라우저 히스토리 관리
+  - 소스코드 (비공개 레포지토리): https://github.com/JohnKim0911/kyh-java-mid2/tree/master/src/collection/deque/test/stack
+  - `BrowserHistoryTest`와 실행 결과를 참고해서 `BrowserHistory` 클래스를 완성하기.
+
+### 문제와 풀이4 - Queue
+
+- 소스코드 (비공개 레포지토리) : https://github.com/JohnKim0911/kyh-java-mid2/tree/master/src/collection/deque/test/queue
+
+- 문제1 - 프린터 대기 : `PrinterQueueTest` 참고
+- 문제2 - 작업 예약 : `Task`인터페이스, `CompressionTask`, `BackupTask`, `CleanTask`, `SchedulerTest`, `TaskScheduler` 참고
 
 ---
 
