@@ -10,7 +10,7 @@
 | 6  | [컬렉션 프레임워크 - List](#6-컬렉션-프레임워크---list)                          | 2024-12-07 ~ 09 |
 | 7  | [컬렉션 프레임워크 - 해시(Hash)](#7-컬렉션-프레임워크---해시hash)                    | 2024-12-09      |
 | 8  | [컬렉션 프레임워크 - HashSet](#8-컬렉션-프레임워크---hashset)                    | 2024-12-10      |
-| 9  | [컬렉션 프레임워크 - Set](#9-컬렉션-프레임워크---set)                            |                 |
+| 9  | [컬렉션 프레임워크 - Set](#9-컬렉션-프레임워크---set)                            | 2024-12-11      |
 | 10 | [컬렉션 프레임워크 - Map, Stack, Queue](#10-컬렉션-프레임워크---map-stack-queue) |                 |
 | 11 | [컬렉션 프레임워크 - 순회, 정렬, 전체 정리](#11-컬렉션-프레임워크---순회-정렬-전체-정리)         |                 |
 | 12 | [다음으로](#12-다음으로)                                                 |                 |
@@ -1393,6 +1393,164 @@ public class WildcardEx {
 ---
 
 ## 9. 컬렉션 프레임워크 - Set
+
+### 자바가 제공하는 Set1 - HashSet, LinkedHashSet
+
+- 컬렉션 프레임워크 - `Set`
+
+![Set](https://github.com/user-attachments/assets/47f338ca-7b67-4ff8-872d-72382a76124c)
+
+- `Set` 인터페이스의 주요 메서드
+  - `add(E e)` : 지정된 요소를 세트에 추가한다 (이미 존재하는 경우 추가하지 않음).
+  - `addAll(Collection<? extends E> c)` : 지정된 컬렉션의 모든 요소를 세트에 추가한다.
+  - `contains(Object o)` : 세트가 지정된 요소를 포함하고 있는지 여부를 반환한다.
+  - `containsAll(Collection<?> c)` : 세트가 지정된 컬렉션의 모든 요소를 포함하고 있는지 여부를 반환한다.
+  - `remove(Object o)` : 지정된 요소를 세트에서 제거한다.
+  - `removeAll(Collection<?> c)` : 지정된 컬렉션에 포함된 요소를 세트에서 모두 제거한다.
+  - `retainAll(Collection<?> c)` : 지정된 컬렉션에 포함된 요소만을 유지하고 나머지 요소는 세트에서 제거한다.
+  - `clear()` : 세트에서 모든 요소를 제거한다.
+  - `size()` : 세트에 있는 요소의 수를 반환한다.
+  - `isEmpty()` : 세트가 비어 있는지 여부를 반환한다.
+  - `iterator()` : 세트의 요소에 대한 반복자를 반환한다.
+  - `toArray()` : 세트의 모든 요소를 배열로 반환한다.
+  - `toArray(T[] a)` : 세트의 모든 요소를 지정된 배열로 반환한다.
+
+- `Set`의 주요 구현체
+  - `HashSet`
+  - `LinkedHashSet`
+  - `TreeSet`
+
+- `HashSet`
+  - 데이터 중복 없고, 순서 보장 안됨.
+    - 예시) 3, 1, 3, 2 입력 -> 2, 3, 1 출력
+  - 주요 연산(추가, 삭제, 검색)은 평균 `O(1)` 시간 복잡도를 가진다.
+  - 앞서 우리가 구현한 `MyHashSet`이 바로 `HashSet`이다.
+
+- `LinkedHashSet`
+  - 데이터 중복 없고, 입력한 순서 보장됨. (데이터 순서 아님)
+    - 예시) 3, 1, 3, 2 입력 -> 3, 1, 2 출력
+    - `LinkedHashSet`은 `HashSet`에 연결 리스트를 추가해서 요소들의 순서를 유지한다.
+  - 주요 연산은 평균 `O(1)` 시간 복잡도를 가진다.
+    - 연결 링크를 유지해야 하기 때문에 `HashSet` 보다는 조금 더 무겁다.
+
+  ![LinkedHashSet](https://github.com/user-attachments/assets/08f1a69a-e21f-494f-b074-956ce9f546ff)
+
+    - 양방향으로 연결된다.
+      - (그림에서는 이해를 돕기 위해 화살표를 다음 순서로만 보여주었다. 실제로는 양방향이다.)
+
+### 자바가 제공하는 Set2 - TreeSet
+
+- `TreeSet`
+  - 데이터 중복 없고, 데이터의 값(크기) 순서 보장됨. (입력 순서 아님)
+    - 예시) 3, 1, 3, 2 입력 -> 1, 2, 3 출력
+  - 주요 연산들은 `O(log n)` 의 시간 복잡도를 가진다.
+    - `HashSet` 보다는 느리다. 데이터의 양이 클수록 효과적이다.
+
+- 트리 구조
+
+  ![tree 구조](https://github.com/user-attachments/assets/6cc6d9d6-a6e8-4357-beff-44459a275e58)
+
+  - 가장 높은 조상을 루트(root)라 한다.
+  - 부모 노드와 자식 노드로 구성된다.
+  - 자식이 2개까지 올 수 있는 트리를 `이진 트리`라 한다.
+  - 노드의 왼쪽 자손은 더 작은 값을 가지고, 오른쪽 자손은 더 큰 값을 가지는 것을 `이진 탐색 트리`라 한다.
+
+- 트리 구조의 구현
+
+  ![tree 구조의 구현](https://github.com/user-attachments/assets/f5497eb7-5dc7-4d12-82d0-f53ed9d6e54b)
+
+```java
+class Node {
+    Object item;
+    Node left;
+    Node right;
+}
+```
+
+- 이진 탐색 트리 - 입력 예시
+  - 루트에서 부터 입력한 값이 기존 값 보다 작으면 왼쪽으로, 크면 오른쪽으로 내려간다.
+  - 비교할 값이 더 이상 없을 경우, 해당 위치에 저장한다.
+
+  ![이진 탐색 트리 - 입력](https://github.com/user-attachments/assets/55e23b04-9697-4cc0-96ed-36786be500e6)
+
+- 이진 탐색 트리 - 검색
+    - 입력시와 동일한 방법으로 값을 찾는다.
+  
+  ![이진트리 - 검색](https://github.com/user-attachments/assets/12b1831c-b6a4-47e2-b6b3-044cac5b7be3)
+
+- 이진 탐색 트리 계산의 핵심은 한번에 절반을 날린 다는 점이다.
+
+- 이진 탐색 트리의 빅오 - `O(log n)`
+    - 예시) 데이터 16개의 경우, 단 4번의 비교 만으로 최종 노드에 도달할 수 있다.
+    - 예시)
+        - 2개의 데이터 ️➡️ 2로 1번 나누기, `log₂(2)=1`
+        - 4개의 데이터 ️➡️ 2로 2번 나누기, `log₂(4)=2`
+        - 8개의 데이터 ️➡️ 2로 3번 나누기, `log₂(8)=3`
+        - 16개의 데이터 ➡️ 2로 4번 나누기, `log₂(16)=4`
+        - 32개의 데이터 ➡️ 2로 5번 나누기, `log₂(32)=5`
+        - 64개의 데이터 ➡️ 2로 6번 나누기, `log₂(64)=6`
+        - ...
+        - 1024개의 데이터 ➡️ 2로 10번 나누기, `log₂(1024)=10`
+          - 1024개의 데이터를 단 10번의 계산으로 원하는 결과를 찾을 수 있다.
+    - 한 번의 계산에 절반을 날려버리기 때문에, 데이터의 크기가 클 수록 효과적이다.
+    - 이것을 수학으로 `log₂(n)` 으로 표현한다.
+      - 쉽게 이야기해서 2로 몇번 나누어서 1에 도달할 수 있는지 계산하면 된다.
+      - 빅오 표기법에서 상수는 사용하지 않으므로 상수를 제외하고 단순히 `O(log n)` 로 표현한다.
+
+- 이진 탐색 트리와 성능
+  - 최악의 경우
+    - 한쪽으로 데이터가 치우친 경우, `O(n)` 성능을 가진다.
+
+      ![이진트리_최악의경우](https://github.com/user-attachments/assets/73b4e185-6cc7-4557-b912-21c8b4f3adf8)
+
+  - 해결방안
+    - 트리의 균형이 너무 깨진 경우, 동적으로 균형을 다시 맞춘다.
+
+      ![이진 탐색 트리 개선](https://github.com/user-attachments/assets/357b3ce7-76bd-47ca-9ac3-61b8b78d83a3)
+
+- 이진 탐색 트리 - 순회
+  - 데이터를 차례로 순회하려면 `중위 순회`라는 방법을 사용하면 된다.
+    - 왼쪽 서브트리를 방문한 다음,
+    - 현재 노드를 처리하고,
+    - 마지막으로 오른쪽 서브트리를 방문한다.
+
+### 자바가 제공하는 Set3 - 예제
+
+- `HashSet`, `LinkedHashSet`, `TreeSet` 예시
+  - 소스코드 (비공개 레포지토리) `JavaSetMain`: https://github.com/JohnKim0911/kyh-java-mid2/blob/master/src/collection/set/javaset/JavaSetMain.java
+    - `HashSet` : 입력한 순서를 보장하지 않는다.
+    - `LinkedHashSet` : 입력한 순서를 정확히 보장한다.
+    - `TreeSet` : 데이터 값을 기준으로 정렬한다.
+
+### 자바가 제공하는 Set4 - 최적화
+
+- 자바 `HashSet`과 최적화
+  - 자바의 `HashSet`은 우리가 직접 구현한 내용과 거의 같지만 다음과 같은 최적화를 추가로 진행한다.
+    - 데이터의 양이 배열 크기의 75%를 넘어가면 배열의 크기를 2배로 늘리고, 2배 늘어난 크기를 기준으로 모든 요소에 해시 인덱스를 다시 적용한다.
+      - 해시 인덱스를 다시 적용하는 시간이 걸리지만, 결과적으로 해시 충돌이 줄어든다.
+      - 이 과정을 재해싱(rehashing)이라 한다.
+    - 자바 `HashSet`의 기본 크기는 `16`이다.
+
+- 정리
+  - 실무에서는 `Set`이 필요한 경우, `HashSet`을 가장 많이 사용한다. 
+    - 입력 순서 유지, 값 정렬의 필요에 따라서 `LinkedHashSet` , `TreeSet`을 선택하면 된다.
+
+### 문제와 풀이1
+
+- 소스 코드 (비공개 레포지토리) : https://github.com/JohnKim0911/kyh-java-mid2/tree/master/src/collection/set/test
+  - 문제1 - 중복 제거: `UniqueNamesTest1` 참고. `HashSet` 사용함.
+  - 문제2 - 중복 제거와 입력 순서 유지: `UniqueNamesTest2` 참고. `LinkedHashSet` 사용함.
+  - 문제3 - 중복 제거와 데이터 순서 유지: `UniqueNamesTest3` 참고. `TreeSet` 사용함.
+
+### 문제와 풀이2
+
+- 소스 코드 (비공개 레포지토리) : https://github.com/JohnKim0911/kyh-java-mid2/tree/master/src/collection/set/test
+  - 문제4 - 합집합, 교집합, 차집합: `SetOperationsTest` 참고.
+    - `Set`의 `addAll()`, `retainAll()`, `removeAll()` 메서드 사용함.
+  - 문제5 - Equals, HashCode: `RectangleTest`, `Rectangle` 참고.
+    - `RectangleTest` 실행 결과를 참고해서 `Rectangle` 클래스 만들기
+    - `HashSet` 사용함.
+    - IDE 사용해서 `equals()`, `hashCode()`, `toString()` 구현
 
 ---
 
