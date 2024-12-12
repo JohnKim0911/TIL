@@ -854,16 +854,16 @@ public class MyIntegerNullMain1 {
     - 기본적으로 앞글자가 대문자로 바뀐다.
         - `Integer`와 `Character`는 예외
 
-      | 기본형     | 래퍼클래스     | 참고      |
-          |---------|-----------|---------|
-      | byte    | Byte      |         |
-      | short   | Short     |         |
-      | int     | Integer   | * 글자 다름 |
-      | long    | Long      |         |
-      | float   | Float     |         |
-      | double  | Double    |         |
-      | char    | Character | * 글자 다름 |
-      | boolean | Boolean   |         |
+| 기본형     | 래퍼클래스     | 참고      |
+|---------|-----------|---------|
+| byte    | Byte      |         |
+| short   | Short     |         |
+| int     | Integer   | * 글자 다름 |
+| long    | Long      |         |
+| float   | Float     |         |
+| double  | Double    |         |
+| char    | Character | * 글자 다름 |
+| boolean | Boolean   |         |
 
 - 래퍼 클래스 특징
     - 불변이다.
