@@ -12,7 +12,7 @@
 | 8  | [컬렉션 프레임워크 - HashSet](#8-컬렉션-프레임워크---hashset)                    | 2024-12-10      |
 | 9  | [컬렉션 프레임워크 - Set](#9-컬렉션-프레임워크---set)                            | 2024-12-11      |
 | 10 | [컬렉션 프레임워크 - Map, Stack, Queue](#10-컬렉션-프레임워크---map-stack-queue) | 2024-12-11      |
-| 11 | [컬렉션 프레임워크 - 순회, 정렬, 전체 정리](#11-컬렉션-프레임워크---순회-정렬-전체-정리)         |                 |
+| 11 | [컬렉션 프레임워크 - 순회, 정렬, 전체 정리](#11-컬렉션-프레임워크---순회-정렬-전체-정리)         | 2024-12-12 |
 | 12 | [다음으로](#12-다음으로)                                                 |                 |
 
 ---
@@ -1786,6 +1786,292 @@ class Node {
 ---
 
 ## 11. 컬렉션 프레임워크 - 순회, 정렬, 전체 정리
+
+### 순회1 - 직접 구현하는 Iterable, Iterator
+
+- 순회
+  - 자료 구조에 들어있는 데이터를 차례대로 접근해서 처리하는 것.
+
+- `Iterable`, `Iterator` 인터페이스
+  - 자료 구조의 구현과 관계 없이 모든 자료 구조를 동일한 방법으로 순회할 수 있도록, 자바가 이 인터페이스들을 제공한다.
+  - 단어 뜻
+    - `Iterable`: "반복 가능한"
+    - `Iterator`: "반복자"
+  
+```java
+public interface Iterable<T> {
+    Iterator<T> iterator(); //단순히 Iterator 반복자를 반환한다.
+}
+```
+
+```java
+public interface Iterator<E> {
+    boolean hasNext(); //다음 요소가 있는지 확인한다. 다음 요소가 없으면 false를 반환한다.
+    E next(); //다음 요소를 반환한다. 내부에 있는 위치를 다음으로 이동한다.
+}
+```
+
+- `Iterable`, `Iterator`를 사용하는 자료 구조를 만들어보자. 둘 다 인터페이스여서 구현체가 필요하다.
+  - 소스코드 (비공개 레포지토리): https://github.com/JohnKim0911/kyh-java-mid2/tree/master/src/collection/iterable
+    - `Iterator` 구현체 : `MyArrayIterator` 참고
+      - `Iterator`는 단독으로 사용할 수 없다. `Iterator`를 통해 순회의 대상이 되는 자료 구조를 만들어보자.
+    - `Iterable` 구현체 : `MyArray` 참고
+    - 실행: `MyArrayMain` 참고
+
+- 클래스 구조도
+
+    ![클래스 구조도](https://github.com/user-attachments/assets/dd21f05e-465d-4c87-aa4b-76e3eb175707)
+
+    - `MyArray`가 `Iterable` 인터페이스를 구현하면, `iterator()` 메서드를 구현해야 한다.
+    - `MyArray`의 `iterator()` 메서드는 `Iterator`를 구현한 `MyArrayIterator`를 생성해서 반환한다.
+
+- 런타임 메모리 구조도
+
+  ![런타임 메모리 구조도](https://github.com/user-attachments/assets/8ce681dd-8fd0-466c-a8ed-d9f7db9e750d)
+
+    - `MyArrayIterator`는 `MyArray`의 배열(`numbers[]`)의 참조값을 가지고 있고,
+    - `next()`가 호출 될때마다 `currentIndex`를 1 증가시키고 `numbers[currentIndex]`의 값을 반환한다.
+
+### 순회2 - 향상된 for문
+
+- 자바는 `Iterable` 인터페이스를 구현한 객체에 대해서 `향상된 for문`(Enhanced For Loop)을 사용할 수 있게 해준다.
+  - 위 `MyArrayMain` 참고
+
+### 순회3 - 자바가 제공하는 Iterable, Iterator
+
+![컬렉션 프레임워크](https://github.com/user-attachments/assets/4f146467-dca9-4ee3-8971-55766590850d)
+
+- 컬렉션 프레임워크의 모든 자료 구조는 `Iterable`과 `Iterator`를 사용해서 편리하고 일관된 방법으로 순회할 수 있다.
+  - 이미 각각의 구현체에 맞는 `Iterator`도 다 구현해두었다.
+  - 소스코드 (비공개 레포지토리) `JavaIterableMain`: https://github.com/JohnKim0911/kyh-java-mid2/blob/master/src/collection/iterable/JavaIterableMain.java
+  
+- `Map`의 경우, `Key` 뿐만 아니라 `Value` 까지 있기 때문에 바로 순회를 할 수는 없다.
+  - 대신에 `Key`나 `Value`를 정해서 순회할 수 있는데,
+  - `keySet()`, `values()`를 호출하면 `Set`, `Collection`을 반환하기 때문에 `Key`나 `Value`를 정해서 순회할 수 있다.
+  - 물론 `Entry`를 `Set` 구조로 반환하는 `entrySet()`도 순회가 가능하다.
+
+- 참고: `Iterator (반복자) 디자인 패턴`
+  - 객체 지향 프로그래밍에서 컬렉션의 요소들을 순회할 때 사용되는 디자인 패턴이다.
+  - 컬렉션의 내부 표현 방식을 노출시키지 않으면서도 그 안의 각 요소에 순차적으로 접근할 수 있게 해준다. 
+  - 컬렉션의 구현과는 독립적으로 요소들을 탐색할 수 있는 방법을 제공하며, 이로 인해 코드의 복잡성을 줄이고 재사용성을 높일 수 있다.
+
+### 정렬1 - Comparable, Comparator
+
+- 배열에 들어있는 데이터를 순서대로 정렬
+  - 소스코드 (비공개 레포지토리) `SortMain1`: https://github.com/JohnKim0911/kyh-java-mid2/blob/master/src/collection/compare/SortMain1.java
+    - `Arrays.sort(array);`: [3, 2, 1] --> [1, 2, 3]
+
+- 정렬 알고리즘
+    - 가장 왼쪽부터 오른쪽으로 숫자를 비교한다.
+    - 왼쪽 숫자가 오른쪽 숫자보다 작으면 위치를 교환한다.
+
+    ![정렬 알고리즘](https://github.com/user-attachments/assets/2f3c52db-501d-4216-a0dc-6e6104170ec3)
+
+    - 지금 설명한 정렬은 가장 단순한 정렬의 예시이다. 
+    - 실제로는 다양한 정렬 알고리즘이 존재한다.
+    - 자바는...
+      - 초기에는 퀵소트를 사용했다가,
+      - 지금은,
+        - 데이터가 작을 때(32개 이하)는 듀얼 피벗 퀵소트(Dual-Pivot QuickSort)를 사용하고,
+        - 데이터가 많을 때는 팀소트(TimSort)를 사용한다.
+        - 이런 알고리즘은 평균 `O(n log n)`의 성능 을 제공한다.
+    - 정렬 알고리즘에 대한 이론적인 내용은 여기서 다루지 않는다.
+
+- 비교자 - `Comparator`
+
+  - 비교자(`Comparator`)를 사용하면 정렬의 기준을 자유롭게 변경할 수 있다.
+    -  값을 비교할 때 비교 기준을 직접 제공할 수 있다.
+        ```java
+        public interface Comparator<T> {
+            int compare(T o1, T o2);
+        }
+        ```
+    - 두 인수를 비교해서 결과 값을 반환하면 된다.
+      - 첫 번째 인수가 더 작으면 음수, 예(`-1`)
+      - 두 값이 같으면 `0`
+      - 첫 번째 인수가 더 크면 양수, 예(`1`)
+
+  - 소스코드 (비공개 레포지토리) `SortMain2`: https://github.com/JohnKim0911/kyh-java-mid2/blob/master/src/collection/compare/SortMain2.java
+    - `Arrays.sort()`를 사용할 때 비교자(`Comparator`)를 넘겨주면 된다.
+      ```java
+      Arrays.sort(array, new AscComparator())
+      Arrays.sort(array, new DescComparator())
+      Arrays.sort(array, new AscComparator().reversed()); //DescComparator와 같다.
+      ```
+
+### 정렬2 - Comparable, Comparator
+
+- `MyUser`와 같이 직접 만든 객체를 정렬하려면 어떻게 해야 할까?
+  - 어떤 객체가 더 큰지 알려줄 방법이 있어야 한다.
+  - 이때는 `Comparable` 인터페이스를 구현하면 된다.
+
+    ```java
+    public interface Comparable<T> {
+        public int compareTo(T o);
+    }
+    ```
+
+  - 소스 코드 (비공개 레포지토리): https://github.com/JohnKim0911/kyh-java-mid2/tree/master/src/collection/compare
+    - `MyUser`, `SortMain3` 참고
+      - `MyUser`
+        - `MyUser`는 `Comparable` 인터페이스를 구현한다. (`compareTo()` 메서드 구현 - `age`를 기준으로 비교)
+        - `Comparable`을 통해 구현한 순서를 자연 순서(Natural Ordering)라 한다.
+      - `SortMain3`
+        - `Arrays.sort(array)`: 기본 정렬을 시도한다.
+          - 객체가 스스로 가지고 있는 `Comparable` 인터페이스를 사용해서 비교한다.
+
+- 만약 객체가 가지고 있는 `Comparable` 기본 정렬이 아니라, 다른 정렬을 사용하고 싶다면?
+    - 소스 코드 (비공개 레포지토리): https://github.com/JohnKim0911/kyh-java-mid2/tree/master/src/collection/compare
+      - `IdComparator`, `SortMain3` 참고
+        - `IdComparator`: `Comparator` 인터페이스를 구현함. `id`를 기준으로 비교하게함.
+
+- 주의!
+  - `Comparable`도 구현하지 않고, `Comparator`도 제공하지 않으면, 런타임 오류가 발생한다.
+    - `java.lang.ClassCastException`
+
+- 정리
+  - 객체의 기본 정렬 방법은 객체에 `Comparable`를 구현해서 정의한다.
+  - 다른 정렬 방법을 사용해야 하는 경우 비교자(`Comparator`)를 별도로 구현해서 정렬 메서드에 전달하면 된다.
+    - `Comparator`가 항상 우선권을 가짐
+  - 자바가 제공하는 `Integer`, `String` 같은 기본 객체들은 대부분 `Comparable`을 구현해 두었다.
+
+### 정렬3 - Comparable, Comparator
+
+- 정렬은 `배열` 뿐만 아니라 순서가 있는 `List` 같은 자료 구조에도 사용할 수 있다.
+
+- `List`와 정렬
+  - 소스 코드 (비공개 레포지토리) `SortMain4`: https://github.com/JohnKim0911/kyh-java-mid2/blob/master/src/collection/compare/SortMain4.java
+    - 기본정렬: `list.sort(null);`
+      - `Collections.sort(list);`도 같은 기능을 하지만, `list.sort()`를 권장한다.
+    - 특별한 정렬: `list.sort(new IdComparator());`
+
+- `Tree` 구조와 정렬
+  - `TreeSet`과 같은 이진 탐색 트리 구조는 데이터를 보관할 때, 데이터를 정렬하면서 보관한다.
+    - 따라서 정렬 기준을 제공하는 것이 필수다.
+  - 이진 탐색 트리는 데이터를 저장할 때 왼쪽 노드에 저장해야 할 지, 오른쪽 노드에 저장해야 할 지 비교가 필요하다.
+    - 따라서 `TreeSet`, `TreeMap`은 `Comparable` 또는 `Comparator`가 필수이다.
+  - 소스 코드 (비공개 레포지토리) `SortMain5`: https://github.com/JohnKim0911/kyh-java-mid2/blob/master/src/collection/compare/SortMain5.java
+    - `TreeSet`을 생성할 때,
+      - 별도의 비교자를 제공하지 않으면, 객체가 구현한 `Comparable`을 사용한다.
+        - 예시) `new TreeSet<>()`
+      - 별도의 비교자를 제공하면, `Comparable` 대신 비교자(`Comparator`)를 사용해서 정렬한다.
+        - 예시) `new TreeSet<>(new IdComparator())`
+
+- 정리
+  - 자바의 정렬 알고리즘은 매우 복잡하고, 또 거의 완성형에 가깝다.
+  - 자바는 개발자가 복잡한 정렬 알고리즘은 신경 쓰지 않으면서 정렬의 기준만 간단히 변경할 수 있도록, 정렬의 기준을 `Comparable`, `Comparator` 인터페이스를 통해 추상화해 두었다.
+
+### 컬렉션 유틸
+
+- 컬렉션을 편리하게 다룰 수 있는 다양한 기능을 알아보자.
+  - 소스 코드 (비공개 레포지토리) `CollectionsSortMain`: 
+    - https://github.com/JohnKim0911/kyh-java-mid2/blob/master/src/collection/utils/CollectionsSortMain.java
+  - `Integer max = Collections.max(list);` : 최대값 반환
+  - `Integer min = Collections.min(list);` : 최소값 반환
+  - `Collections.shuffle(list);` : 랜덤하게 섞기
+  - `Collections.sort(list);` : 정렬기준으로 정렬
+  - `Collections.reverse(list);` : 정렬기준 반대로 정렬
+
+- 편리한 컬렉션 생성
+  - 소스 코드 (비공개 레포지토리) `OfMain`: 
+    - https://github.com/JohnKim0911/kyh-java-mid2/blob/master/src/collection/utils/OfMain.java
+  - `.of`를 컬렉션을 편리하게 생성할 수 있다.
+    - 예시)
+      - `List<Integer> list = List.of(1, 2, 3);`
+      - `Set<Integer> set = Set.of(1, 2, 3);`
+      - `Map<Integer, String> map = Map.of(1, "one", 2, "two");`
+    - 단, 불변 컬렉션이 생성된다.
+      - 불변 컬렉션은 변경할 수 없다. 변경하려고 하면 예외가 발생한다.
+
+- `불변 컬렉션`과 `가변 컬렉션` 전환
+  - 소스 코드 (비공개 레포지토리) `ImmutableMain`:
+    - https://github.com/JohnKim0911/kyh-java-mid2/blob/master/src/collection/utils/ImmutableMain.java
+  - 불변 리스트 -> 가변 리스트로 전환
+    - 예시) `ArrayList<Integer> mutableList = new ArrayList<>(list);`
+      - `list`가 가변.
+      - `mutableList`가 불변
+  - 가변 리스트 -> 불변 리스트로 전환
+    - 예시) `List<Integer> unmodifiableList = Collections.unmodifiableList(mutableList);`
+    - `Collections.unmodifiableList()`를 사용하면 된다.
+      - 다양한 `unmodifiableXxx()`가 존재한다.
+
+- 빈 리스트 생성
+  - 소스 코드 (비공개 레포지토리) `EmptyListMain`:
+    - https://github.com/JohnKim0911/kyh-java-mid2/blob/master/src/collection/utils/EmptyListMain.java
+  - 빈 가변 리스트
+    - 컬렉션의 구현체를 직접 생성하면 된다.
+      - 예시) `List<Integer> list1 = new ArrayList<>();`
+  - 빈 불변 리스트
+    - `List.of()`를 사용하면 된다.
+      - 예시) `List<Object> list4 = List.of();`
+
+- `Arrays.asList()` 
+  - 일반적으로 `Arrays.asList()` 대신 `List.of()`를 사용하는 것을 권장한다.
+  - `Arrays.asList()`로 생성된 리스트는 
+    - 리스트의 길이는 변경할 수 없지만, 기존 위치에 있는 요소들을 다른 요소로 교체할 수 있다.
+    - 고정도 가변도 아닌 애매한 리스트이다.
+
+- 멀티스레드 동기화
+  - 소스 코드 (비공개 레포지토리) `SyncMain`:
+    - https://github.com/JohnKim0911/kyh-java-mid2/blob/master/src/collection/utils/SyncMain.java
+  - `Collections.synchronizedList`를 사용하면 일반 리스트를 멀티스레드 상황에서 동기화 문제가 발생하지 않는 안전한 리스트로 만들 수 있다.
+  - 지금은 이런 것이 있다 정도만 참고하고 넘어가자. 
+
+### 컬렉션 프레임워크 전체 정리
+
+- 자바 컬렉션 프레임워크
+  - 데이터 그룹을 저장하고 처리하기 위한 통합 아키텍처를 제공한다.
+  - 인터페이스, 구현, 알고리즘으로 구성되어 있으며, 다양한 타입의 컬렉션을 효율적으로 처리할 수 있게 해준다.
+
+![컬렉션 프레임워크](https://github.com/user-attachments/assets/4f146467-dca9-4ee3-8971-55766590850d)
+
+- `Collection` 인터페이스의 필요성
+  - 다양한 컬렉션 타입들이 공통적으로 따라야 하는 기본 규약을 정의한다.
+  - 개발자가 다양한 타입의 컬렉션을 다룰 때 일관된 방식으로 접근할 수 있게 해준다.
+  - `Collection` 인터페이스를 사용함으로써, 다양한 컬렉션 타입들을 같은 타입으로 다룰 수 있다. (다형성)
+  - 일관성, 재사용성, 확장성, 다형성으로 나눠서 볼 수 있으나, 해당 내용은 교재 p.33을 참고하자.
+
+- `Collection` 인터페이스의 주요 메서드
+  - `add(E e)` : 컬렉션에 요소를 추가한다.
+  - `remove(Object o)` : 주어진 객체를 컬렉션에서 제거한다.
+  - `size()` : 컬렉션에 포함된 요소의 수를 반환한다.
+  - `isEmpty()` : 컬렉션이 비어 있는지 확인한다.
+  - `contains(Object o)` : 컬렉션이 특정 요소를 포함하고 있는지 확인한다.
+  - `iterator()` : 컬렉션의 요소에 접근하기 위한 반복자를 반환한다.
+  - `clear()` : 컬렉션의 모든 요소를 제거한다.
+
+- 인터페이스, 구현, 알고리즘, 선택 가이드 정리
+  - 교재 p.33~34 참고
+
+- 실무 선택 가이드
+  - `List`와 `Map`을 가장 많이 사용한다.
+    - `List`
+      - 순서가 중요하고, 중복이 허용되는 경우 
+        - 대부분 `ArrayList`를 사용한다.
+        - 앞 부분에 추가/삭제가 많은 경우, `LinkedList`
+          - (데이터가 엄청 많을때만... 몇 천건 이상)
+    - `Set`
+      - 중복을 허용하지 않고 순서가 중요하지 않은 경우 
+        - 대부분 `HashSet`을 사용한다.
+        - 입력 순서를 유지해야 한다면, `LinkedHashSet`
+        - 데이터의 값이 정렬되길 원한다면, `TreeSet`
+    - `Map`
+      - 요소를 키-값 쌍으로 저장하려는 경우
+        - 대부분 `HashMap`을 사용한다.
+        - 입력 순서를 유지해야 한다면, `LinkedHashMap`
+        - 데이터의 값이 정렬되길 원한다면, `TreeMap`
+    - `Queue`, `Deque`
+      - 요소를 처리하기 전에 보관해야 하는 경우
+        - 대부분 `ArrayDeque`를 사용한다. (스택, 큐 구조 모두)
+        - 우선순위에 따라 요소를 처리해야 한다면 `PriorityQueue`
+          - 자주 사용하지 않진 않는다.
+
+### 문제와 풀이
+
+- 카드 게임 만들기 ⭐⭐
+  - 소스 코드 (비공개 레포지토리): 
+    - 내 답안: https://github.com/JohnKim0911/kyh-java-mid2/tree/master/src/collection/compare/test
+    - 정답: https://github.com/JohnKim0911/kyh-java-mid2/tree/master/src/collection/compare/testAnswer
 
 ---
 
