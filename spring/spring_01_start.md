@@ -558,16 +558,20 @@
   - 웹 등록 화면에서 데이터를 전달 받을 `폼 객체`
     - 소스 코드 (비공개 레포지토리): `MemberForm`
       - https://github.com/JohnKim0911/kyh_hello-spring/blob/master/src/main/java/hello/hello_spring/controller/MemberForm.java
-        - `createMemberForm.html`에 있는 `<input>`의 `name`과 매칭이 되면서 데이터가 들어온다.
-          - 이때, `MemberForm`의 `setName()` 메서드를 사용
+
   - `회원 컨트롤러`에서 회원을 실제 등록하는 기능
     - 소스 코드 (비공개 레포지토리): `MemberController`
       - https://github.com/JohnKim0911/kyh_hello-spring/blob/master/src/main/java/hello/hello_spring/controller/MemberController.java
         - `@PostMapping("/members/new")` 부분
           - 새로운 `member` 인스턴스를 생성하고, 
-          - `MemberForm`을 사용하여 `html form`에 입력된 `name`값을 받아와서 생성된 인스턴스에 넣어준다.
-          - `memberService`의 `join()` 기능을 통해서 회원등록한다.
+          - `MemberForm`을 사용하여 `html form`에 입력된 `name`값을 받아와서, 생성된 `member` 인스턴스에 넣어준다.
+            - `createMemberForm.html`에 있는 `<input>`의 `name`과 `MemberForm`의 필드명이 매칭이 되고, 데이터가 `MemberForm`에 보관되어 전달된다.
+              - 이때, `MemberForm`의 `setName()` 메서드가 사용된다.
+          - `memberService.join(member);`을 통해서 회원등록한다.
           - 완료 후, 홈 페이지로 리다이렉트 한다. `return "redirect:/";`
+        - 참고
+          - `@GetMapping()`: 단순 조회시 (get 방식)
+          - `@PostMapping()`: HTML form에 post mothod로 데이터 보낼시 사용 (post 방식)
   - 결과
     - 회원 가입 폼에서 이름에 `spring1`을 입력하고 등록을 누르면, 회원가입이 내부적으로 완료되고, 홈페이지로 리다이렉트 된다.
     - 다시 한번 회원 가입 폼으로 이동해서 `spring2`을 등록한다.
