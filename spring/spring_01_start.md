@@ -8,7 +8,7 @@
 | 1 | [강의 소개](#1-강의-소개)                             | 5분        | 3     | 2024.12.13 |
 | 2 | [프로젝트 환경설정](#2-프로젝트-환경설정)                     | 47분       | 10    | 2024.12.13 |
 | 3 | [스프링 웹 개발 기초](#3-스프링-웹-개발-기초)                 | 33분       | 5     | 2024.12.14 |
-| 4 | [회원 관리 예제 - 백엔드 개발](#4-회원-관리-예제---백엔드-개발)     | 55분       |       |            |
+| 4 | [회원 관리 예제 - 백엔드 개발](#4-회원-관리-예제---백엔드-개발)     | 55분       | 9     | 2024.12.15 |
 | 5 | [스프링 빈과 의존관계](#5-스프링-빈과-의존관계)                 | 27분       |       |            |
 | 6 | [회원 관리 예제 - 웹 MVC 개발](#6-회원-관리-예제---웹-mvc-개발) | 17분       |       |            |
 | 7 | [스프링 DB 접근 기술](#7-스프링-db-접근-기술)               | 1시간 33분   |       |            |
@@ -321,6 +321,111 @@
       - 클라이언트의 `HTTP Accept 해더`와 서버의 `컨트롤러 반환 타입 정보` 둘을 조합해서 `HttpMessageConverter`가 선택된다.
 
 ## 4. 회원 관리 예제 - 백엔드 개발
+
+### 비즈니스 요구사항 정리
+
+- 요구사항
+  - 데이터: 회원ID, 이름
+  - 기능: 회원 등록, 조회
+
+- 일반적인 웹 애플리케이션 계층 구조
+
+  ![웹 앱 구조](https://github.com/user-attachments/assets/9f3efd26-4846-4a56-8234-9a16159e68cb)
+
+  - `컨트롤러`: 웹 MVC의 컨트롤러 역할
+  - `서비스`: 핵심 비즈니스 로직 구현
+  - `리포지토리`: 데이터베이스에 접근
+    - 도메인 객체를 DB에 저장하고 관리
+  - `도메인`: 비즈니스 도메인 객체
+    - 예) 회원, 주문, 쿠폰 등등 주로 데이터베이스에 저장하고 관리됨
+
+- 클래스 의존관계
+
+  ![클래스 의존관계](https://github.com/user-attachments/assets/fd598cb3-edba-4d94-8995-e690093d9061)
+
+  - 아직 데이터 저장소가 선정되지 않아서, 우선 인터페이스로 구현 클래스를 변경할 수 있도록 설계
+
+### 회원 도메인과 리포지토리 만들기
+
+- 회원 객체 `Member`
+  - 소스코드 (비공개 레포지토리):
+    - https://github.com/JohnKim0911/kyh_hello-spring/blob/master/src/main/java/hello/hello_spring/domain/Member.java
+
+- 회원 리포지토리
+  - 소스코드 (비공개 레포지토리):
+    - https://github.com/JohnKim0911/kyh_hello-spring/tree/master/src/main/java/hello/hello_spring/repository
+      - 인터페이스: `MemberRepository`
+      - 메모리 구현체: `MemoryMemberRepository`
+        - (동시성 문제가 고려되어 있지 않음, 실무에서는 `ConcurrentHashMap`, `AtomicLong` 사용 고려)
+      - 특이사항
+        - `Optional` 처음 사용해봄.
+          - `Optional`로 감싸면, 값이 `null` 일 경우 `optional`을 반환하게됨.
+        - 람다 처음 사용해봄.
+
+### 회원 리포지토리 테스트 케이스 작성
+
+- 기존 테스트 방법의 단점
+  - 기존 방법:
+    - 자바의 `main` 메서드를 통해서 실행하거나,
+    - 웹 애플리케이션의 `컨트롤러`를 통해서 해당 기능을 실행한다.
+  - 단점
+    - 이러한 방법은 준비하고 실행하는데 오래 걸리고,
+    - 반복 실행하기 어렵고,
+    - 여러 테스트를 한번에 실행하기 어렵다.
+  - 해결방법:
+    - 자바는 `JUnit`이라는 프레임워크로 테스트를 실행해서 이러한 문제를 해결한다.
+
+- 회원 리포지토리 메모리 구현체 테스트
+  - `src/test/java` 하위 폴더에 생성한다.
+  - 소스 코드 (비공개 레포지토리): `MemoryMemberRepositoryTest`
+    - https://github.com/JohnKim0911/kyh_hello-spring/blob/master/src/test/java/hello/hello_spring/repository/MemoryMemberRepositoryTest.java
+      - 특이사항 
+        - 테스트는 순서와 관계없이, 서로 의존관계 없이 설계가 되어야 한다.
+          - 한번에 여러 테스트를 실행하면 각 테스트의 실행 순서가 랜덤이다.
+        - `@AfterEach`
+          - 각 테스트가 종료 될 때 마다 이 기능을 실행한다.
+          - 한번에 여러 테스트를 실행하면 메모리 DB에 직전 테스트의 결과가 남을 수 있는데, 이전 데이터를 삭제 할 때 사용한다.
+        - `get()`으로 `Optional`에서 값을 꺼낼 수 있다. (권장하는 방법은 아니다.)
+        - `assertThat(member).isEqualTo(result);`
+          - `import static org.assertj.core.api.Assertions.*;`
+            - `assertj`를 사용한다.
+            - `static import` 하면 편하게 사용 가능하다.
+        - `TDD (Test-driven development, 테스트 주도 개발)`
+          - 테스트를 먼저 짜고, 나중에 코드를 짜서 미리 작성한 테스트 코드로 제대로 작동하는지 확인하는 방식.
+          - 여러명이 협업하거나, 코드가 많아지면, 테스트 코드 없이 개발하기 어렵다. 기회가 되면 제대로 공부해보자.
+
+### 회원 서비스 개발
+
+- 소스 코드 (비공개 레포지토리): `MemberService`
+  - https://github.com/JohnKim0911/kyh_hello-spring/blob/master/src/main/java/hello/hello_spring/service/MemberService.java
+    - `회원가입`, `전체 회원 조회`, `회원 아이디로 조회` 구현
+
+### 회원 서비스 테스트
+
+- `MemberService`의 `memberRepository`를 직접 생성해서 보관하지 않고, 외부에서 넣어주도록 수정함.
+  - `DI` (`Dependency Injection`), `의존성 주입`이라 함.
+  - 위 `MemberService` 참고.
+  - 자세한 설명은 `MemberServiceTest`내 주석 참고.
+
+- 회원 서비스 테스트
+  - 소스 코드 (비공개 레포지토리): `MemberServiceTest`
+    - https://github.com/JohnKim0911/kyh_hello-spring/blob/master/src/test/java/hello/hello_spring/service/MemberServiceTest.java
+      - 특이사항
+        - 테스트 파일 단축키로 생성
+          - 해당 클래스에서 `ctrl` + `shift` + `t` 누르면 테스트 파일 자동 생성
+          
+            ![test 자동생성](https://github.com/user-attachments/assets/b1b95fbc-e553-4e69-9497-39f44b15671e)
+            
+            - 생성된 테스트 파일
+
+              ![test 자동생성 결과](https://github.com/user-attachments/assets/15ff75fb-6d98-49f3-9244-b27e9c3b2435)
+        
+        - `@BeforeEach` 사용
+          - 각 테스트 실행 전에 호출된다.
+          - 테스트가 서로 영향이 없도록 항상 새로운 객체를 생성하고, 의존관계도 새로 맺어준다.
+        - 테스트 메서드명은 `한글`로 작성해도 된다.
+        - `given` - `when` - `then` 문법 사용하면 테스트 코드 작성이 명확해진다.
+        - 테스트는 잘되는 것 뿐만 아니라, 잘 안되는 상황도 확인 해봐야함. (예상한 에러가 잘 뜨는지...)
 
 ## 5. 스프링 빈과 의존관계
 
