@@ -312,6 +312,10 @@
   - `viewResolver` 대신에 `HttpMessageConverter`가 동작
     - 기본 문자처리: `StringHttpMessageConverter`
     - 기본 객체처리: `MappingJackson2HttpMessageConverter`
+      - 객체를 `JSON`으로 바꿔주는 라이브러리에 `Jackson`과 `GSON` 등이 있다.
+        - `GSON`은 `Google`에서 만든 라이브러리.
+        - `Jackson`은 스프링이 기본으로 탑재하고 있는 라이브러리이다.
+          - `Jackson` 뒤에 붙은 `2`는 버전을 나타냄.
     - 참고:
       - byte 처리 등등 기타 여러 `HttpMessageConverter`가 기본으로 등록되어 있음
       - 클라이언트의 `HTTP Accept 해더`와 서버의 `컨트롤러 반환 타입 정보` 둘을 조합해서 `HttpMessageConverter`가 선택된다.
