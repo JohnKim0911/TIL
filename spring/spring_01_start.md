@@ -10,7 +10,7 @@
 | 3 | [스프링 웹 개발 기초](#3-스프링-웹-개발-기초)                 | 33분       | 5         | 2024.12.14 |
 | 4 | [회원 관리 예제 - 백엔드 개발](#4-회원-관리-예제---백엔드-개발)     | 55분       | 9         | 2024.12.15 |
 | 5 | [스프링 빈과 의존관계](#5-스프링-빈과-의존관계)                 | 27분       | 5         | 2024.12.15 |
-| 6 | [회원 관리 예제 - 웹 MVC 개발](#6-회원-관리-예제---웹-mvc-개발) | 17분       |           |            |
+| 6 | [회원 관리 예제 - 웹 MVC 개발](#6-회원-관리-예제---웹-mvc-개발) | 17분       | 5         | 2024.12.15 |
 | 7 | [스프링 DB 접근 기술](#7-스프링-db-접근-기술)               | 1시간 33분   |           |            |
 | 8 | [AOP](#8-aop)                                 | 22분       |           |            |
 | 9 | [다음으로](#9-다음으로)                               | 18분       |           |            |
@@ -23,7 +23,7 @@
 - 아래 내용은...
     - 강의 내용을 개인적으로 복습하고자 정리하였습니다.
         - 제 기억을 살리기 위한 용도이다보니, 아래 글만으로는 이해가 어려울 수 있습니다.
-            - 필요하시다면, 위 강의를 직접 수강하시는 것을 추천드립니다.
+            - 필요하시다면, 위 강의를 직접 수강하시는 것을 추천드립니다. (무료)
         - 방식:
             - 강의를 들으면서 코드를 직접 치고,
             - 강의가 끝나면 다시 교재를 보면서 중요 내용 위주로 정리하였습니다.
@@ -513,6 +513,92 @@
     - 스프링 빈으로 등록하지 않고 내가 직접 생성한 객체에서는 동작하지 않는다.
 
 ## 6. 회원 관리 예제 - 웹 MVC 개발
+
+### 회원 웹 기능 - 홈 화면 추가
+
+- `홈 컨트롤러` 추가
+  - 소스 코드 (비공개 레포지토리): `HomeController`
+    - https://github.com/JohnKim0911/kyh_hello-spring/blob/master/src/main/java/hello/hello_spring/controller/HomeController.java
+      - `@GetMapping("/")`
+
+- 회원 관리용 `홈 HTML`
+  - 소스 코드 (비공개 레포지토리): `home.html`
+    - https://github.com/JohnKim0911/kyh_hello-spring/blob/master/src/main/resources/templates/home.html
+
+- 실행 결과
+
+  ![home](https://github.com/user-attachments/assets/df64e46d-7d99-4283-a9f5-17204b0c04c8)
+
+- 참고
+  - `컨트롤러`가 `정적 파일`보다 우선순위가 높다.
+
+### 회원 웹 기능 - 등록
+
+- 회원 등록 폼 개발
+  - `회원` 등록 폼 `컨트롤러`
+    - 소스 코드 (비공개 레포지토리): `MemberController`
+      - https://github.com/JohnKim0911/kyh_hello-spring/blob/master/src/main/java/hello/hello_spring/controller/MemberController.java
+        - `@GetMapping("/members/new")` 부분
+          - `return "members/createMemberForm";` // 아래 회원 등록 폼 `HTML`을 화면에 띄운다.
+  - 회원 등록 폼 `HTML`
+    - 소스 코드 (비공개 레포지토리): `resources/templates/members/createMemberForm.html`
+      - https://github.com/JohnKim0911/kyh_hello-spring/blob/master/src/main/resources/templates/members/createMemberForm.html
+        - `<form action="/members/new" method="post">` // post 방식
+          - `<input type="text" id="name" name="name" placeholder="이름을 입력하세요">` // input의 name을 name으로 지정
+  - 결과
+    - 홈에서 회원 가입 클릭
+    
+      ![home_signup](https://github.com/user-attachments/assets/c115396f-20bd-42fe-8681-379b5609bb91)
+
+    - 회원 가입 폼으로 이동.
+    
+      ![form](https://github.com/user-attachments/assets/b7bffd75-a7e7-4104-8eed-33be703237e4)
+
+- 회원 등록 컨트롤러
+  - 웹 등록 화면에서 데이터를 전달 받을 `폼 객체`
+    - 소스 코드 (비공개 레포지토리): `MemberForm`
+      - https://github.com/JohnKim0911/kyh_hello-spring/blob/master/src/main/java/hello/hello_spring/controller/MemberForm.java
+        - `createMemberForm.html`에 있는 `<input>`의 `name`과 매칭이 되면서 데이터가 들어온다.
+          - 이때, `MemberForm`의 `setName()` 메서드를 사용
+  - `회원 컨트롤러`에서 회원을 실제 등록하는 기능
+    - 소스 코드 (비공개 레포지토리): `MemberController`
+      - https://github.com/JohnKim0911/kyh_hello-spring/blob/master/src/main/java/hello/hello_spring/controller/MemberController.java
+        - `@PostMapping("/members/new")` 부분
+          - 새로운 `member` 인스턴스를 생성하고, 
+          - `MemberForm`을 사용하여 `html form`에 입력된 `name`값을 받아와서 생성된 인스턴스에 넣어준다.
+          - `memberService`의 `join()` 기능을 통해서 회원등록한다.
+          - 완료 후, 홈 페이지로 리다이렉트 한다. `return "redirect:/";`
+  - 결과
+    - 회원 가입 폼에서 이름에 `spring1`을 입력하고 등록을 누르면, 회원가입이 내부적으로 완료되고, 홈페이지로 리다이렉트 된다.
+    - 다시 한번 회원 가입 폼으로 이동해서 `spring2`을 등록한다.
+
+### 회원 웹 기능 - 조회
+
+- `회원 컨트롤러`에서 조회 기능
+  - 소스 코드 (비공개 레포지토리): `MemberController`
+    - https://github.com/JohnKim0911/kyh_hello-spring/blob/master/src/main/java/hello/hello_spring/controller/MemberController.java
+      - `@GetMapping("/members")` 부분
+        - `memberService.findMember();`를 통해 `List` 형태로 `members`를 받아온다.
+        - `model`을 통해 화면에 값을 전달한다. `return "members/memberList";` // 바로 아래 `HTML`
+
+- 회원 리스트 `HTML`
+  - 소스 코드 (비공개 레포지토리): `resources/templates/members/memberList.html`
+    - https://github.com/JohnKim0911/kyh_hello-spring/blob/master/src/main/resources/templates/members/memberList.html
+      - 전달받은 `members` 리스트를 `Thymeleaf` 템플릿 엔진을 통해 반복문을 돌면서 렌더링한다.
+        - `<tr th:each="member : ${members}">`
+          - `<td th:text="${member.id}"></td>` //Member의 getId()을 사용한다.
+          - `<td th:text="${member.name}"></td>` //Member의 getName()을  사용한다.
+        - `</tr>`
+
+- 결과
+  - 홈에서 회원 목록을 클릭한다.
+  
+    ![home_list](https://github.com/user-attachments/assets/8b5c52ef-f57b-4bb2-99d0-a64a46115318)
+
+  - 회원 목록 페이지로 이동된다.
+    - 위에서 추가했던 `spring1`, `spring2`가 화면에 표시된다.
+
+      ![list](https://github.com/user-attachments/assets/5bdd558e-ff4e-4190-a821-a3aa5201cbd4)
 
 ## 7. 스프링 DB 접근 기술
 
