@@ -3,23 +3,22 @@
 - 김영한의 스프링 완전 정복 로드맵
   - 1편) 스프링 입문 - 코드로 배우는 스프링 부트, 웹 MVC, DB 접근 기술
 
-|   | 제목                                            | 강의 분량     | 교재 분량 (쪽) | 복습일        |
-|---|-----------------------------------------------|-----------|-----------|------------|
-| 1 | [강의 소개](#1-강의-소개)                             | 5분        | 3         | 2024.12.13 |
-| 2 | [프로젝트 환경설정](#2-프로젝트-환경설정)                     | 47분       | 10        | 2024.12.13 |
-| 3 | [스프링 웹 개발 기초](#3-스프링-웹-개발-기초)                 | 33분       |           |            |
-| 4 | [회원 관리 예제 - 백엔드 개발](#4-회원-관리-예제---백엔드-개발)     | 55분       |           |            |
-| 5 | [스프링 빈과 의존관계](#5-스프링-빈과-의존관계)                 | 27분       |           |            |
-| 6 | [회원 관리 예제 - 웹 MVC 개발](#6-회원-관리-예제---웹-mvc-개발) | 17분       |           |            |
-| 7 | [스프링 DB 접근 기술](#7-스프링-db-접근-기술)               | 1시간 33분   |           |            |
-| 8 | [AOP](#8-aop)                                 | 22분       |           |            |
-| 9 | [다음으로](#9-다음으로)                               | 18분       |           |            |
-|   |                                               | 총 5시간 21분 |           |            |
+|   | 제목                                            | 강의 분량     | 교재 분량 | 복습일        |
+|---|-----------------------------------------------|-----------|-------|------------|
+| 1 | [강의 소개](#1-강의-소개)                             | 5분        | 3     | 2024.12.13 |
+| 2 | [프로젝트 환경설정](#2-프로젝트-환경설정)                     | 47분       | 10    | 2024.12.13 |
+| 3 | [스프링 웹 개발 기초](#3-스프링-웹-개발-기초)                 | 33분       | 5     | 2024.12.14 |
+| 4 | [회원 관리 예제 - 백엔드 개발](#4-회원-관리-예제---백엔드-개발)     | 55분       |       |            |
+| 5 | [스프링 빈과 의존관계](#5-스프링-빈과-의존관계)                 | 27분       |       |            |
+| 6 | [회원 관리 예제 - 웹 MVC 개발](#6-회원-관리-예제---웹-mvc-개발) | 17분       |       |            |
+| 7 | [스프링 DB 접근 기술](#7-스프링-db-접근-기술)               | 1시간 33분   |       |            |
+| 8 | [AOP](#8-aop)                                 | 22분       |       |            |
+| 9 | [다음으로](#9-다음으로)                               | 18분       |       |            |
+|   |                                               | 총 5시간 21분 |       |            |
 
 ## 1. 강의 소개
 
-- 강의 소개 페이지:
-  - https://inf.run/hivx6
+- 강의 소개 페이지: https://inf.run/hivx6
 
 - 아래 내용은...
     - 강의 내용을 개인적으로 복습하고자 정리하였습니다.
@@ -204,6 +203,118 @@
     ![ctrl c](https://github.com/user-attachments/assets/8db726cd-e7e7-4a3e-9708-69fd532f666d)
 
 ## 3. 스프링 웹 개발 기초
+
+- 웹 개발 3가지 방법
+  - 정적 컨텐츠
+  - MVC와 템플릿 엔진
+  - API
+
+### 정적 컨텐츠
+
+- 소스코드 (비공개 레포지토리): 
+  - `resources/static/hello-static.html`
+    - https://github.com/JohnKim0911/kyh_hello-spring/blob/master/src/main/resources/static/hello-static.html
+  - 컨트롤러 필요없음. `html` 파일만 생성
+
+- 실행
+  - `localhost` + `해당 파일명`으로 접근.
+  - `http://localhost:8080/hello-static.html`
+ 
+    ![static](https://github.com/user-attachments/assets/8dbadce8-182d-4a03-a7c4-4993e7ecc9b1)
+
+- 정적 컨텐츠 이미지
+
+  ![정적 컨텐츠 이미지](https://github.com/user-attachments/assets/0306ff43-f484-48c3-8055-3b7f5b423d66)
+
+### MVC와 템플릿 엔진
+
+- MVC: `Model`, `View`, `Controller`
+
+- 소스코드 (비공개 레포지토리):
+  - `HelloController`
+    - https://github.com/JohnKim0911/kyh_hello-spring/blob/master/src/main/java/hello/hello_spring/controller/HelloController.java
+      - `@GetMapping("hello-mvc")` 부분
+  - `resources/templates/hello-template.html`
+    - https://github.com/JohnKim0911/kyh_hello-spring/blob/master/src/main/resources/templates/hello-template.html
+
+- 실행
+  - `localhost` + `url mapping` + `?key=value`
+  - `http://localhost:8080/hello-mvc?name=spring`
+    - `hello-mvc`라고 맵핑된 `Controller`가 실행되고,
+    - `url`로 부터 `@RequestParam("name")`으로 `name`을 받고, `hello-template.html`에 넘겨준다.
+    - Thymeleaf 템플릿을 통해 `html`을 변환하여 내려준다. (받은 `name`값을 `html`에 넣음)
+
+- 결과
+
+  ![hello-mvc](https://github.com/user-attachments/assets/421cf137-8ff5-4f0f-80a9-18228f9e4eb8)
+
+  - 우클릭, 페이지 소스 보기:
+    - html 태그들이 포함되어있다.
+  
+    ![hello-mvc_src](https://github.com/user-attachments/assets/68e2c6d3-5507-422a-9a66-f6b4cecddc90)
+
+- MVC, 템플릿 엔진 이미지
+
+  ![mvc 템플릿 엔진](https://github.com/user-attachments/assets/98aad78b-dc1b-49fc-82f3-7df7572ac64a)
+
+### API
+
+- 2가지로 나눠서 보았다.
+  - `@ResponseBody` 문자 반환
+  - `@ResponseBody` 객체 반환
+
+- `@ResponseBody` 문자 반환
+  - `@ResponseBody`를 사용하면 `뷰 리졸버(viewResolver)`를 사용하지 않음.
+  - 대신에 HTTP의 BODY에 문자 내용을 직접 반환
+    - (HTML BODY TAG를 말하는 것이 아님)
+
+  - 소스코드 (비공개 레포지토리):
+    - `HelloController`
+      - https://github.com/JohnKim0911/kyh_hello-spring/blob/master/src/main/java/hello/hello_spring/controller/HelloController.java
+        - `@GetMapping("hello-string")` 부분
+        - `@ResponseBody`을 붙였다.
+        - 컨트롤러의 `return`값에 문자열을 그대로 반환한다. (html 파일명이 아님)
+
+  - 실행
+    - `http://localhost:8080/hello-string?name=spring`
+
+  - 결과
+    - 화면에 보이는 것은 mvc와 동일하나, 페이지 소스를 보면 다르다.
+  
+    ![hello-string](https://github.com/user-attachments/assets/bd89d9ef-57f7-4f3d-8b9e-f62fa3d50106)
+
+    - 우클릭, 페이지 소스 보기:
+      - html 태그 없이 문자열만 있다.
+      
+      ![hello-string_src](https://github.com/user-attachments/assets/172ab67a-6e2f-4e4e-9e4f-95774ddb8f27)
+
+- `@ResponseBody` 객체 반환
+
+  - 소스코드 (비공개 레포지토리):
+    - `HelloController`
+      - https://github.com/JohnKim0911/kyh_hello-spring/blob/master/src/main/java/hello/hello_spring/controller/HelloController.java
+        - `@GetMapping("hello-api")` 부분
+        - 내부 클래스를 만들고 객체를 생성하였다. 생성한 객체를 `return` 한다.
+  
+  - 실행
+    - `http://localhost:8080/hello-api?name=spring`
+  
+  - 결과
+    - JSON 형태로 결과를 반환한다.
+    
+    ![hello-api](https://github.com/user-attachments/assets/6b9e9640-1adc-43d5-8e7a-5874af745d40)
+
+- `@ResponseBody` 사용 원리
+
+  ![ResponseBody 사용 원리](https://github.com/user-attachments/assets/db4e37dc-b388-4ec7-be4e-c5c34fc609f6)
+
+  - HTTP의 BODY에 문자 내용을 직접 반환
+  - `viewResolver` 대신에 `HttpMessageConverter`가 동작
+    - 기본 문자처리: `StringHttpMessageConverter`
+    - 기본 객체처리: `MappingJackson2HttpMessageConverter`
+    - 참고:
+      - byte 처리 등등 기타 여러 `HttpMessageConverter`가 기본으로 등록되어 있음
+      - 클라이언트의 `HTTP Accept 해더`와 서버의 `컨트롤러 반환 타입 정보` 둘을 조합해서 `HttpMessageConverter`가 선택된다.
 
 ## 4. 회원 관리 예제 - 백엔드 개발
 
