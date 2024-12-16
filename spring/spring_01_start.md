@@ -11,7 +11,7 @@
 | 4 | [회원 관리 예제 - 백엔드 개발](#4-회원-관리-예제---백엔드-개발)     | 55분       | 9         | 2024.12.15 |
 | 5 | [스프링 빈과 의존관계](#5-스프링-빈과-의존관계)                 | 27분       | 5         | 2024.12.15 |
 | 6 | [회원 관리 예제 - 웹 MVC 개발](#6-회원-관리-예제---웹-mvc-개발) | 17분       | 5         | 2024.12.15 |
-| 7 | [스프링 DB 접근 기술](#7-스프링-db-접근-기술)               | 1시간 33분   |           |            |
+| 7 | [스프링 DB 접근 기술](#7-스프링-db-접근-기술)               | 1시간 33분   | 21        | 2024.12.16 |
 | 8 | [AOP](#8-aop)                                 | 22분       |           |            |
 | 9 | [다음으로](#9-다음으로)                               | 18분       |           |            |
 |   |                                               | 총 5시간 21분 |           |            |
@@ -604,7 +604,257 @@
 
       ![list](https://github.com/user-attachments/assets/5bdd558e-ff4e-4190-a821-a3aa5201cbd4)
 
+- `DB` 없이 진행한거라 서버를 끄고, 다시 켜면 데이터가 날라간다...
+  - 다음 강의서 `DB`에 대해서 다뤄보자.
+
 ## 7. 스프링 DB 접근 기술
+
+### H2 데이터베이스 설치
+
+- 개발이나 테스트 용도로 가볍고 편리한 DB, 웹 화면 제공
+
+- 다운로드
+  - https://www.h2database.com/ 에서 다운로드
+  - 나는 `Windows Installer` 다운로드 함.
+    - 일반 윈도우 프로그램 처럼 설치하면된다.
+    
+- 실행
+  - 윈도우 버전은 그냥 아이콘 눌러서 실행하면 된다.
+  - 맥처럼 설정하거나 command line으로 접근 할 필요 없다.
+  - 실행되면 H2 console 웹 화면이 뜬다.
+  
+- 데이터베이스 파일 생성 방법
+  - 제일 처음 실행시에는,
+    - JDBC URL에 `jdbc:h2:~/test`를 입력하고, 실행(`Connect`)한다.
+    
+      ![최초 한번](https://github.com/user-attachments/assets/451fb034-5a17-477d-a390-b35980a49c52)
+
+  - `/test.mv.db` 파일이 생성된다. (직접 쓸 일은 없고, 생성이 됐는지만 확인하면 된다.)
+
+    ![test mv db](https://github.com/user-attachments/assets/fcebd545-acc3-43be-8dd2-b70bcc9e36f0)
+    
+  - DB를 끌때는 왼쪽 상단의 아이콘을 이용한다.
+
+    ![quit db](https://github.com/user-attachments/assets/e2ef0f1b-bcac-4cd7-91bf-979da34268c8)
+
+  - 이후부터는 JDBC URL에 `jdbc:h2:tcp://localhost/~/test`을 입력하고 실행한다. (한번만 하면 계속 그대로 남아있다.)
+
+    ![이후부터](https://github.com/user-attachments/assets/00832043-5373-441c-9601-a7dcc9f40b04)
+
+  - 왜 JDBC URL을 바꿨나?
+    - 처음엔 한번 세팅 한 것 (파일로 접근하는 방식) : 동시에 `웹 콘솔`이랑 `어플리케이션`에서 동시 접근 안됨. 파일이 충돌남.
+    - 두번째 부터는 파일에 직접 접근하는게 아니라, `소켓`을 통해서 접근 할 수 있도록 변경함.
+
+- 테이블 생성하기
+  - 프로젝트 루트에 `sql/ddl.sql` 생성
+    - 소스코드 (비공개 레포지토리): 
+      - https://github.com/JohnKim0911/kyh_hello-spring/blob/master/sql/ddl.sql
+    - `SQL`도 프로젝트에 넣어두면, 버전 관리나 참고할 때 용이하다.
+  - `H2 데이터베이스`에 `member` 테이블 생성
+    - 위 코드를 복사해서, 웹 `H2 콘솔`에 붙여놓고 실행한다.
+  - 결과
+    - `Member` 테이블이 생성이 되고, `select` 문을 통해 `table`의 내용을 확인 할 수 있다.
+    
+      ![create table result](https://github.com/user-attachments/assets/46101500-1efd-4af2-b929-269ef7c30f7c)
+
+      - 지금은 아무것도 넣지 않아서 데이터가 없다.
+
+- `H2 데이터베이스`가 정상 생성되지 않을 때
+  - H2 데이터베이스를 종료하고, 다시 시작한다.
+  - 웹 브라우저 주소창에 `:8082` 이전의 숫자들을 지우고, `localhost`로 바꾼다.
+    - 나머지는 바꾸면 안된다. (특히 뒤에 세션 부분이 변경되면 안된다.)
+
+    ![localhost](https://github.com/user-attachments/assets/1d7c9bb6-e22f-43fc-bca4-870aa19e7a47)
+
+### 순수 Jdbc
+
+- 환경 설정
+  - `build.gradle` 파일에 `jdbc`, `h2 데이터베이스` 관련 라이브러리 추가
+    - 소스 코드 (비공개 레포지토리): `build.gradle`
+      - https://github.com/JohnKim0911/kyh_hello-spring/blob/master/build.gradle
+        - `dependencies`에 아래 2줄 추가 
+          - `implementation 'org.springframework.boot:spring-boot-starter-jdbc'`
+          - `runtimeOnly 'com.h2database:h2'`
+    - 라이브러리 추가 후, 코끼리 아이콘(?)을 눌러준다. (`sync gradle changes`)
+    
+      ![sync gradle changes](https://github.com/user-attachments/assets/12060077-2d88-4e34-b25d-d8db99b9a5f1)
+      
+  - `스프링 부트` 데이터베이스 연결 설정 추가
+    - 소스 코드 (비공개 레포지토리): `resources/application.properties`
+      - https://github.com/JohnKim0911/kyh_hello-spring/blob/master/src/main/resources/application.properties
+        - 아래 3줄 추가
+          - `spring.datasource.url=jdbc:h2:tcp://localhost/~/test`
+          - `spring.datasource.driver-class-name=org.h2.Driver`
+          - `spring.datasource.username=sa` //이거 안넣으면 오류 난다. (`Wrong user name or password`)
+            - 공백은 모두 제거해야 한다.
+
+- `Jdbc` 리포지토리 구현
+  - 이렇게 `JDBC API`로 직접 코딩하는 것은 20년 전 이야기이다. 
+    - 고대 개발자들이 이렇게 고생하고 살았구나 생각하고, 정신건강을 위해 참고만 하고 넘어가자.
+
+  - `Jdbc` 회원 리포지토리
+    - 소스 코드 (비공개 레포지토리): `JdbcMemberRepository`
+      - https://github.com/JohnKim0911/kyh_hello-spring/blob/master/src/main/java/hello/hello_spring/repository/JdbcMemberRepository.java
+
+  - 스프링 설정 변경
+    - 소스 코드 (비공개 레포지토리): `SpringConfig`
+      - https://github.com/JohnKim0911/kyh_hello-spring/blob/master/src/main/java/hello/hello_spring/SpringConfig.java
+        - `DataSource`는 데이터베이스 커넥션을 획득할 때 사용하는 객체다.
+          - `스프링 부트`는 데이터베이스 커넥션 정보를 바탕으로 `DataSource`를 생성하고 `스프링 빈`으로 만들어둔다.
+          - 그래서 `DI`를 받을 수 있다.
+        - `MemoryMemberRepository`에서 `JdbcMemberRepository`을 사용하도록 변경하였다.
+          - 다른곳에 코드 수정없이 `SpringConfig`에서만 수정하면 된다!
+            - 스프링의 `DI (Dependencies Injection)`을 사용하면 기존 코드를 전혀 손대지 않고, 설정만으로 구현 클래스를 변경할 수 있다.
+
+- 구현 클래스 추가 이미지
+
+  ![구현 클래스 추가 이미지](https://github.com/user-attachments/assets/3ffce39a-9b5e-4e00-8bff-bfbbebfc2810)
+
+- 스프링 설정 이미지
+
+  ![스프링 설정 이미지](https://github.com/user-attachments/assets/6bd2d9a3-5fe8-4241-a568-cce95a2b060d)
+
+- 실행
+  - 웹 애플리케이션을 실행해서 데이터를 추가하고, 목록을 확인해본다.
+  
+    ![web result](https://github.com/user-attachments/assets/c8b5d65b-d905-4ff7-b74c-c7f0f3140b8c)
+
+  - H2 콘솔에서도 확인해본다.
+  
+    ![H2 result](https://github.com/user-attachments/assets/f9faba70-09be-4bec-bb2c-0d2d169258fd)
+
+- 데이터를 DB에 저장하므로, 스프링 서버를 다시 실행해도 데이터가 안전하게 저장된다.
+
+### 스프링 통합 테스트
+
+- `스프링 컨테이너`와 `DB`까지 연결한 `통합 테스트`를 진행해보자.
+
+- 회원 서비스 스프링 통합 테스트 작성
+  - 소스 코드 (비공개 레포지토리): `MemberServiceIntegrationTest`
+    - https://github.com/JohnKim0911/kyh_hello-spring/blob/master/src/test/java/hello/hello_spring/service/MemberServiceIntegrationTest.java
+      - `@SpringBootTest` : 스프링 컨테이너와 테스트를 함께 실행한다. 즉, 실제로 스프링이 띄어서 테스트한다.
+      - `@Transactional` : 테스트 시작 전에 트랜잭션을 시작하고, 테스트 완료 후에 항상 롤백한다. 이렇게 하면 DB에 데이터가 남지 않으므로 다음 테스트에 영향을 주지 않는다.
+        - 참고) `@Commit`을 붙이면, 테스트 한게 실제로 DB에 반영된다.
+      - `@BeforeEach`, `@AfterEach` 삭제
+      - `단위 테스트` vs `통합 테스트`
+        - `단위 테스트`:
+          - 순수하게 자바에서 모든 테스트를 끝내서 실행이 빠르다.
+        - `통합 테스트`:
+          - 스프링까지 띄우므로 실행이 느리다.
+        - 되도록 단위 테스트로 잘게 쪼개서 테스트 하는게 테스트 설계가 잘되었다고 볼 수 있다.
+      - 참고)
+        - 실무에서 테스트는 실제 사용하는 DB가 아니라, 테스트용 DB를 별도로 두고 진행하게 된다.
+        - 테스트 코드에는 굳이 생성자로 할 필요없이, 필드에 바로 `@Autowired`를 붙여서 아래와 같이 많이 함.
+          - `@Autowired MemberService memberService;`
+
+### 스프링 JdbcTemplate
+
+- 서론
+  - `순수 Jdbc`와 동일한 환경설정을 하면 된다.
+  - `스프링 JdbcTemplate`과 `MyBatis` 같은 라이브러리는 `JDBC API`에서 본 반복 코드를 대부분 제거해준다. 
+    - 하지만 `SQL`은 직접 작성해야 한다.
+  - `JdbcTemplate`은 실무에서도 많이 쓰인다.
+
+- `스프링 JdbcTemplate` 회원 리포지토리 작성
+  - 소스 코드 (비공개 레포지토리): `JdbcTemplateMemberRepository`
+    - https://github.com/JohnKim0911/kyh_hello-spring/blob/master/src/main/java/hello/hello_spring/repository/JdbcTemplateMemberRepository.java
+
+- `JdbcTemplate`을 사용하도록 스프링 설정 변경
+  - 소스 코드 (비공개 레포지토리): `SpringConfig`
+    - https://github.com/JohnKim0911/kyh_hello-spring/blob/master/src/main/java/hello/hello_spring/SpringConfig.java
+
+- 테스트
+  - 직접 스프링 띄어서 테스트 할 필요없이, 위에서 작성했던 `MemberServiceIntegrationTest`를 다시 실행하면 된다!
+    - 소스 코드 (비공개 레포지토리): `MemberServiceIntegrationTest`
+      - https://github.com/JohnKim0911/kyh_hello-spring/blob/master/src/test/java/hello/hello_spring/service/MemberServiceIntegrationTest.java
+
+### JPA
+
+- 서론
+  - `JPA`를 사용하면 개발 생산성을 크게 높일 수 있다.
+    - `JPA`는 기존의 반복 코드는 물론이고, 기본적인 `SQL`도 `JPA`가 직접 만들어서 실행해준다.
+    - `JPA`를 사용하면, `SQL`과 데이터 중심의 설계에서 객체 중심의 설계로 패러다임을 전환을 할 수 있다.
+
+- `build.gradle` 파일에 `JPA`, `h2 데이터베이스` 관련 라이브러리 추가
+  - 소스 코드 (비공개 레포지토리): `build.gradle`
+    - https://github.com/JohnKim0911/kyh_hello-spring/blob/master/build.gradle
+        - `implementation 'org.springframework.boot:spring-boot-starter-data-jpa'` 추가
+          - 내부에 jdbc 관련 라이브러리를 포함한다. 따라서 jdbc는 제거해도 된다.
+
+- 스프링 부트에 JPA 설정 추가
+  - 소스 코드 (비공개 레포지토리): `resources/application.properties`
+    - https://github.com/JohnKim0911/kyh_hello-spring/blob/master/src/main/resources/application.properties
+      - 아래 2줄 추가함
+        - `spring.jpa.show-sql=true` // JPA가 생성하는 SQL을 출력한다.
+        - `spring.jpa.hibernate.ddl-auto=none`
+
+- JPA 엔티티 매핑
+  - 소스 코드 (비공개 레포지토리): `Member`
+    - https://github.com/JohnKim0911/kyh_hello-spring/blob/master/src/main/java/hello/hello_spring/domain/Member.java
+      - `@Entity`, `@Id`, `@GeneratedValue()` 추가
+
+- JPA 회원 리포지토리
+  - 소스 코드 (비공개 레포지토리): `JpaMemberRepository`
+    - https://github.com/JohnKim0911/kyh_hello-spring/blob/master/src/main/java/hello/hello_spring/repository/JpaMemberRepository.java
+      - JPA를 쓰려면 `EntityManager`를 주입 받아야 한다.
+        - 스프링 부트가 자동으로 `EntityManager`를 생성해준다.
+
+- 서비스 계층에 트랜잭션 추가
+  - 소스 코드 (비공개 레포지토리): `MemberService`
+    - https://github.com/JohnKim0911/kyh_hello-spring/blob/master/src/main/java/hello/hello_spring/service/MemberService.java
+      - `@Transactional` 추가함.
+        - **JPA를 통한 모든 데이터 변경은 트랜잭션 안에서 실행해야 한다.**
+        - 스프링은 해당 클래스의 메서드를 실행할 때 트랜잭션을 시작하고, 메서드가 정상 종료되면 트랜잭션을 커밋한다.
+          - 만약 런타임 예외가 발생하면 롤백한다.
+
+- JPA를 사용하도록 스프링 설정 변경
+  - 소스 코드 (비공개 레포지토리): `SpringConfig`
+    - https://github.com/JohnKim0911/kyh_hello-spring/blob/master/src/main/java/hello/hello_spring/SpringConfig.java
+      - JPA를 위해 `EntityManager` 추가함.
+
+- 참고
+  - JPA도 스프링 만큼 성숙한 기술이고, 학습해야 할 분량도 방대하다...
+
+### 스프링 데이터 JPA
+
+- 서론
+  - `스프링 부트`와 `JPA`
+    - `스프링 부트`와 `JPA`만 사용해도 개발 생산성이 정말 많이 증가하고, 개발해야할 코드도 확연히 줄어든다.
+  - `스프링 데이터 JPA`
+    - 여기에 `스프링 데이터 JPA`를 사용하면, 리포지토리에 `구현 클래스` 없이 `인터페이스` 만으로 개발을 완료할 수 있다.
+    - 반복 개발해온 기본 `CRUD` 기능도 모두 제공한다.
+    - 개발자는 핵심 비즈니스 로직을 개발하는데, 집중할 수 있다.
+    - 실무에서 관계형 데이터베이스를 사용한다면, `스프링 데이터 JPA`는 이제 선택이 아니라 필수이다.
+  - 주의
+    - `스프링 데이터 JPA`는 `JPA`를 편리하게 사용하도록 도와주는 기술이다.
+    - 따라서 `JPA`를 먼저 학습한 후에 `스프링 데이터 JPA`를 학습해야 한다.
+
+- 스프링 데이터 JPA 회원 리포지토리
+  - 소스 코드 (비공개 레포지토리): `SpringDataJpaMemberRepository` (`interface`)
+    - https://github.com/JohnKim0911/kyh_hello-spring/blob/master/src/main/java/hello/hello_spring/repository/SpringDataJpaMemberRepository.java
+      - 개발자가 `구현체`를 구현할 필요 없이 `인터페이스`만으로 기능을 구현한다!
+        - 스프링 데이터 JPA가 자동으로 구현체를 만들고, 스프링빈을 자동으로 등록해준다.
+      - 공통 기능들을 이미 인터페이스에 다 정의 되어있다. 
+        - 공통화 하기 어려운 것들만 여기서 정의 해주면 된다.
+
+- 스프링 데이터 JPA 회원 리포지토리를 사용하도록 스프링 설정 변경
+  - 소스 코드 (비공개 레포지토리): `SpringConfig`
+    - https://github.com/JohnKim0911/kyh_hello-spring/blob/master/src/main/java/hello/hello_spring/SpringConfig.java
+      - 스프링 데이터 JPA가 `SpringDataJpaMemberRepository`를 스프링 빈으로 자동 등록해준다.
+
+- 스프링 데이터 JPA 제공 클래스
+
+  ![스프링 데이터 JPA 제공 클래스](https://github.com/user-attachments/assets/2b52269f-7e45-48e6-bf85-7eb5192cd642)
+
+- 스프링 데이터 JPA 제공 기능
+  - 인터페이스를 통한 기본적인 CRUD
+  - `findByName()`, `findByEmail()`처럼 메서드 이름 만으로 조회 기능 제공
+  - 페이징 기능 자동 제공
+
+- 참고
+  - 실무에서는 `JPA`와 `스프링 데이터 JPA`를 기본으로 사용하고, 복잡한 동적 쿼리는 `Querydsl`이라는 라이브러리를 사용하면 된다.
+  - `Querydsl`을 사용하면 쿼리도 자바 코드로 안전하게 작성할 수 있고, 동적 쿼리도 편리하게 작성할 수 있다.
+  - 이 조합으로 해결하기 어려운 쿼리는 `JPA`가 제공하는 `네이티브 쿼리`를 사용하거나, 앞서 학습한 `스프링 JdbcTemplate`를 사용하면 된다.
 
 ## 8. AOP
 
