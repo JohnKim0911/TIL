@@ -12,7 +12,7 @@
 | 5 | [스프링 빈과 의존관계](#5-스프링-빈과-의존관계)                 | 27분       | 5         | 2024.12.15 |
 | 6 | [회원 관리 예제 - 웹 MVC 개발](#6-회원-관리-예제---웹-mvc-개발) | 17분       | 5         | 2024.12.15 |
 | 7 | [스프링 DB 접근 기술](#7-스프링-db-접근-기술)               | 1시간 33분   | 21        | 2024.12.16 |
-| 8 | [AOP](#8-aop)                                 | 22분       |           |            |
+| 8 | [AOP](#8-aop)                                 | 22분       | 6         | 2024.12.16 |
 | 9 | [다음으로](#9-다음으로)                               | 18분       |           |            |
 |   |                                               | 총 5시간 21분 |           |            |
 
@@ -874,5 +874,82 @@
   - 이 조합으로 해결하기 어려운 쿼리는 `JPA`가 제공하는 `네이티브 쿼리`를 사용하거나, 앞서 학습한 `스프링 JdbcTemplate`를 사용하면 된다.
 
 ## 8. AOP
+
+### AOP가 필요한 상황
+
+- 서론
+  - 모든 메소드의 호출 시간을 측정하고 싶다면?
+    - 모든 메소드에 코드를 일일히 넣어줘야 한다...
+  
+      ![시간측정](https://github.com/user-attachments/assets/f58622f6-f5f4-42bb-a97f-72c8cf37b881)
+
+- `MemberService` 회원 조회 시간 측정 추가
+  - 소스 코드 (비공개 레포지토리): `MemberService`
+    - https://github.com/JohnKim0911/kyh_hello-spring/blob/master/src/main/java/hello/hello_spring/service/MemberService.java
+      - 아래 2개 메서드에 시작 시간, 끝 시간을 출력하는 코드를 추가하였다.
+        - `join()` : 회원가입
+        - `findMember()` : 전체 회원 조회
+
+- 문제점
+  - `공통 관심 사항(cross-cutting concern)` vs `핵심 관심 사항(core concern)` 혼재
+    - 회원가입, 회원 조회에 시간을 측정하는 기능은 `핵심 관심 사항`이 아니다.
+    - 시간을 측정하는 로직은 `공통 관심 사항`이다.
+    - `시간을 측정하는 로직`과 `핵심 비즈니스의 로직`이 섞여서 유지보수가 어렵다.
+  - `시간을 측정하는 로직`을 별도의 공통 로직으로 만들기 매우 어렵다.
+  - `시간을 측정하는 로직`을 변경할 때 모든 로직을 찾아가면서 변경해야 한다
+
+### AOP 적용
+
+- 서론
+  - `AOP`: `Aspect Oriented Programming` (관점 지향 프로그래밍)
+  -  `공통 관심 사항(cross-cutting concern)` vs `핵심 관심 사항(core concern)` 분리
+
+![AOP](https://github.com/user-attachments/assets/b5ab9fb9-cee3-4082-9c18-bbeed37375b0)
+
+- 시간 측정 `AOP` 등록
+  - 소스 코드 (비공개 레포지토리): `TimeTraceAop`
+    - https://github.com/JohnKim0911/kyh_hello-spring/blob/master/src/main/java/hello/hello_spring/aop/TimeTraceAop.java
+      - `@Aspect` //AOP사용하려면 추가해야.
+      - `@Around("execution(* hello.hello_spring..*(..))")` //특정 위치에만도 적용할 수 있다.
+      - `joinPoint.proceed();` //실제 로직이 실행됨
+
+- 해결
+  - 회원가입, 회원 조회 등 `핵심 관심사항`과 시간을 측정하는 `공통 관심 사항`을 분리한다.
+  - 시간을 측정하는 로직을 별도의 공통 로직으로 만들었다.
+  - `핵심 관심 사항`을 깔끔하게 유지할 수 있다.
+  - 변경이 필요하면 이 로직만 변경하면 된다.
+  - 원하는 적용 대상을 선택할 수 있다.
+
+- 실행결과
+  - `Controller` - `Service` - `Repository` 순으로 실행되고, 메서드가 끝나면서 측정된 시간이 출력되는 것을 확인 할 수 있다.
+  
+    ![AOP result](https://github.com/user-attachments/assets/761a595b-6033-4b87-b6d5-b7fd3499e14b)
+
+  - `Service` 패키지에만 적용되도록 해봄. (빨간색 박스)
+    - 실제 Proxy가 주입되는지 콘솔에 출력해서 확인함. (초록색 라인)
+      -  `MemberService`로 끝나는게 아니라, `$$`뒤에 프록시값이 출력됨.
+  
+    ![AOP result_service](https://github.com/user-attachments/assets/b9621712-ef3d-4d0d-9160-0b515f5eae56)
+
+- 스프링의 AOP 동작 방식 설명
+  - 부분 그림 
+    - AOP 적용 전 의존관계
+
+      ![AOP 적용 전 의존관계](https://github.com/user-attachments/assets/c211f93b-7a6c-479e-b114-3dcdc2307e54)
+
+    - AOP 적용 후 의존관계
+      - `memberControllr`가 `memberService`를 호출하게 되면 `프록시`가 대신 호출되게 되고,
+      - `프록시` 내에서 `joinPoint.proceed()`가 실행되면 실제 `memberService`가 호출된다.
+
+      ![AOP 적용 후 의존관계](https://github.com/user-attachments/assets/5d8a006b-5dda-44fc-bc65-b6f3fa35bc5c)
+
+  - 전체 그림
+    - AOP 적용 전 의존관계
+
+      ![AOP 적용 전 전체 그림](https://github.com/user-attachments/assets/7bd6a1fa-64b4-47f8-bfaf-c8f6fbe8c3c2)
+  
+    - AOP 적용 후 의존관계
+
+      ![AOP 적용 후 전체 그림](https://github.com/user-attachments/assets/e435c502-ffe8-43fc-96e5-dc61aec94628)
 
 ## 9. 다음으로
