@@ -774,6 +774,23 @@
   - `JPA`를 사용하면 개발 생산성을 크게 높일 수 있다.
     - `JPA`는 기존의 반복 코드는 물론이고, 기본적인 `SQL`도 `JPA`가 직접 만들어서 실행해준다.
     - `JPA`를 사용하면, `SQL`과 데이터 중심의 설계에서 객체 중심의 설계로 패러다임을 전환을 할 수 있다.
+  - `JPA` vs `Mybatis`
+    - 참고
+      - `구글 트렌드`에서 검색
+      - `자바 퍼시스턴스 API` --> `JPA`
+    - 한국 동향
+      - 예전에는 `Mybatis`를 많이쓰다가, 최근엔 `JPA`를 더 많이 쓰는 추세다.
+
+        ![jpa vs mabatis in korea](https://github.com/user-attachments/assets/78c0639f-6ee4-40d3-be9f-0bdcdd846cde)
+
+    - 전세계 동향
+      - 전세계적으로 `JPA`를 훨씬 더 많이 쓴다.
+      
+        ![jpa vs mabatis in the world](https://github.com/user-attachments/assets/459c8d48-6838-4f53-9960-73cf2d996a12)
+
+        ![jpa vs mabatis map](https://github.com/user-attachments/assets/05104c97-a2e6-433f-a41a-7e0e633a342b)
+      
+         - 중국, 한국, 일본만 `Mybatis`를 많이 사용..
 
 - `build.gradle` 파일에 `JPA`, `h2 데이터베이스` 관련 라이브러리 추가
   - 소스 코드 (비공개 레포지토리): `build.gradle`
