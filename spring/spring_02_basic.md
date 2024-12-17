@@ -400,6 +400,16 @@
     - https://github.com/JohnKim0911/kyh_spring_basic/blob/master/src/test/java/hello/core/order/OrderServiceTest.java
       - `Assertions.assertThat(order.getDiscountPrice()).isEqualTo(1000);` 사용
 
+- 전체 테스트
+  - 모든 패키지의 테스트를 한번에 실행하였다.
+  
+    ![전체 테스트 실행_단위테스트가 중요](https://github.com/user-attachments/assets/3ff98e52-380a-4c68-9007-eb44090e0af3)
+  
+  - 스프링이 띄워지는 `CoreApplicationTests`는 테스트 소요시간이 긴 것을 확인 할 수 있다.
+    - (단순히 자바 코드로만 이뤄진 `단위테스트`에 비해서.)
+    - 나중에 라이브러리를 많이 쓰게 되면 훨씬 더 차이가 벌어진다.
+  - 그래서 되도록 `단위테스트`를 사용하는게 좋다.
+
 ## 4. 스프링 핵심 원리 이해2 - 객체 지향 원리 적용
 
 ## 5. 스프링 컨테이너와 스프링 빈
