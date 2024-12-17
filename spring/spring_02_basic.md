@@ -7,7 +7,7 @@
 |----|---------------------------------------------------------------|-----------|-------------|------------|
 | 1  | [강의 소개](#1-강의-소개)                                             | 4분        | 3           | 2024.12.16 |
 | 2  | [객체 지향 설계와 스프링](#2-객체-지향-설계와-스프링)                             | 1시간 16분   | 65          | 2024.12.17 |
-| 3  | [스프링 핵심 원리 이해1 - 예제 만들기](#3-스프링-핵심-원리-이해1---예제-만들기)           | 1시간 1분    |             |            |
+| 3  | [스프링 핵심 원리 이해1 - 예제 만들기](#3-스프링-핵심-원리-이해1---예제-만들기)           | 1시간 1분    | 20          | 2024.12.17 |
 | 4  | [스프링 핵심 원리 이해2 - 객체 지향 원리 적용](#4-스프링-핵심-원리-이해2---객체-지향-원리-적용) | 1시간 38분   |             |            |
 | 5  | [스프링 컨테이너와 스프링 빈](#5-스프링-컨테이너와-스프링-빈)                         | 1시간 19분   |             |            |
 | 6  | [싱글톤 컨테이너](#6-싱글톤-컨테이너)                                       | 1시간 15분   |             |            |
@@ -30,7 +30,7 @@
       - 강의를 들으면서 코드를 직접 치고,
       - 강의가 끝나면 다시 교재를 보면서 중요 내용 위주로 정리하였습니다.
   - 유료 강의이므로, 실제 작성한 전체 코드는 비공개 합니다. (저작권...)
-    - 비공개 레포지토리: 
+    - 비공개 레포지토리: https://github.com/JohnKim0911/kyh_spring_basic
       - 링크가 있긴하지만, 저만 볼 수 있습니다. (404 error 뜨는게 정상)
 
 ## 2. 객체 지향 설계와 스프링
@@ -217,6 +217,188 @@
       - 기능을 확장할 가능성이 없다면, 구체 클래스를 직접 사용하고, 향후 꼭 필요할 때 리팩터링해서 인터페이스를 도입하는 것도 방법이다.
 
 ## 3. 스프링 핵심 원리 이해1 - 예제 만들기
+
+### 프로젝트 생성
+
+- 사전 준비물
+  - `Java 17` 이상 설치
+    - 나는 `Java 23` 사용
+  - IDE: `IntelliJ `사용
+
+- 스프링 프로젝트 생성
+  - 스프링 부트 스타터 사이트에서 생성 (https://start.spring.io/)
+  
+    ![프로젝트 세팅](https://github.com/user-attachments/assets/31d39164-f2ba-4bc5-af50-c36d3afc62fa)
+    
+    - `Artifact`: 프로젝트 빌드명
+  - 위 그림처럼 설정 후, `GENERATE`로 생성하고, 압축파일 받아서 원하는 경로에 압축풀기.
+
+- 프로젝트 열기
+  - `인텔리제이`로 해당 프로젝트 폴더안에 `build.gradle`을 통해 열기.
+  
+    ![open project](https://github.com/user-attachments/assets/ea4b38f0-b918-4c16-ac26-761ce5b8d92f)
+
+- Gradle 세팅
+  - 기본 설정인 `Gradle` 통해서 실행하면 느린데,
+  - 이렇게 설정을 바꾸면 `인텔리제이` 통해서 자바를 바로 실행해서 실행속도가 빠르다.
+
+    ![gradle setting](https://github.com/user-attachments/assets/95446bec-4ec7-4fc4-9814-9dca7ea31445)
+
+  - 주의!
+    - `스프링 부트 3.2` 부터 `Gradle` 옵션을 선택하자. `IntelliJ IDEA`를 선택하면 몇가지 오류가 발생한다.
+    - 내 경우
+      - 강의 끝나고 나서야, 내가 `IntelliJ IDEA`로 세팅 하면 안된다는 것을 찾았다.
+      - 나는 `스프링 부트 3.4.0`인데, `IntelliJ IDEA` 선택했었는데, 오류가 안난다...
+      - 우선 당장은 문제가 안되지만, 혹시 모르니 나중을 위해서 다시 `Gradle`로 변경하였다.
+      
+        ![gradle로 재변경](https://github.com/user-attachments/assets/b77b0361-f26c-47b7-b429-ae2b3dced834)
+
+- 프로젝트 실행해 보기
+  - 기본 메인 클래스 실행 (`CoreApplication.main()`)
+
+    ![run project](https://github.com/user-attachments/assets/758221b0-88bd-459a-b011-a165294bb649)
+
+  - 이번 강의에선 순수 자바 코드로 진행하고, 나중에 점차 코드를 바꿔나간다.
+    - 지금은 스프링이 뜨긴했지만, 웹 앱을 올린게 아니라서 바로 종료되는게 정상이다.
+
+### 비즈니스 요구사항과 설계
+
+- 회원
+  - `회원`을 `가입`하고 `조회`할 수 있다.
+  - 회원은 `일반`과 `VIP` 두 가지 등급이 있다.
+  - 회원 데이터는 `자체 DB`를 구축할 수 있고, `외부 시스템`과 연동할 수 있다. (미확정)
+
+- 주문과 할인 정책
+  - 회원은 `상품`을 `주문`할 수 있다.
+  - `회원 등급`에 따라 `할인 정책`을 적용할 수 있다.
+  - `할인 정책`은 모든 `VIP`는 1000원을 할인해주는 `고정 금액 할인`을 적용해달라. (나중에 변경 될 수 있다.)
+  - `할인 정책`은 변경 가능성이 높다. 회사의 기본 할인 정책을 아직 정하지 못했고, 오픈 직전까지 고민을 미루고 싶다.
+    - 최악의 경우, 할인을 적용하지 않을 수 도 있다. (미확정)
+
+- 지금은 `스프링` 없는 `순수한 자바`로만 개발을 진행한다!
+  - 프로젝트 환경설정을 편리하게 하려고 `스프링 부트`를 사용한 것이다.
+  - `스프링` 관련은 한참 뒤에 등장한다.
+
+### 회원 도메인 설계
+
+- 회원 도메인 협력 관계
+
+  ![회원 도메인 협력 관계](https://github.com/user-attachments/assets/37c1bf09-241c-4915-92a4-8c9f4cfce022)
+
+- 회원 클래스 다이어그램 (정적)
+
+  ![회원 클래스 다이어그램](https://github.com/user-attachments/assets/408da51b-b788-40a8-b545-226f767ffba9)
+
+  - `회원 클래스 다이어그램`으로는 실제 어떤 인스턴스가 사용되는지 알 수 없다.
+    - 런타임에 어떤구현체를 넣어서 사용할지 결정되기 때문...
+    - 따라서 `회원 객체 다이어그램`이 별도로 필요하다.
+
+- 회원 객체 다이어그램 (동적)
+  - 실제 인스턴스 들의 관계를 나타낸다.
+  
+  ![회원 객체 다이어그램](https://github.com/user-attachments/assets/cb322020-b3d0-458f-9261-72b5fc69e0ad)
+
+### 회원 도메인 개발
+
+- 소스코드 (비공개 레포지토리):
+  - https://github.com/JohnKim0911/kyh_spring_basic/tree/master/src/main/java/hello/core/member
+
+- 회원 엔티티
+  - `Grade`: 회원 등급
+    - `enum`으로 `BASIC`과 `VIP`를 선언했다.
+  - `Member`: 회원 엔티티 
+    - `id`, `name`, `grade`를 필드로 가진다.
+
+- 회원 저장소
+  - `MemberRepository`: 인터페이스
+    - `save()`: 회원 가입
+    - `findById()`: 회원 조회
+  - `MemoryMemberRepository`: 구현체 (메모리)
+    - `HashMap`으로 `Member`를 보관한다.
+
+- 회원 서비스
+  - `MemberService`: 인터페이스
+    - `join()`: 회원 가입
+    - `findMember()`: 회원 조회
+  - `MemberServiceImpl`: 구현체
+
+### 회원 도메인 실행과 테스트
+
+- 회원 가입 `main`
+  - 콘솔에 출력해서 제대로 회원가입이 되는지 확인했다.
+  - 소스 코드 (비공개 레포지토리): `MemberApp`
+    - https://github.com/JohnKim0911/kyh_spring_basic/blob/master/src/main/java/hello/core/MemberApp.java
+  - 애플리케이션 로직으로 이렇게 테스트 하는 것은 좋은 방법이 아니다. `JUnit` 테스트를 사용하자.
+
+- 회원 가입 `JUnit 테스트`
+  - 소스 코드 (비공개 레포지토리): `MemberServiceTest`
+    - https://github.com/JohnKim0911/kyh_spring_basic/blob/master/src/test/java/hello/core/member/MemberServiceTest.java
+      - `Assertions.assertThat(member).isEqualTo(findMember);` 사용
+
+- 회원 도메인 설계의 문제점
+  - `MemberServiceImpl`
+    - `private final MemberRepository memberRepository = new MemoryMemberRepository();`
+      - 여기서 `OCP`, `DIP`가 안 지켜지고 있다.
+      - 의존관계가 인터페이스 뿐만 아니라 구현까지 모두 의존하는 문제점이 있음.
+      - 소스 코드 (비공개 레포지토리):
+        - https://github.com/JohnKim0911/kyh_spring_basic/blob/master/src/main/java/hello/core/member/MemberServiceImpl.java
+  - 주문까지 만들고나서 문제점과 해결 방안을 설명.
+
+### 주문과 할인 도메인 설계
+
+- 주문 도메인 전체
+
+  ![주문 도메인 전체](https://github.com/user-attachments/assets/24bff942-9db3-46cb-b47e-38c7dba87d39)
+
+  - 참고: 실제로는 `주문 데이터`를 DB에 저장하겠지만, 예제가 너무 복잡해 질 수 있어서 생략하고, 단순히 `주문 결과`를 반환한다.
+
+- 주문 도메인 클래스 다이어그램
+
+  ![주문 도메인 클래스 다이어그램](https://github.com/user-attachments/assets/5ea2f7c4-23a1-46e1-a15f-31a09b4ab741)
+
+- 주문 도메인 객체 다이어그램
+
+  ![주문 도메인 객체 다이어그램1](https://github.com/user-attachments/assets/e4f7c208-3e08-42cc-b17e-b7d6d6b87a5b)
+  
+  ![주문 도메인 객체 다이어그램2](https://github.com/user-attachments/assets/7002e746-dbe9-4d92-bcfd-7c236a39ca3b)
+
+  - `회원 저장소`와 `할인 정책`을 바꾸어도, `주문 서비스`를 변경하지 않아도 된다.
+
+### 주문과 할인 도메인 개발
+
+
+- 할인
+  - 소스 코드 (비공개 레포지토리):
+    - https://github.com/JohnKim0911/kyh_spring_basic/tree/master/src/main/java/hello/core/discount
+  - `DiscountPolicy`: 할인 정책 인터페이스
+    - `discount()`: 할인 금액 반환
+  - `FixDiscountPolicy`: 정액 할인 정책 구현체
+    - VIP면 1000원 할인, 아니면 할인 없음
+
+- 주문
+  - 소스 코드 (비공개 레포지토리):
+    - https://github.com/JohnKim0911/kyh_spring_basic/tree/master/src/main/java/hello/core/order
+  - `Order`: 주문 엔티티
+    - `memberId`, `itemName`, `itemPrice`, `discountPrice` 보관
+    - `calculatePrice()`: 할인 적용된 금액 반환 
+  - `OrderService`: 주문 서비스 인터페이스
+    - `createOrder()`: 주문하기
+  - `OrderServiceImpl`: 주문 서비스 구현체
+    - `메모리 회원 리포지토리`와, `고정 금액 할인 정책`을 구현체로 생성한다. (`MemoryMemberRepository`, `FixDiscountPolicy`)
+    - 주문 생성 요청이 오면, 회원 정보를 조회하고, 할인 정책을 적용한 다음, 주문 객체를 생성해서 반환한다.
+
+### 주문과 할인 도메인 실행과 테스트
+
+- 주문과 할인 정책 `main`
+  - 소스 코드 (비공개 레포지토리): `OrderApp`
+    - https://github.com/JohnKim0911/kyh_spring_basic/blob/master/src/main/java/hello/core/OrderApp.java
+      - 실행결과: `order = Order{memberId=1, itemName='itemA', itemPrice=10000, discountPrice=1000}`
+  - 애플리케이션 로직으로 이렇게 테스트 하는 것은 좋은 방법이 아니다. `JUnit` 테스트를 사용하자.
+
+- 주문과 할인 정책 `JUnit 테스트`
+  - 소스 코드 (비공개 레포지토리): `OrderServiceTest`
+    - https://github.com/JohnKim0911/kyh_spring_basic/blob/master/src/test/java/hello/core/order/OrderServiceTest.java
+      - `Assertions.assertThat(order.getDiscountPrice()).isEqualTo(1000);` 사용
 
 ## 4. 스프링 핵심 원리 이해2 - 객체 지향 원리 적용
 
