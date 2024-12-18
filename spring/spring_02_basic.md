@@ -9,7 +9,7 @@
 | 2  | [객체 지향 설계와 스프링](#2-객체-지향-설계와-스프링)                             | 1시간 16분   | 65          | 2024.12.17 |
 | 3  | [스프링 핵심 원리 이해1 - 예제 만들기](#3-스프링-핵심-원리-이해1---예제-만들기)           | 1시간 1분    | 20          | 2024.12.17 |
 | 4  | [스프링 핵심 원리 이해2 - 객체 지향 원리 적용](#4-스프링-핵심-원리-이해2---객체-지향-원리-적용) | 1시간 38분   | 30          | 2024.12.17 |
-| 5  | [스프링 컨테이너와 스프링 빈](#5-스프링-컨테이너와-스프링-빈)                         | 1시간 19분   |             |            |
+| 5  | [스프링 컨테이너와 스프링 빈](#5-스프링-컨테이너와-스프링-빈)                         | 1시간 19분   | 19          | 2024.12.18 |
 | 6  | [싱글톤 컨테이너](#6-싱글톤-컨테이너)                                       | 1시간 15분   |             |            |
 | 7  | [컴포넌트 스캔](#7-컴포넌트-스캔)                                         | 51분       |             |            |
 | 8  | [의존관계 자동 주입](#8-의존관계-자동-주입)                                   | 1시간 53분   |             |            |
@@ -703,6 +703,224 @@
           - https://github.com/JohnKim0911/kyh_spring_basic/blob/master/src/main/resources/logback.xml
 
 ## 5. 스프링 컨테이너와 스프링 빈
+
+### 스프링 컨테이너 생성
+
+```java
+//스프링 컨테이너 생성
+ApplicationContext applicationContext =  new AnnotationConfigApplicationContext(AppConfig.class); 
+```
+
+- `ApplicationContext`를 `스프링 컨테이너`라 한다.
+  - `ApplicationContext`는 인터페이스이다.
+  - `new AnnotationConfigApplicationContext(AppConfig.class);`는 `ApplicationContext` 인터페이스의 구현체이다.
+
+- `스프링 컨테이너`는 2가지 방법으로 만들 수 있다.
+  - `XML`을 기반으로 만들 수 있고,
+  - `애노테이션` 기반의 자바 설정 클래스로 만들 수 있다.
+    - 예) 직전에 `AppConfig`를 사용했던 방식
+
+- 참고:
+  - 더 정확히는 `스프링 컨테이너`를 부를 때 `BeanFactory`, `ApplicationContext`로 구분해서 이야기 한다.
+    - `BeanFactory`를 직접 사용하는 경우는 거의 없으므로, 일반적으로 `ApplicationContext`를 `스프링 컨테이너`라 한다.
+
+- 스프링 컨테이너의 생성 과정
+
+  - 스프링 컨테이너 생성
+
+    - `new AnnotationConfigApplicationContext(AppConfig.class)`
+      - 스프링 컨테이너를 생성할 때는 구성 정보(`AppConfig.class`)를 지정해주어야 한다.
+
+    ![1  스프링 컨테이너 생성](https://github.com/user-attachments/assets/7b44bb00-98f0-488a-af25-5fb04bfda42d)
+  
+  - 스프링 빈 등록
+    - 스프링 컨테이너는 파라미터로 넘어온 설정 클래스 정보를 사용해서 스프링 빈을 등록한다.
+    
+    ![2  스프링 빈 등록](https://github.com/user-attachments/assets/9908b4ef-82ee-4271-9e2c-da623e36ce8b)
+
+    - 빈 이름
+      - 빈 이름은 메서드 이름을 사용한다.
+      - 빈 이름을 직접 부여할 수 도 있다.
+        - 예시) `@Bean(name="memberService2")`
+      - 주의: 
+        - 빈 이름은 항상 다른 이름을 부여해야 한다.
+          - 같은 이름을 부여하면, 다른 빈이 무시되거나, 기존 빈을 덮어버리거나 설정에 따라 오류가 발생한다.
+          - 빈 이름이 중복되면, 애초부터 중복되지 않도록 바꾸자. 중복된 걸 어떻게 해결하려고 하지 말기.
+          
+  - 스프링 빈 의존관계 설정 - 준비
+
+    ![3  스프링 빈 의존관계 설정 - 준비](https://github.com/user-attachments/assets/918a8a60-0326-4205-84fe-fd08e15d110f)
+
+      - (초록색이 각각의 빈이다.)
+
+  - 스프링 빈 의존관계 설정 - 완료
+    - 스프링 컨테이너는 설정 정보를 참고해서 의존관계를 주입(DI)한다
+    
+    ![4  스프링 빈 의존관계 설정 - 완료](https://github.com/user-attachments/assets/581015dc-47ea-49c2-98c7-23244d6cc1ca)
+
+    - 단순히 자바 코드를 호출하는 것 같지만, 차이가 있다.
+      - 뒤에 싱글톤 컨테이너에서 설명한다.
+
+- 정리
+  - `스프링 컨테이너`를 생성하고, 설정(구성) 정보를 참고해서 `스프링 빈`도 등록하고, 의존관계도 설정했다.
+
+### 컨테이너에 등록된 모든 빈 조회
+
+- `스프링 컨테이너`에 실제 `스프링 빈`들이 잘 등록 되었는지 확인해보자.
+  - 소스 코드 (비공개 레포지토리): `ApplicationContextInfoTest`
+    - https://github.com/JohnKim0911/kyh_spring_basic/blob/master/src/test/java/hello/core/beanfind/ApplicationContextInfoTest.java
+      - 모든 빈 출력하기
+        - 스프링이 내부에서 사용하는 빈 + 내가 등록한 빈 둘 다 출력.
+        - `ac.getBeanDefinitionNames()` : 스프링에 등록된 모든 빈 이름을 조회
+        - `ac.getBean()` : 빈 이름으로 빈 객체(인스턴스)를 조회
+      - 애플리케이션 빈 출력하기
+        - 내가 등록한 빈만 출력. (스프링이 내부에서 사용하는 빈은 제외)
+        - `BeanDefinition beanDefinition = ac.getBeanDefinition(beanDefinitionName);` : `BeanDefinition` 반환
+        - `if (beanDefinition.getRole() == BeanDefinition.ROLE_APPLICATION) {...}`
+          - 스프링이 내부에서 사용하는 빈은 `getRole()`로 구분할 수 있다.
+            - `ROLE_APPLICATION` : 일반적으로 `사용자`가 정의한 빈
+            - `ROLE_INFRASTRUCTURE` : `스프링 내부`에서 사용하는 빈
+
+### 스프링 빈 조회 - 기본
+
+- `스프링 컨테이너`에서 `스프링 빈`을 찾는 가장 기본적인 조회 방법
+  - `ac.getBean(빈이름, 타입)`
+  - `ac.getBean(타입)`
+  - 조회 대상 `스프링 빈`이 없으면 예외 발생한다.
+    - `NoSuchBeanDefinitionException: No bean named 'xxxxx' available`
+
+- 예제 코드
+  - 소스 코드 (비공개 레포지토리): `ApplicationContextBasicFindTest`
+    - https://github.com/JohnKim0911/kyh_spring_basic/blob/master/src/test/java/hello/core/beanfind/ApplicationContextBasicFindTest.java
+      - 테스트 케이스
+        - 빈 이름으로 조회: `ac.getBean(빈이름, 타입)`
+          - 에러 상황해봄. (빈 이름으로 조회X)
+        - 이름 없이 타입만으로 조회: `ac.getBean(타입)`
+        - 구체 타입으로 조회: `ac.getBean(빈이름, 구체 타입)` //권장하지 않는다. 변경시 유연성 떨어짐.
+      - 공통적으로 사용된 코드
+        - 해당 타입이 맞는지 확인: 
+          - `assertThat(memberService).isInstanceOf(MemberServiceImpl.class);`
+        - 빈이 없을때 에러가 나는지 확인: 
+          - `Assertions.assertThrows(NoSuchBeanDefinitionException.class, 실행코드);`
+            - 실행코드를 실행했을때, 좌측의 예외가 나는지 확인.
+      
+### 스프링 빈 조회 - 동일한 타입이 둘 이상
+
+- 타입으로 조회시, 같은 타입의 `스프링 빈`이 둘 이상이면 오류가 발생한다. 이때는 빈 이름을 지정하자.
+  - 소스 코드 (비공개 레포지토리): `ApplicationContextSameBeanFindTest`
+    - https://github.com/JohnKim0911/kyh_spring_basic/blob/master/src/test/java/hello/core/beanfind/ApplicationContextSameBeanFindTest.java
+      - 정적 중첩 클래스(`SameBeanConfig`)로 설정파일을 지정하였다.
+      - 테스트 케이스
+        - "타입으로 조회시, 같은 타입이 둘 이상 있으면, 중복 오류가 발생한다."
+        - "타입으로 조회시, 같은 타입이 둘 이상 있으면, 빈 이름을 지정하면 된다."
+        - "특정 타입을 모두 조회하기."
+          - `Map<String, MemberRepository> beansOfType = ac.getBeansOfType(MemberRepository.class);`
+            - `ac.getBeansOfType()`: 해당 타입의 모든 빈 조회
+
+### 스프링 빈 조회 - 상속 관계
+
+- 부모 타입으로 조회하면, 자식 타입도 함께 조회한다
+  - 그래서 모든 자바 객체의 최고 부모인 `Object` 타입으로 조회하면, 모든 스프링 빈을 조회한다.
+
+  ![스프링 빈 조회 - 상속 관계](https://github.com/user-attachments/assets/5d433bfe-7a1a-48ee-8a8b-f4d60da2f22f)
+
+- 예제 코드 
+  - 소스 코드 (비공개 레포지토리): `ApplicationContextExtendsFindTest`
+    - https://github.com/JohnKim0911/kyh_spring_basic/blob/master/src/test/java/hello/core/beanfind/ApplicationContextExtendsFindTest.java
+      - 정적 중첩 클래스(`TestConfig`)로 설정파일을 지정하였다.
+      - 테스트 케이스
+        - "부모 타입으로 조회시, 자식이 둘 이상 있으면, 중복 오류가 발생한다."
+        - "부모 타입으로 조회시, 자식이 둘 이상 있으면, 빈 이름을 지정하면 된다."
+        - "특정 하위 타입으로 조회"
+        - "부모 타입으로 모두 조회하기"
+        - "부모 타입으로 모두 조회하기 - Object"
+
+### BeanFactory와 ApplicationContext
+
+![BeanFactory, ApplicationContext](https://github.com/user-attachments/assets/b61fd3e7-d032-45a4-9f42-7848b76ea54d)
+
+- `BeanFactory`
+  - 스프링 컨테이너의 최상위 인터페이스다.
+  - 스프링 빈을 관리하고 조회하는 역할을 담당한다.
+  - `getBean()`을 제공한다.
+  - 지금까지 우리가 사용했던 대부분의 기능은 `BeanFactory`가 제공하는 기능이다.
+
+- `ApplicationContext`
+  - `BeanFactory` 기능을 모두 상속받아서 제공한다.
+  - `ApplicatonContext`가 제공하는 부가기능
+
+    ![ApplicatonContext](https://github.com/user-attachments/assets/100ab02b-6b3b-49db-a198-d3910fea3468)
+
+    - 메시지소스를 활용한 국제화 기능
+      - 예를 들어서 한국에서 들어오면 한국어로, 영어권에서 들어오면 영어로 출력
+    - 환경변수
+      - 로컬, 개발, 운영등을 구분해서 처리
+    - 애플리케이션 이벤트
+      - 이벤트를 발행하고 구독하는 모델을 편리하게 지원
+    - 편리한 리소스 조회
+      - 파일, 클래스패스, 외부 등에서 리소스를 편리하게 조회
+
+- 정리
+  - `BeanFactory`를 직접 사용할 일은 거의 없다. 부가기능이 포함된 `ApplicationContext`를 사용한다.
+  - `BeanFactory`나 `ApplicationContext`를 `스프링 컨테이너`라 한다.
+
+### 다양한 설정 형식 지원 - 자바 코드, XML
+
+- `스프링 컨테이너`는 다양한 형식의 설정 정보를 받아들일 수 있게 유연하게 설계되어 있다.
+  - 자바 코드, XML, Groovy 등등
+  
+  ![다양한 설정 형식 지원](https://github.com/user-attachments/assets/9866660d-6ad1-4802-9a3d-417f5437f2ec)
+
+- 애노테이션 기반 자바 코드 설정 사용:
+  - 지금까지 했던 것 (`new AnnotationConfigApplicationContext(AppConfig.class)`)
+- XML 설정 사용:
+  - 최근에는 `스프링 부트`를 많이 사용하면서 XML기반의 설정은 잘 사용하지 않는다.
+  - 아직 많은 `레거시 프로젝트` 들이 XML로 되어 있고, 또 XML을 사용하면 컴파일 없이 빈 설정 정보를 변경할 수 있는 장점도 있다.
+  - `GenericXmlApplicationContext`를 사용하면서 xml 설정 파일을 넘기면 된다.
+
+- XML 설정 사용 예시
+  - 소스 코드 (비공개 레포지토리): 
+    - `src/main/resources/appConfig.xml` (xml 기반의 스프링 빈 설정 정보)
+      - https://github.com/JohnKim0911/kyh_spring_basic/blob/master/src/main/resources/appConfig.xml
+        - 자바 코드로 된 `AppConfig.java` 설정 정보를 비교해보면 거의 비슷하다.
+          - `AppConfig.java`: https://github.com/JohnKim0911/kyh_spring_basic/blob/master/src/main/java/hello/core/AppConfig.java
+    - `XmlAppContext` (자바 테스트 코드)
+      - https://github.com/JohnKim0911/kyh_spring_basic/blob/master/src/test/java/hello/core/xml/XmlAppContext.java
+
+### 스프링 빈 설정 메타 정보 - BeanDefinition
+
+- 스프링은 어떻게 이런 다양한 설정 형식을 지원하는 것일까?
+  - 그 중심에는 `BeanDefinition`이라는 추상화가 있다.
+
+![BeanDefinition](https://github.com/user-attachments/assets/3ee4de54-5648-4056-b177-b236cc7f9b65)
+
+- `역할`과 `구현`을 개념적으로 나누었다.
+  - XML을 읽어서 `BeanDefinition`을 만들면 된다.
+  - 자바 코드를 읽어서 `BeanDefinition`을 만들면 된다.
+  - `스프링 컨테이너`는 자바 코드인지, XML인지 몰라도 된다. 오직 `BeanDefinition`만 알면 된다.
+- `BeanDefinition`을 `빈 설정 메타정보`라 한다.
+  - `@Bean`, `<bean>`당 각각 하나씩 `메타 정보`가 생성된다.
+- `스프링 컨테이너`는 이 `메타정보`를 기반으로 `스프링 빈`을 생성한다.
+
+- 코드 레벨로 조금 더 깊이 있게 들어가보자.
+
+  ![BeanDefinition_코드 레벨](https://github.com/user-attachments/assets/66a59ad7-fdfa-4d74-8eb0-61a3bc82aaef)
+
+    - `AnnotationConfigApplicationContext`는 `AnnotatedBeanDefinitionReader`를 사용해서 `AppConfig.class`를 읽고 `BeanDefinition`을 생성한다.
+
+- `BeanDefinition` 살펴보기
+  - 잘 몰라도 되는 내용이다. 이런게 있구나 참고만 하자.
+  - `BeanDefinition` 정보
+    - 아래 예제에서 콘솔에 찍히는 내용을 이해하고 싶다면, 교재 p.17 참고. 
+  - 소스 코드 (비공개 레포지토리): `BeanDefinitionTest`
+    - https://github.com/JohnKim0911/kyh_spring_basic/blob/master/src/test/java/hello/core/beandefinition/BeanDefinitionTest.java
+      - 빈 설정 메타정보 확인
+
+- 정리
+  - `BeanDefinition`을 직접 생성해서 `스프링 컨테이너`에 등록할 수 도 있다. 하지만 실무에서 `BeanDefinition`을 직접 정의하거나 사용할 일은 거의 없다.
+  - 스프링이 다양한 형태의 설정 정보를 `BeanDefinition`으로 추상화해서 사용하는 것 정도만 이해하면 된다.
+    - 너무 깊이있게 이해 할 필요 없다.
+  - 가끔 스프링 코드나 스프링 관련 오픈 소스의 코드를 볼 때, `BeanDefinition`이 보일 때가 있다. 이때 이러한 메커니즘을 떠올리면 된다.
 
 ## 6. 싱글톤 컨테이너
 
