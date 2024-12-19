@@ -12,7 +12,7 @@
 | 5  | [스프링 컨테이너와 스프링 빈](#5-스프링-컨테이너와-스프링-빈)                         | 1시간 19분   | 19          | 2024.12.18 |
 | 6  | [싱글톤 컨테이너](#6-싱글톤-컨테이너)                                       | 1시간 15분   | 16          | 2024.12.18 |
 | 7  | [컴포넌트 스캔](#7-컴포넌트-스캔)                                         | 51분       | 12          | 2024.12.19 |
-| 8  | [의존관계 자동 주입](#8-의존관계-자동-주입)                                   | 1시간 53분   |             |            |
+| 8  | [의존관계 자동 주입](#8-의존관계-자동-주입)                                   | 1시간 53분   | 21          | 2024.12.19           | 
 | 9  | [빈 생명주기 콜백](#9-빈-생명주기-콜백)                                     | 35분       |             |            |
 | 10 | [빈 스코프](#10-빈-스코프)                                            | 1시간 44분   |             |            |
 | 11 | [다음으로](#11-다음으로)                                              | 25분       |             |            |
@@ -1301,6 +1301,333 @@ ApplicationContext applicationContext =  new AnnotationConfigApplicationContext(
       - 스프링 부트인 `CoreApplication`을 실행해보면 오류를 볼 수 있다.
 
 ## 8. 의존관계 자동 주입
+
+### 다양한 의존관계 주입 방법
+
+- 의존관계 주입은 크게 4가지 방법이 있다.
+  - `생성자 주입`
+  - `수정자 주입`(`setter 주입`)
+  - `필드 주입`
+  - `일반 메서드 주입`
+
+- `생성자 주입`
+  - 특징
+    - 생성자 호출시점에 딱 1번만 호출되는 것이 보장된다.
+    - `불변`, `필수` 의존관계에 사용
+  - 소스 코드 (비공개 레포지토리): `OrderServiceImpl` (2. 생성자 주입) 참고
+    - https://github.com/JohnKim0911/kyh_spring_basic/blob/master/src/main/java/hello/core/order/OrderServiceImpl.java
+      - 중요: 생성자가 딱 1개만 있으면 `@Autowired`를 생략해도 자동 주입 된다. ⭐
+
+- `수정자 주입(setter 주입)`
+  - 특징
+    - `선택`, `변경` 가능성이 있는 의존관계에 사용
+    - `자바빈 프로퍼티 규약`의 수정자 메서드 방식을 사용하는 방법이다.
+  - 소스 코드 (비공개 레포지토리): `OrderServiceImpl` (3. setter 주입) 참고
+    - https://github.com/JohnKim0911/kyh_spring_basic/blob/master/src/main/java/hello/core/order/OrderServiceImpl.java
+      - 참고: `@Autowired`의 기본 동작은 주입할 대상이 없으면 오류가 발생한다.
+        - 주입할 대상이 없어도 동작하게 하려면 `@Autowired(required = false)`로 지정하면 된다.
+  - `자바빈 프로퍼티 규약`
+
+    ```java
+    class Data {
+        private int age;
+        
+        public void setAge(int age) {
+            this.age = age;
+        }
+        
+        public int getAge() {
+            return age;
+        }
+    }
+    ```
+
+- `필드 주입` // 왠만하면 사용하지 말자.
+  - 특징
+    - 코드가 간결해서 많은 개발자들을 유혹하지만, 외부에서 변경이 불가능해서 테스트 하기 힘들다는 치명적인 단점이 있다.
+    - DI 프레임워크가 없으면 아무것도 할 수 없다.
+    - 사용하지 말자!
+    - 아래 경우만 사용을 고려하자.
+      - 애플리케이션의 실제 코드와 관계 없는 테스트 코드
+      - 스프링 설정을 목적으로 하는 `@Configuration` 같은 곳에서만 특별한 용도로 사용
+  - 소스 코드 (비공개 레포지토리): `OrderServiceImpl` (4. 필드 주입) 참고
+    - https://github.com/JohnKim0911/kyh_spring_basic/blob/master/src/main/java/hello/core/order/OrderServiceImpl.java
+  - 참고: `순수한 자바 테스트 코드`에는 당연히 `@Autowired`가 동작하지 않는다. 
+    - `@SpringBootTest`처럼 `스프링 컨테이너`를 테스트에 통합한 경우에만 가능하다.
+
+- `일반 메서드 주입` // 잘 사용하지 않는다.
+  - 특징
+    - 한번에 여러 필드를 주입 받을 수 있다.
+    - 일반적으로 잘 사용하지 않는다.
+  - 소스 코드 (비공개 레포지토리): `OrderServiceImpl` (5. 일반 메서드 주입) 참고
+    - https://github.com/JohnKim0911/kyh_spring_basic/blob/master/src/main/java/hello/core/order/OrderServiceImpl.java
+
+### 옵션 처리
+
+<details>
+<summary>(에러 디버깅) 스프링 부트 3.2 매개변수 이름 인식 문제 💦</summary>
+
+- 개요
+    - "옵셥 처리" 초반에, 그동안 작성한 테스트 코드가 정상 작동하는지 확인하였다.
+    - 강사님 말씀대로 따랐는데, 강의에선 잘 되나, 나는 해결 되지 않는 에러가 1개 있었다.
+
+      ![error](https://github.com/user-attachments/assets/158fda54-514f-4901-bb43-f62d29ca1299)
+
+    - 찾아보니, 세팅 문제였다.
+        - 참고 링크: [(인프런 Q&A) 스프링 부트 3.2 매개변수 이름 인식 문제](https://www.inflearn.com/community/questions/1089023/%EC%84%B9%EC%85%98-7-%EC%98%B5%EC%85%98-%EC%B2%98%EB%A6%AC-%EC%A0%84%EC%B2%B4-%ED%85%8C%EC%8A%A4%ED%8A%B8-%EC%A4%91-coreapplicationtests-%ED%81%B4%EB%9E%98%EC%8A%A4%EC%9D%98-contextloads-%ED%85%8C%EC%8A%A4%ED%8A%B8-%EC%8B%A4%ED%8C%A8-%EC%A7%88%EB%AC%B8%EC%9E%85%EB%8B%88%EB%8B%A4)
+            - 강사님 답변 중 해결방안 3번을 따랐더니 해결이 되었다.
+
+              ![setting](https://github.com/user-attachments/assets/ea6079aa-3b06-4e7e-86f4-50e2a1a40355)
+
+                - 강의 초반에는 `Gradle`로 설정했었으나, 테스트 속도가 느려서 `IntellJ`로 바꿨더니 빨라졌다.
+                - 그래서 그대로 사용하고 있었는데, 여기서 에러가 났던 것이다.
+
+</details>
+
+- 옵션 처리 서론
+  - 주입할 `스프링 빈`이 없어도 동작해야 할 때가 있다.
+  - 그런데 `@Autowired`만 사용하면 `required` 옵션의 기본값이 `true`로 되어 있어서 `자동 주입 대상`이 없으면 오류가 발생한다.
+
+- `자동 주입 대상`을 `옵션`으로 처리하는 방법
+  - `@Autowired(required=false)`: 자동 주입할 대상이 없으면 수정자 메서드 자체가 호출 안됨
+  - `@Nullable`(org.springframework.lang.@Nullable): 자동 주입할 대상이 없으면 `null`이 입력된다.
+  - `Optional<>` : 자동 주입할 대상이 없으면 `Optional.empty`가 입력된다.
+  - 소스코드 (비공개 레포지토리): `AutowiredTest`
+    - https://github.com/JohnKim0911/kyh_spring_basic/blob/master/src/test/java/hello/core/autowired/AutowiredTest.java
+  - 참고:` @Nullable`, `Optional`은 스프링 전반에 걸쳐서 지원된다. 
+    - 예를 들어서 생성자 자동 주입에서 특정 필드에만 사용해도 된다.
+
+### 생성자 주입을 선택해라!
+
+- 추세
+  - 과거에는 `수정자 주입`과 `필드 주입`을 많이 사용했지만, 
+  - 최근에는 스프링을 포함한 DI 프레임워크 대부분이 `생성자 주입`을 권장한다.
+
+- 왜 `생성자 주입`을 권장하나?
+  - `불변`
+    - 대부분의 의존관계 주입은 한번 일어나면 애플리케이션 종료시점까지 의존관계를 변경할 일이 없다. 
+      - 오히려 대부분의 의존관계는 애플리케이션 종료 전까지 변하면 안된다.(불변해야 한다.)
+    - 수정자 주입을 사용하면, `setXxx` 메서드를 `public`으로 열어두어야 한다.
+      - 누군가 실수로 변경할 수 도 있고, 변경하면 안되는 메서드를 열어두는 것은 좋은 설계 방법이 아니다.
+    - 생성자 주입은 객체를 생성할 때 딱 1번만 호출되므로 이후에 호출되는 일이 없다. 따라서 불변하게 설계할 수 있다.
+  - `누락`
+    - 소스 코드 (비공개 레포지토리): 
+      - `OrderServiceImpl`: (3. setter 주입) 참고
+        - https://github.com/JohnKim0911/kyh_spring_basic/blob/master/src/main/java/hello/core/order/OrderServiceImpl.java
+      - `OrderServiceImplTest`
+        - https://github.com/JohnKim0911/kyh_spring_basic/blob/master/src/test/java/hello/core/order/OrderServiceImplTest.java
+    - 프레임워크 없이 순수한 자바 코드를 단위 테스트 하는 경우에 의존관계 주입이 누락될 수 있다.
+      - `컴파일러`가 에러를 발생시키지 않고 실행된다. 실행 후에야 문제를 찾을 수 있다.
+      - 반면, `생성자 주입`을 사용하면 주입 데이터를 누락 했을 때 `컴파일 오류`가 발생한다.
+  - `final` 키워드
+    - `생성자 주입`을 사용하면 필드에 `final` 키워드를 사용할 수 있다. 
+      - 그래서 `생성자`에서 혹시라도 값이 설정되지 않는 오류를 `컴파일 시점`에 막아준다.
+    - 참고: 오직 `생성자 주입 방식`만 `final` 키워드를 사용할 수 있다.
+      - `수정자 주입`을 포함한 `나머지 주입 방식`은 모두 `생성자` 이후에 호출되므로, 필드에 `final` 키워드를 사용 할 수 없다.
+
+- 정리
+  - `생성자 주입` 방식을 선택하는 이유는 여러가지가 있지만, 프레임워크에 의존하지 않고, `순수한 자바` 언어의 특징을 잘 살리는 방법이기도 하다.
+  - 기본으로 `생성자 주입`을 사용하고, 필수 값이 아닌 경우에는 `수정자 주입` 방식을 옵션으로 부여하면 된다. 
+    - `생성자 주입`과 `수정자 주입`을 동시에 사용할 수 있다.
+  - 항상 `생성자 주입`을 선택해라! 
+    - 그리고 가끔 옵션이 필요하면 `수정자 주입`을 선택해라. 
+    - `필드 주입`은 사용하지 않는 게 좋다.
+
+### 롬복과 최신 트랜드
+
+- 서론
+  - 막상 개발을 해보면, 대부분이 다 불변이다.
+    - 필드에 `final` 키워드를 사용하고, `생성자`도 만들어야 하고, 주입 받은 값을 `대입하는 코드`도 만들어야 한다.
+    - 이런 반복적인 코드를 좀 편리하게 사용하는 방법? --> `롬복`
+
+
+- 롬봄 라이브러리 적용 방법
+  - `인텔리제이`에 롬복 설치
+    - 롬복 설치
+
+      ![install lombok](https://github.com/user-attachments/assets/7165b06a-b7d8-4e22-949b-72f73473d936)
+
+    - 세팅 (`Annotation Processors` --> `Enable annotation processing`)
+
+      ![annotaion processors](https://github.com/user-attachments/assets/9122bcf7-b148-4c7f-aead-987d999c66bf)
+
+  - `build.gradle`에 라이브러리 및 환경 추가
+    - 소스 코드 (비공개 레포지토리):
+      - https://github.com/JohnKim0911/kyh_spring_basic/blob/master/build.gradle
+
+- 롬복 테스트
+  - 소스 코드 (비공개 레포지토리): `HelloLombok`
+    - https://github.com/JohnKim0911/kyh_spring_basic/blob/master/src/main/java/hello/core/HelloLombok.java
+      - `Lombok`을 사용하면, 적용한 애노테이션에 따라서 `getter`, `setter`, `생성자`, `toString` 등을 자동으로 만들어준다. (실무에서 많이 쓴다!!) ⭐
+        - `@Getter`
+        - `@Setter`
+        - `@NoArgsConstructor`
+        - `@ToString`
+
+- 롬봄 적용
+  - 소스 코드 (비공개 레포지토리): `OrderServiceImpl` (7. 롬봄 사용) 참고
+    - https://github.com/JohnKim0911/kyh_spring_basic/blob/master/src/main/java/hello/core/order/OrderServiceImpl.java
+      - `@RequiredArgsConstructor`: 롬복이 `final`로 되어있는 필드를 보고 자동으로 생성자를 만들어준다. ⭐
+        - 많이 사용한다!! 
+          - 개발자가 별도로 해줄게 없다. 애노테이션만 붙이면 된다. 편하다!!!
+        - 롬복이 자바의 애노테이션 프로세서라는 기능을 이용해서 컴파일 시점에 생성자 코드를 자동으로 생성해준다.
+          - 실제 `class`파일을 열어보면 확인할 수 있다.
+
+### 조회 빈이 2개 이상 - 문제
+
+- `@Autowired`는 `타입(Type)`으로 조회한다.
+  - 타입으로 조회하기 때문에, 마치 다음 코드와 유사하게 동작한다. (실제로는 더 많은 기능을 제공한다.) 
+    - `ac.getBean(DiscountPolicy.class)`
+  - 타입으로 조회하면 선택된 빈이 2개 이상일 때 문제가 발생한다.
+    - `NoUniqueBeanDefinitionException` 발생
+      - 예시) `DiscountPolicy` 인터페이스의 구현체인 `FixDiscountPolicy`, `RateDiscountPolicy` 둘다 스프링 빈으로 선언시
+        - 즉, 2개 모두 `@Component`가 붙어있을시...
+        - 하나의 빈을 기대했는데 `fixDiscountPolicy`, `rateDiscountPolicy` 2개가 발견되었다고 에러로 알려준다.
+
+- 해결방법: `@Autowired` 필드 명, `@Qualifier`, `@Primary`
+  - `하위 타입`으로 지정할 수 도 있지만, 하위 타입으로 지정하는 것은 `DIP`를 위배하고 `유연성`이 떨어진다. 
+  - 그리고 이름만 다르고, 완전히 `똑같은 타입의 스프링 빈이 2개 있을 때` 해결이 안된다.
+  - `스프링 빈을 수동 등록`해서 문제를 해결해도 되지만, `의존 관계 자동 주입`에서 해결하는 여러 방법이 있다.
+  - 바로 아래에서 다룬다..
+
+### @Autowired 필드 명, @Qualifier, @Primary
+
+- 조회 대상 빈이 2개 이상일 때 해결 방법
+  - `@Autowired` 필드 명 매칭
+  - `@Qualifier` --> `@Qualifier`끼리 매칭 --> 빈 이름 매칭
+  - `@Primary` 사용
+
+- `@Autowired` 필드 명 매칭
+  - `@Autowired`는 `타입` 매칭을 시도하고, 이때 여러 빈이 있으면 `필드 이름`, `파라미터 이름`으로 빈 이름을 추가 매칭한다.
+  - 소스 코드 (비공개 레포지토리): `OrderServiceImpl` (8. 파리미터명으로 빈 이름 매칭) 참고
+      - https://github.com/JohnKim0911/kyh_spring_basic/blob/master/src/main/java/hello/core/order/OrderServiceImpl.java
+  - `@Autowired` 매칭 우선순위 정리
+    - 1순위) `타입` 매칭
+    - 2순위) `타입` 매칭의 결과가 2개 이상일 때 `필드 명`, `파라미터 명`으로 빈 이름 매칭
+
+- `@Qualifier` 사용
+  - 개요
+    - `@Qualifier`는 추가 구분자를 붙여주는 방법이다. 
+    - 주입시 추가적인 방법을 제공하는 것이지, 빈 이름을 변경하는 것은 아니다.
+  - 방법
+    - 빈 등록시 `@Qualifier`를 붙여 준다.
+      - 소스 코드 (비공개 레포지토리): `RateDiscountPolicy`, `FixDiscountPolicy` 참고
+        - https://github.com/JohnKim0911/kyh_spring_basic/tree/master/src/main/java/hello/core/discount
+          - `@Qualifier("mainDiscountPolicy")`
+          - `@Qualifier("fixDiscountPolicy")`
+    - 주입시에 `@Qualifier`를 붙여주고 등록한 이름을 적어준다.
+        - 소스 코드 (비공개 레포지토리): `OrderServiceImpl` (9. @Qualifier 사용 ) 참고
+          - https://github.com/JohnKim0911/kyh_spring_basic/blob/master/src/main/java/hello/core/order/OrderServiceImpl.java
+            - `public OrderServiceImpl(MemberRepository memberRepository, @Qualifier("mainDiscountPolicy") DiscountPolicy discountPolicy) {...}`
+
+- `@Primary` 사용
+  - `@Autowired`시에 여러 빈이 매칭되면 `@Primary`가 우선권을 가진다.
+  - 소스 코드 (비공개 레포지토리):
+    - `RateDiscountPolicy`: `@Primary` 추가
+      - https://github.com/JohnKim0911/kyh_spring_basic/blob/master/src/main/java/hello/core/discount/RateDiscountPolicy.java
+    - `OrderServiceImpl`: 사용 코드
+      - https://github.com/JohnKim0911/kyh_spring_basic/blob/master/src/main/java/hello/core/order/OrderServiceImpl.java
+
+- `@Primary` vs `@Qualifier` 
+  - 차이점
+    - `@Qualifier`의 단점은 주입 받을 때 다음과 같이 모든 코드에 `@Qualifier`를 붙여주어야 한다는 점이다.
+    - `public OrderServiceImpl(MemberRepository memberRepository, @Qualifier("mainDiscountPolicy") DiscountPolicy discountPolicy) {...}`
+    - 반면에 `@Primary`를 사용하면 이렇게 `@Qualifier`를 붙일 필요가 없다.
+  - 활용방법:
+    - 자주 `@primary`,  특별: `@Qualifier`
+    - 예시)
+      - 코드에서 `자주 사용하는 메인` 데이터베이스의 커넥션을 획득하는 스프링 빈이 있고, 코드에서 특별한 기능으로 `가끔 사용하는 서브` 데이터베이스의 커넥션을 획득하는 스프링 빈이 있다고 생각해보자.
+        - `메인` 데이터베이스의 커넥션을 획득하는 스프링 빈은 `@Primary`를 적용해서 조회하는 곳에서 `@Qualifier` 지정 없이 편리하게 조회하고,
+        - `서브` 데이터베이스 커넥션 빈을 획득할 때는 `@Qualifier`를 지정해서 `명시적으로` 획득 하는 방식으로 사용하면 코드를 깔끔하게 유지할 수 있다. 
+  - 우선순위
+    - `@Primary` < `@Qualifier`
+      - `@Primary`는 기본값 처럼 동작하는 것이고,` @Qualifier`는 매우 상세하게 동작한다.
+      - 스프링은 `자동`보다는 `수동`이, `넒은 범위의 선택권` 보다는 `좁은 범위의 선택권`이 우선 순위가 높다. 
+      - 따라서 여기서도 `@Qualifier`가 우선권이 높다.
+
+### 애노테이션 직접 만들기
+
+- `@Qualifier("mainDiscountPolicy")` 이렇게 `문자`를 적으면 컴파일시 타입 체크가 안되는데, `애노테이션`을 직접 만들면 문제를 해결할 수 있다.
+- 예시
+  - 애노테이션 생성
+    - 소스 코드 (비공개 레포지토리): `MainDiscountPolicy`
+      - https://github.com/JohnKim0911/kyh_spring_basic/blob/master/src/main/java/hello/core/annotation/MainDiscountPolicy.java
+        - 생성시 `@interface` 키워드 사용
+        - 애노테이션 총 4개 추가
+          - `Qualifier` 클래스(애노테이션)에 붙어있는 애노테이션 3줄 복사해왔다. (`@Target(...)`, `@Retention(...)`, `@Inherited`)
+          - `@Qualifier("mainDiscountPolicy")` 추가 --> 이게 실제 애노테이션 명칭이 됨. (`@MainDiscountPolicy`)
+  - 애노테이션 사용
+    - 소스 코드 (비공개 레포지토리): `OrderServiceImpl`
+      - https://github.com/JohnKim0911/kyh_spring_basic/blob/master/src/main/java/hello/core/order/OrderServiceImpl.java
+        - `public OrderServiceImpl(MemberRepository memberRepository, @MainDiscountPolicy DiscountPolicy discountPolicy) {...}`
+          - `@MainDiscountPolicy` 사용
+- 참고
+  - 애노테이션에는 `상속`이라는 개념이 없다. 
+  - 이렇게 여러 애노테이션을 모아서 사용하는 기능은 `스프링`이 지원해주는 기능이다. 
+  - `@Qualifier` 뿐만 아니라 다른 애노테이션들도 함께 조합해서 사용할 수 있다. 
+    - 단적으로 `@Autowired`도 재정의 할 수 있다. 
+      - 물론 스프링이 제공하는 기능을 뚜렷한 목적 없이 무분별하게 재정의 하는 것은 유지보수에 더 혼란만 가중할 수 있다.
+
+### 조회한 빈이 모두 필요할 때, List, Map
+
+- 서론
+  - 해당 타입의 `스프링 빈`이 다 필요한 경우도 있다.
+    - 예시) 할인 서비스를 제공하는데, 클라이언트가 할인의 종류(rate, fix)를 선택할 수 있다고 가정해보자. 
+  - 스프링을 사용하면 소위 말하는 전략 패턴을 매우 간단하게 구현할 수 있다.
+
+- 소스 코드 (비공개 레포지토리): `AllBeanTest`
+  - https://github.com/JohnKim0911/kyh_spring_basic/blob/master/src/test/java/hello/core/autowired/AllBeanTest.java
+    - `DiscountPolicy`의 하위 타입인 `fixDiscountPolicy`, `rateDiscountPolicy` 스프링빈을 모두 불러와서 하나의 `List`, `Map`에 각각 저장해놓고 원하는 빈을 꺼내어 사용한다.
+
+### 자동, 수동의 올바른 실무 운영 기준
+
+- 편리한 `자동` 기능을 기본으로 사용하자.
+  - 스프링, 스프링 부트의 추세가 `자동`임. (자세한 내용은 교재 p.20 참고)
+- `수동 빈 등록`은 언제?
+  - 애플리케이션은 크게 `업무 로직`과 `기술 지원 로직`으로 나눌 수 있다.
+    - `업무 로직 빈`: 
+      - 웹을 지원하는 `컨트롤러`, 핵심 비즈니스 로직이 있는 `서비스`, 데이터 계층의 로직을 처리하는 `리포지토리`등이 모두 업무 로직이다. 
+      - 보통 비즈니스 요구사항을 개발할 때 추가되거나 변경된다.
+    - `기술 지원 빈`: 
+      - `기술적인 문제`나 `공통 관심사(AOP)`를 처리할 때 주로 사용된다. 
+      - 데이터베이스 연결이나, 공통 로그처리 처럼 업무 로직을 지원하기 위한 `하부 기술`이나 `공통 기술`들이다.
+  - `업무 로직`은 숫자도 매우 많고, 한번 개발해야 하면 컨트롤러, 서비스, 리포지토리 처럼 어느정도 유사한 패턴이 있다. 
+    - 이런 경우 `자동 기능`을 적극 사용하는 것이 좋다. 
+    - 보통 문제가 발생해도 어떤 곳에서 문제가 발생했는지 명확하게 파악하기 쉽다.
+  - `기술 지원 로직`은 업무 로직과 비교해서 그 수가 매우 적고, 보통 애플리케이션 전반에 걸쳐서 광범위하게 영향을 미친다. 
+    - 그리고 업무 로직은 문제가 발생했을 때 어디가 문제인지 명확하게 잘 드러나지만, 기술 지원 로직은 적용이 잘 되고 있는지 아닌지 조차 파악하기 어려운 경우가 많다.
+    - 그래서 이런 기술 지원 로직들은 가급적 `수동 빈 등록`을 사용해서 명확하게 드러내는 것이 좋다. ⭐
+      - 설정 정보에 한눈에 딱! 바로 나타나게 하는 것이 유지보수 하기 좋다.
+- 비즈니스 로직 중에서 `다형성`을 적극 활용할 때
+  - 위 `AllBeanTest` 예시
+    - `DiscountService`가 의존관계 자동 주입으로 `Map<String, DiscountPolicy>`에 주입을 받는 상황.
+      - 여기에 어떤 빈들이 주입될 지, 각 빈들의 이름은 무엇일지 코드만 보고 한번에 쉽게 파악하기 어렵다.
+    - `다형성`이 내가 작성한거면 이해가 잘 되는데, 다른 사람 코드는 파악하기 너무 어렵다.
+      - 이런 경우 `수동 빈으로 등록`하거나 또는 `자동`으로하면 `특정 패키지에 같이 묶어`두는게 좋다!
+    - 이 부분을 별도의 `설정 정보`로 만들고, `수동으로 등록`하면 다음과 같다.
+
+      ```java
+      @Configuration
+      public class DiscountPolicyConfig {
+        
+          @Bean
+          public DiscountPolicy rateDiscountPolicy() {
+              return new RateDiscountPolicy();
+          }
+        
+          @Bean
+          public DiscountPolicy fixDiscountPolicy() {
+              return new FixDiscountPolicy();
+          }
+      }
+      ```
+      - 이 `설정 정보`만 봐도 한눈에 빈의 이름은 물론이고, 어떤 빈들이 주입될지 파악할 수 있다.
+      - 그래도 `빈 자동 등록`을 사용하고 싶으면 파악하기 좋게 `DiscountPolicy`의 구현 빈들만 따로 모아서 `특정 패키지`에 모아두자.
+
+- 정리
+  - 편리한 `자동 기능`을 `기본`으로 사용하자.
+  - 직접 등록하는 기술 지원 객체는 `수동 등록`.
+  - 다형성을 적극 활용하는 비즈니스 로직은 `수동 등록`을 고민해보자.
 
 ## 9. 빈 생명주기 콜백
 
