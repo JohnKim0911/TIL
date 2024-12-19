@@ -11,7 +11,7 @@
 | 4  | [스프링 핵심 원리 이해2 - 객체 지향 원리 적용](#4-스프링-핵심-원리-이해2---객체-지향-원리-적용) | 1시간 38분   | 30          | 2024.12.17 |
 | 5  | [스프링 컨테이너와 스프링 빈](#5-스프링-컨테이너와-스프링-빈)                         | 1시간 19분   | 19          | 2024.12.18 |
 | 6  | [싱글톤 컨테이너](#6-싱글톤-컨테이너)                                       | 1시간 15분   | 16          | 2024.12.18 |
-| 7  | [컴포넌트 스캔](#7-컴포넌트-스캔)                                         | 51분       |             |            |
+| 7  | [컴포넌트 스캔](#7-컴포넌트-스캔)                                         | 51분       | 12          | 2024.12.19 |
 | 8  | [의존관계 자동 주입](#8-의존관계-자동-주입)                                   | 1시간 53분   |             |            |
 | 9  | [빈 생명주기 콜백](#9-빈-생명주기-콜백)                                     | 35분       |             |            |
 | 10 | [빈 스코프](#10-빈-스코프)                                            | 1시간 44분   |             |            |
@@ -1103,6 +1103,202 @@ ApplicationContext applicationContext =  new AnnotationConfigApplicationContext(
   - 스프링 설정 정보(`AppConfig`)는 항상 `@Configuration`을 사용하자.
 
 ## 7. 컴포넌트 스캔
+
+### 컴포넌트 스캔과 의존관계 자동 주입 시작하기
+
+- 지금까지 `스프링 빈`을 등록할 때는 자바 코드의 `@Bean`이나 `XML`의 `<bean>` 등을 통해서 설정 정보(`AppConfig`)에 직접 등록할 `스프링 빈`을 나열했다.
+- 스프링은...
+  - 설정 정보가 없어도 자동으로 `스프링 빈`을 등록하는 `컴포넌트 스캔` 기능을 제공한다.
+    - `@Component` 애노테이션이 붙은 클래스를 스캔해서 `스프링 빈`으로 등록.
+  - 또 의존관계도 자동으로 주입하는 `@Autowired` 라는 기능도 제공한다
+
+- 기존 `AppConfig.java`는 남겨두고, 새로운 `AutoAppConfig.java`를 만들자.
+  - 소스 코드 (비공개 레포지토리): `AutoAppConfig`
+    - https://github.com/JohnKim0911/kyh_spring_basic/blob/master/src/main/java/hello/core/AutoAppConfig.java
+      - `@ComponentScan`을 붙여주었다.
+      - 기존의 `AppConfig`와는 다르게 `@Bean`으로 등록한 클래스가 하나도 없다!
+      - 참고
+        - `컴포넌트 스캔`을 사용하면 `@Configuration`이 붙은 설정 정보도 자동으로 등록되기 때문에,
+          `AppConfig`, `TestConfig` 등 앞서 만들어두었던 설정 정보도 함께 등록되고, 실행되어 버린다.
+          - 그래서 `excludeFilters`를 이용해서 설정정보는 `컴포넌트 스캔` 대상에서 제외했다.
+          - `@Configuration` 소스코드를 열어보면 `@Component` 애노테이션이 붙어있다.
+        - 보통 설정 정보를 `컴포넌트 스캔` 대상에서 제외하지는 않지만, 기존 예제 코드를 최대한 남기고 유지하기 위해서 이 방법을 선택했다.
+
+- 각 클래스가 `컴포넌트 스캔`의 대상이 되도록 `@Component` 애노테이션을 붙여주자.
+  - (아래 각 링크는 비공개 레포지토리임!)
+  - `MemoryMemberRepository`: `@Component` 추가
+    - https://github.com/JohnKim0911/kyh_spring_basic/blob/master/src/main/java/hello/core/member/MemoryMemberRepository.java
+  - `RateDiscountPolicy`: `@Component` 추가
+    - https://github.com/JohnKim0911/kyh_spring_basic/blob/master/src/main/java/hello/core/discount/RateDiscountPolicy.java
+  - `MemberServiceImpl`: `@Component`, `@Autowired` 추가
+    - https://github.com/JohnKim0911/kyh_spring_basic/blob/master/src/main/java/hello/core/member/MemberServiceImpl.java
+      - `@Autowired`는 의존관계를 자동으로 주입해준다.
+        - 이전에 `AppConfig`에서는 `@Bean`으로 직접 설정 정보를 작성했고, 의존관계도 직접 명시했다.
+        - 이제는 이런 설정 정보 자체가 없기 때문에, 의존관계 주입도 이 클래스 안에서 해결해야 한다.
+  - `OrderServiceImpl`: `@Component`, `@Autowired` 추가
+    - https://github.com/JohnKim0911/kyh_spring_basic/blob/master/src/main/java/hello/core/order/OrderServiceImpl.java
+      - `@Autowired`를 사용하면 생성자에서 여러 의존관계도 한번에 주입받을 수 있다.
+- 테스트 코드: `AutoAppConfigTest`
+  - https://github.com/JohnKim0911/kyh_spring_basic/blob/master/src/test/java/hello/core/scan/AutoAppConfigTest.java
+    - 설정 정보로 `AutoAppConfig` 클래스를 넘겨준다.
+    - 로그를 잘 보면 `컴포넌트 스캔`이 잘 동작하는 것을 확인할 수 있다.
+
+- `컴포넌트 스캔`, `자동 의존관계 주입` 동작 방식
+  - `@ComponentScan`
+  
+    ![ComponentScan](https://github.com/user-attachments/assets/14d077b1-45a0-4b81-8d38-c5dae88ebd41)
+
+    - `@ComponentScan`은 `@Component`가 붙은 모든 클래스를 `스프링 빈`으로 등록한다.
+    - 이때` 스프링 빈`의 기본 이름은 클래스명을 사용하되 맨 앞글자만 소문자를 사용한다.
+      - **빈 이름 기본 전략**: `MemberServiceImpl` 클래스 --> `memberServiceImpl`
+      - **빈 이름 직접 지정**: 만약 스프링 빈의 이름을 직접 지정하고 싶으면
+        - 예시) `@Component("memberService2")`
+
+  - `@Autowired` 의존관계 자동 주입
+
+    ![Autowired](https://github.com/user-attachments/assets/54f86fd7-73bd-472d-91b3-9242c54581ba)
+
+    - 생성자에 `@Autowired`를 지정하면, `스프링 컨테이너`가 자동으로 해당 `스프링 빈`을 찾아서 주입한다.
+    - 이때 기본 조회 전략은 타입이 같은 빈을 찾아서 주입한다.
+      - `getBean(MemberRepository.class)`와 동일하다고 이해하면 된다.
+    - 생성자에 파라미터가 많아도 다 찾아서 자동으로 주입한다. (아래 그림 참고)
+    
+      ![Autowired2](https://github.com/user-attachments/assets/0bb40663-4e36-4752-a11a-500bd10b3e7a)
+
+### 탐색 위치와 기본 스캔 대상
+
+- 탐색할 패키지의 시작 위치 지정
+  - 모든 자바 클래스를 다 컴포넌트 스캔하면 시간이 오래 걸린다. 그래서 꼭 필요한 위치부터 탐색하도록 시작 위치를 지정할 수 있다.
+  - 소스 코드 (비공개 레포지토리): `AutoAppConfig`
+    - https://github.com/JohnKim0911/kyh_spring_basic/blob/master/src/main/java/hello/core/AutoAppConfig.java
+      - 위 링크 안의 주석 참고할 것. (`basePackages`, `basePackageClasses`, `지정하지 않을시 default 값`)
+      - 추가 내용) 여러 시작 위치를 지정할 수도 있다.
+          - 예시) `basePackages = {"hello.core", "hello.service"}`
+- 권장하는 방법
+  - 패키지 위치를 지정하지 않고, 설정 정보 클래스의 위치를 `프로젝트 최상단`에 두는 것을 권장한다.
+    - 최근 `스프링 부트`도 이 방법을 기본으로 제공한다.
+  - 예시)
+    - `com.hello` --> 프로젝트 시작 루트, 
+      - 여기에 `AppConfig` 같은 메인 설정 정보를 두고, `@ComponentScan` 애노테이션을 붙이고, `basePackages` 지정은 생략한다.
+      - 이렇게 하면 `com.hello` 를 포함한 하위는 모두 자동으로 `컴포넌트 스캔`의 대상이 된다.
+  - 참고
+    - `스프링 부트`를 사용하면 `스프링 부트`의 대표 시작 정보인 `@SpringBootApplication` 를 이 프로젝트 시작 루트 위치에 두는 것이 관례이다.
+      - (그리고 이 설정안에 바로 `@ComponentScan` 이 들어있다!)
+
+- `컴포넌트 스캔` 기본 대상
+  - `컴포넌트 스캔`은 `@Component` 뿐만 아니라 다음과 내용도 추가로 대상에 포함한다.
+    - `@Component` : 컴포넌트 스캔에서 사용
+    - `@Controller` : 스프링 MVC 컨트롤러에서 사용
+    - `@Service` : 스프링 비즈니스 로직에서 사용
+    - `@Repository` : 스프링 데이터 접근 계층에서 사용
+    - `@Configuration` : 스프링 설정 정보에서 사용
+  - 다음 해당 클래스들의 소스 코드를 보면 `@Component`를 포함하고 있다.
+    - `Controller`, `Service`, `Repository` 인터테이스
+- 참고: 
+  - 애노테이션에는 상속관계라는 것이 없다.
+  - 애노테이션이 특정 애노테이션을 들고 있는 것을 인식할 수 있는 것은 
+    - `자바` 언어가 지원하는 기능은 아니고,
+    - `스프링`이 지원하는 기능이다.
+- `컴포넌트 스캔`의 용도 뿐만 아니라 다음 애노테이션이 있으면 스프링은 부가 기능을 수행한다.
+  - `@Controller` : 스프링 MVC 컨트롤러로 인식
+  - `@Repository` : 스프링 데이터 접근 계층으로 인식하고, 데이터 계층의 예외를 스프링 예외로 변환해준다.
+  - `@Configuration` : 앞서 보았듯이 스프링 설정 정보로 인식하고, 스프링 빈이 싱글톤을 유지하도록 추가 처리를 한다.
+  - `@Service` : 사실 특별한 처리를 하지 않는다. 대신 개발자들이 핵심 비즈니스 로직이 여기에 있겠구나 라고 비즈니스 계층을 인식하는데 도움이 된다.
+
+- 참고: 
+  - `useDefaultFilters` 옵션은 기본으로 켜져있는데, 이 옵션을 끄면 기본 스캔 대상들이 제외된다.
+    - 그냥 이런 옵션이 있구나 정도 알고 넘어가자.
+
+### 필터
+
+- 필터를 쓰지 않고 기본(`@ComponentScan()`) 그대로 쓰는 것을 권장한다.
+  - 지금은 이런게 있구나 정도 참고만 하자.
+
+- 설정 정보의 `@ComponentScan()`에 옵션을 주어 필터를 지정할 수 있다.
+  - `includeFilters` : `컴포넌트 스캔` 대상을 추가로 지정한다. `(거의 사용 안함)`
+  - `excludeFilters` : `컴포넌트 스캔`에서 제외할 대상을 지정한다. `(간혹 사용함)`
+
+- 소스 코드 (비공개 레포지토리):
+  - https://github.com/JohnKim0911/kyh_spring_basic/tree/master/src/test/java/hello/core/scan/filter
+    - 사용할 애노테이션을 직접 만든다.
+      - `MyIncludeComponent`: 컴포넌트 스캔 대상에 추가할 애노테이션
+      - `MyExcludeComponent`: 컴포넌트 스캔 대상에서 제외할 애노테이션
+    - 빈 2개를 만든다.
+      - `BeanA`: 컴포넌트 스캔 대상에 추가할 클래스. `@MyIncludeComponent` 적용
+      - `BeanB`: 컴포넌트 스캔 대상에서 제외할 클래스. `@MyExcludeComponent` 적용
+    - 설정 정보와 전체 테스트 코드 작성: `ComponentFilterAppConfigTest`
+        - 중첩 클래스로 설정 정보 클래스 생성 (`ComponentFilterAppConfig`)
+          - `@ComponentScan()`에 필터를 추가한다.
+            - `includeFilters = @Filter(type = FilterType.ANNOTATION, classes = MyIncludeComponent.class)`
+              - `BeanA`가 스프링 빈에 등록된다.
+            - `excludeFilters = @Filter(type = FilterType.ANNOTATION, classes = MyExcludeComponent.class)`
+              - `BeanB`는 스프링 빈에 등록되지 않는다.
+
+- `FilterType` 5가지 옵션
+  - `ANNOTATION`: 기본값, 애노테이션을 인식해서 동작한다.
+    - ex) `org.example.SomeAnnotation`
+  - `ASSIGNABLE_TYPE`: 지정한 타입과 자식 타입을 인식해서 동작한다.
+    - ex) `org.example.SomeClass`
+  - `ASPECTJ`: AspectJ 패턴 사용
+    - ex) `org.example..*Service+`
+  - `REGEX`: 정규 표현식
+    - ex) `org\.example\.Default.*`
+  - `CUSTOM`: TypeFilter 이라는 인터페이스를 구현해서 처리
+    - ex) `org.example.MyTypeFilter`
+
+- 예시) `BeanA`도 빼고 싶으면 다음과 같이 추가하면 된다.
+    ```java
+    //ComponentFilterAppConfigTest의 일부 코드
+    
+    @Configuration
+    @ComponentScan(
+        includeFilters = {
+                @Filter(type = FilterType.ANNOTATION, classes = MyIncludeComponent.class)
+        },
+        excludeFilters = {
+                @Filter(type = FilterType.ANNOTATION, classes = MyExcludeComponent.class), 
+                @Filter(type = FilterType.ASSIGNABLE_TYPE, classes = BeanA.class) //추가. BeanA도 빼기
+        }
+    )
+    static class ComponentFilterAppConfig {
+    }
+    ```
+    - 원본 소스코드 (비공개 레포지토리): `ComponentFilterAppConfigTest`
+        - https://github.com/JohnKim0911/kyh_spring_basic/blob/master/src/test/java/hello/core/scan/filter/ComponentFilterAppConfigTest.java
+
+- 정리: 
+  - `@Component`면 충분하기 때문에, `includeFilters`를 사용할 일은 거의 없다.
+  - `excludeFilters`는 여러가지 이유로 간혹 사용할 때가 있지만 많지는 않다.
+  - 최근 `스프링 부트`는 `컴포넌트 스캔`을 기본으로 제공하는데, 옵션을 변경하면서 사용하기 보다는 스프링의 기본 설정에 최대한 맞추어 사용하는 것을 권장한다.
+
+### 중복 등록과 충돌
+
+- `컴포넌트 스캔`에서 같은 빈 이름을 등록하면? 2가지 상황으로 나누어 보자.
+  - `자동 빈 등록` vs `자동 빈 등록 `
+  - `수동 빈 등록` vs `자동 빈 등록`
+
+- `자동 빈 등록` vs `자동 빈 등록`
+  - `컴포넌트 스캔`에 의해 자동으로 `스프링 빈`이 등록되는데, 그 이름이 같은 경우 스프링은 `오류`를 발생시킨다. (`ConflictingBeanDefinitionException`)
+
+- `수동 빈 등록` vs `자동 빈 등록`
+  - 수동 빈 등록이 우선권을 가졌었으나 문제가 많아, 최신 `스프링 부트`에서는 `오류`가 나도록 기본 값을 바꾸었다.
+  - 소스 코드 (비공개 레포지토리):
+    - 수동 빈 등록: `AutoAppConfig`
+        - https://github.com/JohnKim0911/kyh_spring_basic/blob/master/src/main/java/hello/core/AutoAppConfig.java
+          - `@Bean(name = "memoryMemberRepository")`
+    - 자동 빈 등록: `MemoryMemberRepository`
+      - https://github.com/JohnKim0911/kyh_spring_basic/blob/master/src/main/java/hello/core/member/MemoryMemberRepository.java
+          - `@Component`
+          - `public class MemoryMemberRepository implements MemberRepository {}`
+  - 이전에는...
+    - 수동 빈 등록이 우선권을 가졌었다. (수동 빈이 자동 빈을 오버라이딩 해버린다.)
+    - 문제점
+      - 여러명이서 개발을 하다보니, 설정들이 꼬여서 잡기 어려운 버그가 만들어진다.
+        - 누구는 수동을 고려해서 하고, 누구는 자동으로만 하는데, 결국 수동이 다 오버라이딩 해버린다.
+        - 그래서 예상치 못한 문제들이 발생한다...
+  - 최근에는...
+    - 그래서 최근에는 `스프링 부트`에서는 `수동 빈 등록`과 `자동 빈 등록`이 충돌나면 `오류`가 발생하도록 기본 값을 바꾸었다.
+      - 스프링 부트인 `CoreApplication`을 실행해보면 오류를 볼 수 있다.
 
 ## 8. 의존관계 자동 주입
 
