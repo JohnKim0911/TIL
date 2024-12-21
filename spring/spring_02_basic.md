@@ -1798,18 +1798,149 @@ ApplicationContext applicationContext =  new AnnotationConfigApplicationContext(
 
 - 서론
   - `스프링 컨테이너`에 `프로토타입 스코프의 빈`을 요청하면 `항상 새로운 객체 인스턴스`를 생성해서 반환한다. 
-  - 하지만 `싱글톤 빈`과 `함께` 사용할 때는 의도한 대로 잘 동작하지 않으므로 `주의`해야 한다.
+  - 하지만 `싱글톤 빈`과 함께 사용할 때는 의도한 대로 잘 동작하지 않으므로 `주의`해야 한다.
+- `프로토타입 빈` 직접 요청
+    - `스프링 컨테이너`에 `프로토타입 빈`을 요청하면 `항상 새로운 객체 인스턴스`를 생성해서 반환한다. 
+    
+      ![스프링 컨테이너에 프로토타입 빈 직접 요청2](https://github.com/user-attachments/assets/ae1a5408-402d-4384-8b64-9e66de1cf063)
 
-- 프로토타입 빈 직접 요청
+      - 클라이언트 A,B의 카운트가 각각 1이다. 
+    - 소스 코드 (비공개 레포지토리): `SingletonWithPrototypeTest1` - `prototypeFind()` 참고
+      - https://github.com/JohnKim0911/kyh_spring_basic/blob/master/src/test/java/hello/core/scope/SingletonWithPrototypeTest1.java
 
-    ![스프링 컨테이너에 프로토타입 빈 직접 요청1](https://github.com/user-attachments/assets/447a7459-ff7a-4e14-a8c4-9bc326eb0e21)
+- `싱글톤 빈`에서 `프로토타입 빈` 사용 ⭐
+  - `1. 싱글톤과 프로토타입을 같이 쓰면, 프로토타입이 싱글톤처럼 사용되어버린다.` 
+    - (싱글톤이 같은 프로토타입을 계속 가지고 있어서)
+    - 클라이언트 A,B의 카운트가 모두 2가 된다. (카운트를 공유한다.)
 
+    ![싱글톤에서 프로토타입 빈 사용1](https://github.com/user-attachments/assets/3b51d3d4-c382-46fc-aa7c-8f9220506bff)
+    
+    ![싱글톤에서 프로토타입 빈 사용2](https://github.com/user-attachments/assets/7a049e1b-8c08-4a33-a82c-ea3fd0a3b2be)
+
+    ![싱글톤에서 프로토타입 빈 사용3](https://github.com/user-attachments/assets/4966222a-2e7a-4b69-b89b-2c690ed63e65)
+
+    - `clientBean`이 내부에 가지고 있는 `프로토타입 빈`은 이미 과거에 주입이 끝난 빈이다. 
+    - 주입 시점에 스프링 컨테이너에 요청해서 `프로토타입 빈`이 새로 생성이 된 것이지, 사용 할 때마다 새로 생성되는 것이 아니다!
+
+  - 소스 코드 (비공개 레포지토리): `SingletonWithPrototypeTest1`
+      - https://github.com/JohnKim0911/kyh_spring_basic/blob/master/src/test/java/hello/core/scope/SingletonWithPrototypeTest1.java
+        - `// 1. 싱글톤과 프로토타입을 같이 쓰면, 프로토타입이 싱글톤처럼 사용되어버린다.` 참고
+
+- 문제점
+  - 스프링은 일반적으로 `싱글톤 빈`을 사용하므로, `싱글톤 빈`이 `프로토타입 빈`을 사용하게 된다. 
+  - 그런데 `싱글톤 빈`은 생성 시점에만 의존관계 주입을 받기 때문에, `프로토타입 빈`이 새로 생성되기는 하지만, `싱글톤 빈`과 함께 계속 유지되는 것이 문제다.
+  - 아마 원하는 것이 이런 것은 아닐 것이다. 
+    - `프로토타입 빈`을 주입 시점에만 새로 생성하는게 아니라, 사용할 때 마다 새로 생성해서 사용하는 것을 원할 것이다.
 
 ### 프로토타입 스코프 - 싱글톤 빈과 함께 사용시 Provider로 문제 해결
 
+- `싱글톤 빈`과 `프로토타입 빈`을 함께 사용할 때, 어떻게 하면 사용할 때 마다 항상 새로운 `프로토타입 빈`을 생성할 수 있을까?
+
+- 가장 간단한 방법은 `싱글톤 빈`이 `프로토타입`을 사용할 때 마다 `스프링 컨테이너`에 새로 요청하는 것이다.
+  - 소스 코드 (비공개 레포지토리): `SingletonWithPrototypeTest1`
+    - https://github.com/JohnKim0911/kyh_spring_basic/blob/master/src/test/java/hello/core/scope/SingletonWithPrototypeTest1.java
+      - `// 2. 단순하고 무식(?)한 해결방법: 싱글톤 빈이 프로토타입을 사용할 때 마다 스프링 컨테이너에 새로 요청.` 참고
+        - `ac.getBean()`을 통해서 항상 새로운 프로토타입 빈이 생성된다.
+        - 의존관계를 외부에서 주입(DI) 받는게 아니라, 이렇게 `직접 필요한 의존관계를 찾는 것`을 `Dependency Lookup(DL)` `의존관계 조회(탐색)`이라 한다.
+      - 문제점 
+        - 그런데 이렇게 스프링의 애플리케이션 컨텍스트 전체를 주입받게 되면, 스프링 컨테이너에 종속적인 코드가 되고, 단위 테스트도 어려워진다.
+        - 지금 필요한 기능은 지정한 `프로토타입 빈`을 컨테이너에서 대신 찾아주는 딱! `DL` 정도의 기능만 제공하는 무언가가 있으면 된다.
+          - `스프링`에는 이미 모든게 준비되어 있다.
+
+- `ObjectFactory`, `ObjectProvider`
+  - 지정한 빈을 컨테이너에서 대신 찾아주는 `DL` 서비스를 제공하는 것이 바로 `ObjectProvider`이다. 
+    - 참고로, 과거에는 `ObjectFactory`가 있었는데, 여기에 편의 기능을 추가해서 `ObjectProvider`가 만들어졌다.
+  - 소스 코드 (비공개 레포지토리): `SingletonWithPrototypeTest1`
+    - https://github.com/JohnKim0911/kyh_spring_basic/blob/master/src/test/java/hello/core/scope/SingletonWithPrototypeTest1.java
+      - `// 3. ObjectProvider 사용.` 참고
+        - `prototypeBeanProvider.getObject()`을 통해서 항상 새로운 `프로토타입 빈`이 생성된다.
+        - `ObjectProvider`의 `getObject()`를 호출하면 내부에서는 스프링 컨테이너를 통해 해당 빈을 찾아서 반환 한다. (`DL`)
+        - 스프링이 제공하는 기능을 사용하지만, 기능이 단순하므로 단위테스트를 만들거나 mock 코드를 만들기는 훨씬 쉬워진다.
+        - `ObjectProvider`는 지금 딱 필요한 `DL` 정도의 기능만 제공한다.
+
+  - 특징
+    - `ObjectFactory`: 기능이 단순, 별도의 라이브러리 필요 없음, 스프링에 의존
+    - `ObjectProvider`: `ObjectFactory` 상속, 옵션, 스트림 처리등 편의 기능이 많고, 별도의 라이브러리 필요 없음, 스프링에 의존
+    
+- `JSR-330 Provider`
+  - 마지막 방법은 `javax.inject.Provider` 라는 `JSR-330 자바 표준`을 사용하는 방법이다.
+    - `스프링 부트 3.0`은 `jakarta.inject.Provider`를 사용한다.
+    - 이 방법을 사용하려면, `라이브러리`를 `gradle`에 추가해야 한다.
+      - `jakarta.inject:jakarta.inject-api:2.0.1`
+      - 소스 코드 (비공개 레포지토리): `build.gradle`
+        - https://github.com/JohnKim0911/kyh_spring_basic/blob/master/build.gradle
+  - 소스 코드 (비공개 레포지토리): `SingletonWithPrototypeTest1`
+    - https://github.com/JohnKim0911/kyh_spring_basic/blob/master/src/test/java/hello/core/scope/SingletonWithPrototypeTest1.java
+      - `// 4. JSR-330 Provider 적용` 참고
+        - `provider.get()`을 통해서 항상 새로운 `프로토타입 빈`이 생성된다.
+        - `provider`의 `get()`을 호출하면 내부에서는 스프링 컨테이너를 통해 해당 빈을 찾아서 반환한다. (DL)
+        - `자바 표준`이고, 기능이 단순하므로 단위테스트를 만들거나 mock 코드를 만들기는 훨씬 쉬워진다.
+        - `Provider`는 지금 딱 필요한 `DL` 정도의 기능만 제공한다.
+  - 특징
+    - `get()` 메서드 하나로 기능이 매우 단순하다.
+    - 별도의 라이브러리가 필요하다.
+    - 자바 표준이므로 스프링이 아닌 다른 컨테이너에서도 사용할 수 있다.
+
+- 정리
+  - 그러면 `프로토타입 빈`을 언제 사용할까?
+    - 매번 사용할 때 마다 의존관계 주입이 완료된 새로운 객체가 필요하면 사용하면 된다. 
+  - 그런데 `실무`에서 `웹 애플리케이션`을 개발해보면, `싱글톤 빈`으로 대부분의 문제를 해결할 수 있기 때문에 `프로토타입 빈`을 직접적으로 사용하는 일은 매우 드물다. ✅
+  - `ObjectProvider`, `JSR330 Provider` 등은 `프로토타입` 뿐만 아니라 `DL`이 필요한 경우는 언제든지 사용할 수 있다.
+
+- 참고
+  - 스프링이 제공하는 메서드에 `@Lookup` 애노테이션을 사용하는 방법도 있지만, 이전 방법들로 충분하고, 고려해야할 내용도 많아서 생략하겠다.
+  - 실무에서 자바 표준인 `JSR-330 Provider`를 사용할 것인지, 아니면 스프링이 제공하는 `ObjectProvider`를 사용할 것인지 고민이 될 것이다. 
+    - `ObjectProvider`는 `DL`을 위한 편의 기능을 많이 제공해주고 스프링 외에 별도의 의존관계 추가가 필요 없기 때문에 편리하다. 
+    - 만약(정말 그럴일은 거의 없겠지만) 코드를 스프링이 아닌 `다른 컨테이너`에서도 사용할 수 있어야 한다면 `JSR-330 Provider`를 사용해야한다.
+  - 스프링을 사용하다 보면 이 기능 뿐만 아니라 다른 기능들도 `자바 표준`과 `스프링`이 제공하는 기능이 겹칠때가 많이 있다. 
+    - 대부분 `스프링`이 더 다양하고 편리한 기능을 제공해주기 때문에, 특별히 다른 컨테이너를 사용할 일이 없다면, `스프링`이 제공하는 기능을 사용하면 된다.
+
 ### 웹 스코프
 
-### request 스코프 예제 만들기
+- `웹 스코프`의 특징
+  - `웹 스코프`는 `웹 환경`에서만 동작한다.
+  - `웹 스코프`는 `프로토타입`과 다르게 `스프링`이 해당 스코프의 종료시점까지 관리한다.
+    - 따라서 `종료 메서드`가 호출된다.
+
+- `웹 스코프` 종류
+  - `request`: `HTTP 요청` 하나가 들어오고 나갈 때 까지 유지되는 스코프. 각각의 HTTP 요청마다 별도의 빈 인스턴스가 생성되고, 관리된다.
+  - `session`: `HTTP Session`과 동일한 생명주기를 가지는 스코프
+  - `application`: `서블릿 컨텍스트(ServletContext)`와 동일한 생명주기를 가지는 스코프
+  - `websocket`: `웹 소켓`과 동일한 생명주기를 가지는 스코프
+
+- 여기서는 `request` 스코프를 예제로 설명한다. 나머지도 범위만 다르지 동작 방식은 비슷하다.
+
+- HTTP request 요청 당 각각 할당되는 `request 스코프`
+
+    ![request 스코프](https://github.com/user-attachments/assets/5bdfd502-b9ca-483a-87ac-18f5729051f8)
+
+### `request 스코프` 예제 만들기
+
+- `웹 환경` 추가
+  - `웹 스코프`는 `웹 환경`에서만 동작하므로 `web 환경`이 동작하도록 `라이브러리`를 추가하자.
+  - `build.gradle`에 추가
+    - 소스 코드 (비공개 레포지토리): `build.gradle`
+      - https://github.com/JohnKim0911/kyh_spring_basic/blob/master/build.gradle
+        - `implementation 'org.springframework.boot:spring-boot-starter-web'`
+  - `hello.core.CoreApplication`의 `main 메서드`를 실행하면 `웹 애플리케이션`이 실행된다.
+    - 소스 코드 (비공개 레포지토리): `CoreApplication`
+      - https://github.com/JohnKim0911/kyh_spring_basic/blob/master/src/main/java/hello/core/CoreApplication.java
+    - 실행결과 (콘솔)
+      - `Tomcat started on port(s): 8080 (http) with context path ''`
+    - 참고
+      - `spring-boot-starter-web` 라이브러리를 추가하면, `스프링 부트`는 `내장 톰켓 서버`를 활용해서 `웹 서버`와 `스프링`을 함께 실행시킨다.
+      - `스프링 부트`는 `웹 라이브러리`가 없으면, 지금까지 학습한 `AnnotationConfigApplicationContext`을 기반으로 애플리케이션을 구동한다. 
+      - `웹 라이브러리`가 추가되면, 웹과 관련된 추가 설정과 환경들이 필요하므로 `AnnotationConfigServletWebServerApplicationContext`를 기반으로 애플리케이션을 구동한다.
+      - 만약 기본 포트인 8080 포트를 다른곳에서 사용중이어서 오류가 발생하면 포트를 변경해야 한다. 
+        - 9090 포트로 변경하려면 다음 설정을 추가하자.
+          - `main/resources/application.properties`
+            - `server.port=9090`
+        - 나는 그냥 사용중인 8080을 닫고 다시 실행하였다.
+
+- `request 스코프` 예제 개발
+
+  - 동시에 여러 `HTTP 요청`이 오면 정확히 어떤 요청이 남긴 로그인지 구분하기 어렵다. 
+    - 이럴때 사용하기 딱 좋은것이 바로 `request 스코프`이다.
 
 ### 스코프와 Provider
 
