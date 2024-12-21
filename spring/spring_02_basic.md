@@ -1942,7 +1942,80 @@ ApplicationContext applicationContext =  new AnnotationConfigApplicationContext(
   - 동시에 여러 `HTTP 요청`이 오면 정확히 어떤 요청이 남긴 로그인지 구분하기 어렵다. 
     - 이럴때 사용하기 딱 좋은것이 바로 `request 스코프`이다.
 
+  - `MyLogger`
+    - 소스 코드 (비공개 레포지토리): 
+      - https://github.com/JohnKim0911/kyh_spring_basic/blob/master/src/main/java/hello/core/common/MyLogger.java
+        - 로그를 출력하기 위한 `MyLogger` 클래스이다.
+        - `@Scope(value = "request")`를 사용해서 `request 스코프`로 지정했다.
+        - 이제 이 빈은 `HTTP 요청` 당 하나씩 생성되고, `HTTP 요청`이 끝나는 시점에 소멸된다.
+        - 이 빈이 생성되는 시점에 자동으로 `@PostConstruct` 초기화 메서드를 사용해서 `uuid`를 생성해서 저장해둔다.
+        - 이 빈은 `HTTP 요청` 당 하나씩 생성되므로, `uuid`를 저장해두면 다른 `HTTP 요청`과 구분할 수 있다.
+        - 이 빈이 소멸되는 시점에 `@PreDestroy`를 사용해서 종료 메시지를 남긴다.
+        - `requestURL`은 이 빈이 생성되는 시점에는 알 수 없으므로, 외부에서 `setter`로 입력 받는다.
+  - `LogDemoController`
+    - 소스 코드 (비공개 레포지토리): `// 1. 초기 코드 (오류남... provider 적용 전)` 참고
+      - https://github.com/JohnKim0911/kyh_spring_basic/blob/master/src/main/java/hello/core/web/LogDemoController.java
+        - `로거`가 잘 작동하는지 확인하는 테스트용 `컨트롤러`다.
+        - 여기서 `HttpServletRequest`를 통해서 요청 URL을 받았다.
+          - `requestURL` 값:  `http://localhost:8080/log-demo`
+        - 이렇게 받은 `requestURL` 값을 `myLogger`에 저장해둔다.
+          - `myLogger`는 `HTTP 요청` 당 각각 구분되므로 다른 `HTTP 요청` 때문에 값이 섞이는 걱정은 하지 않아도 된다.
+        - 참고: 
+          - `requestURL`을 `MyLogger`에 저장하는 부분은 `컨트롤러` 보다는 공통 처리가 가능한 `스프링 인터셉터`나 `서블릿 필터` 같은 곳을 활용하는 것이 좋다.
+          - 지금은 예제를 단순화하게 하기 위해서 `컨트롤러`에서 함.
+  - `LogDemoService`
+    - 소스 코드 (비공개 레포지토리): `// 1. 초기 코드 (오류남... provider 적용 전)` 참고
+      - https://github.com/JohnKim0911/kyh_spring_basic/blob/master/src/main/java/hello/core/web/LogDemoService.java
+- 중요
+  - 문제점
+    - `request scope`를 사용하지 않고, `파라미터`로 이 모든 정보를 `서비스 계층`에 넘긴다면, `파라미터`가 많아서 지저분해진다.
+    - 더 문제는 `requestURL` 같은 웹과 관련된 정보가 웹과 관련없는 `서비스 계층`까지 넘어가게 된다.
+      - 웹과 관련된 부분은 `컨트롤러`까지만 사용해야 한다. 
+      - `서비스 계층`은 웹 기술에 종속되지 않고, 가급적 순수하게 유지하는 것이 유지보수 관점에서 좋다.
+  - 문제점 해결
+    - `request scope`의 `MyLogger` 덕분에 이런 부분을 `파라미터`로 넘기지 않고, `MyLogger`의 `멤버변수`에 저장해서 코드와 계층을 깔끔하게 유지할 수 있다.
+
+- 실행
+  - 에러가 난다...
+    - `Error creating bean with name 'myLogger': Scope 'request' is not active for the current thread; consider defining a scoped proxy for this bean if you intend to refer to it from a singleton;`
+  - 왜?
+    - `스프링 애플리케이션`을 실행하는 시점에 `싱글톤 빈`은 생성해서 주입이 가능하지만, `request 스코프 빈`은 아직 생성되지 않는다.
+    - `request 스코프 빈`은 실제 고객의 요청이 와야 생성할 수 있다!
+
 ### 스코프와 Provider
+
+- 첫번째 해결방안은 앞서 배운 `Provider`를 사용하는 것이다.
+  - 간단히 `ObjectProvider`를 사용해보자.
+
+- 소스 코드 (비공개 레포지토리):  `LogDemoController`, `LogDemoService` - `// 2. ObjectProvider 적용` 참고
+  - https://github.com/JohnKim0911/kyh_spring_basic/tree/master/src/main/java/hello/core/web
+
+- 실행
+  - `main() 메서드`로 스프링을 실행하고, 웹 브라우저에 `http://localhost:8080/log-demo` 를 입력하자.
+
+- 실행결과
+  - 웹 화면
+  
+    ![web화면](https://github.com/user-attachments/assets/4a3eb051-a96f-4057-9c5a-0eb9fffbaa31)
+
+  - 콘솔
+    - 새로고침 천천히 순차적으로 할 때:
+      - 같은 요청끼리 순차적으로 출력된다. 
+
+        ![순차실행](https://github.com/user-attachments/assets/88a0b4fd-521d-4c7c-972e-33cd90613f07)
+
+    - 새로고침 빠르게 여러번 할 때: 
+      - 여러 요청이 섞여서 출력된다. (`uuid`를 통해서 구분 할 수 있다.)
+      
+      ![연속실행](https://github.com/user-attachments/assets/b9f0f9fa-d59d-40c0-9738-dd5ff17925b3)
+
+- 설명
+  - `ObjectProvider` 덕분에 `ObjectProvider.getObject()`를 호출하는 시점까지 `request scope 빈`의 생성을 지연할 수 있다.
+  - `ObjectProvider.getObject()`를 호출하시는 시점에는 `HTTP 요청`이 진행중이므로 `request scope 빈`의 생성이 정상 처리된다.
+  - `ObjectProvider.getObject()`를 `LogDemoController`, `LogDemoService` 에서 각각 한번씩 따로 호출해도 같은 `HTTP 요청`이면 같은 `스프링 빈`이 반환된다!
+
+- 이 정도에서 끝내도 될 것 같지만… 
+  - 개발자들의 코드 몇자를 더 줄이려는 욕심은 끝이 없다.
 
 ### 스코프와 프록시
 
