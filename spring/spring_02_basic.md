@@ -1937,6 +1937,7 @@ ApplicationContext applicationContext =  new AnnotationConfigApplicationContext(
             - `main/resources/application.properties`
               - `server.port=9090`
           - 나는 그냥 사용중인 8080을 닫고 다시 실행하였다.
+            - [이미 해당 포트 번호가 사용 중 인 경우, 해당 작업 끝내기](../debug/portAlreadyBeingUsed.md)
         - 예전에 작성했던 `logback.xml`를 제거해줘야 로그가 정상적으로 나온다. 
           - 저게 있으면 로그가 너무 많이 떠서 헷갈린다...
           - 나는 그냥 파일명을 바꿔서 해결했다. `logback.xml` --> `logback_xml`

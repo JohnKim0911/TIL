@@ -85,7 +85,7 @@
   - `main` 메서드를 실행한다. (프로젝트 생성시 샘플로 생성된 코드)
     - 소스코드 (비공개 레포지토리) `HelloSpringApplication`:
       - https://github.com/JohnKim0911/kyh_hello-spring/blob/master/src/main/java/hello/hello_spring/HelloSpringApplication.java
-  - (강의에 없는 내용) [이미 해당 포트 번호가 사용 중 인 경우, 해당 작업 끝내기](debug/portAlreadyBeingUsed.md)
+  - (강의에 없는 내용) [이미 해당 포트 번호가 사용 중 인 경우, 해당 작업 끝내기](../debug/portAlreadyBeingUsed.md)
   - 아래와 같이 정상 실행되면, 인터넷 브라우저에서 `localhost:8080`을 입력한다.
     ![console](https://github.com/user-attachments/assets/70775837-6ca4-4209-9f01-c53db6f76818)
   - 아래와 같이 에러 페이지가 뜨면 정상!
