@@ -85,19 +85,7 @@
   - `main` 메서드를 실행한다. (프로젝트 생성시 샘플로 생성된 코드)
     - 소스코드 (비공개 레포지토리) `HelloSpringApplication`:
       - https://github.com/JohnKim0911/kyh_hello-spring/blob/master/src/main/java/hello/hello_spring/HelloSpringApplication.java
-  - 이미 해당 포트 번호가 사용 중 인 경우, 해당 작업 끝내기 (강의에 없는 내용)
-    - 나의 경우, 8080 포트가 이미 사용중이라 에러가 떴었다. 이런 경우, 사용하고 있는 8080을 닫아줘야한다.
-    - 방법
-      - 관리자 권한으로 명령 프롬프트를 연다. (`ctrl` + `r` --> `cmd`)
-      - `netstat-ano`을 입력하여, 해당 주소 8080을 사용하고 있는 `PID`를 확인한다.
-      
-        ![find pid](https://github.com/user-attachments/assets/4bb75c2a-4109-486f-a033-81e7393168c9)
-
-      - `taskkill /pid 5988 /f`를 입력한다. (5988 대신 해당 `PID`를 입력)
- 
-        ![taskkill](https://github.com/user-attachments/assets/c2f6a121-a59b-454d-881f-7aaa2a2c7498)
-      
-      - 위와 같이 성공적으로 종료되었다.
+  - (강의에 없는 내용) [이미 해당 포트 번호가 사용 중 인 경우, 해당 작업 끝내기](debug/portAlreadyBeingUsed.md)
   - 아래와 같이 정상 실행되면, 인터넷 브라우저에서 `localhost:8080`을 입력한다.
     ![console](https://github.com/user-attachments/assets/70775837-6ca4-4209-9f01-c53db6f76818)
   - 아래와 같이 에러 페이지가 뜨면 정상!

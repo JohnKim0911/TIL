@@ -1931,11 +1931,15 @@ ApplicationContext applicationContext =  new AnnotationConfigApplicationContext(
       - `spring-boot-starter-web` 라이브러리를 추가하면, `스프링 부트`는 `내장 톰켓 서버`를 활용해서 `웹 서버`와 `스프링`을 함께 실행시킨다.
       - `스프링 부트`는 `웹 라이브러리`가 없으면, 지금까지 학습한 `AnnotationConfigApplicationContext`을 기반으로 애플리케이션을 구동한다. 
       - `웹 라이브러리`가 추가되면, 웹과 관련된 추가 설정과 환경들이 필요하므로 `AnnotationConfigServletWebServerApplicationContext`를 기반으로 애플리케이션을 구동한다.
-      - 만약 기본 포트인 8080 포트를 다른곳에서 사용중이어서 오류가 발생하면 포트를 변경해야 한다. 
-        - 9090 포트로 변경하려면 다음 설정을 추가하자.
-          - `main/resources/application.properties`
-            - `server.port=9090`
-        - 나는 그냥 사용중인 8080을 닫고 다시 실행하였다.
+      - 겪어던 문제
+        - 만약 기본 포트인 8080 포트를 다른곳에서 사용중이어서 오류가 발생하면 포트를 변경해야 한다. 
+          - 9090 포트로 변경하려면 다음 설정을 추가하자.
+            - `main/resources/application.properties`
+              - `server.port=9090`
+          - 나는 그냥 사용중인 8080을 닫고 다시 실행하였다.
+        - 예전에 작성했던 `logback.xml`를 제거해줘야 로그가 정상적으로 나온다. 
+          - 저게 있으면 로그가 너무 많이 떠서 헷갈린다...
+          - 나는 그냥 파일명을 바꿔서 해결했다. `logback.xml` --> `logback_xml`
 
 - `request 스코프` 예제 개발
 
@@ -2011,7 +2015,7 @@ ApplicationContext applicationContext =  new AnnotationConfigApplicationContext(
 
 - 설명
   - `ObjectProvider` 덕분에 `ObjectProvider.getObject()`를 호출하는 시점까지 `request scope 빈`의 생성을 지연할 수 있다.
-  - `ObjectProvider.getObject()`를 호출하시는 시점에는 `HTTP 요청`이 진행중이므로 `request scope 빈`의 생성이 정상 처리된다.
+  - `ObjectProvider.getObject()`를 호출하는 시점에는 `HTTP 요청`이 진행중이므로 `request scope 빈`의 생성이 정상 처리된다.
   - `ObjectProvider.getObject()`를 `LogDemoController`, `LogDemoService` 에서 각각 한번씩 따로 호출해도 같은 `HTTP 요청`이면 같은 `스프링 빈`이 반환된다!
 
 - 이 정도에서 끝내도 될 것 같지만… 
