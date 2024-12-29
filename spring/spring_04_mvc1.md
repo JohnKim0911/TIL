@@ -54,14 +54,26 @@
 - HTTP 응답 데이터 - API JSON
 - 정리
 
+> 비공개 레포지토리: https://github.com/JohnKim0911/kyh_spring_mvc1/blob/master/readme/s03.md
+
 ## 4. 서블릿, JSP, MVC 패턴
+
+> 비공개 레포지토리: https://github.com/JohnKim0911/kyh_spring_mvc1/blob/master/readme/s04.md
 
 ## 5. MVC 프레임워크 만들기
 
+> 비공개 레포지토리: https://github.com/JohnKim0911/kyh_spring_mvc1/blob/master/readme/s05.md
+
 ## 6. 스프링 MVC - 구조 이해
+
+> 비공개 레포지토리: https://github.com/JohnKim0911/kyh_spring_mvc1/blob/master/readme/s06.md
 
 ## 7. 스프링 MVC - 기본 기능
 
+> 비공개 레포지토리: https://github.com/JohnKim0911/kyh_spring_mvc1/blob/master/readme/s07.md
+
 ## 8. 스프링 MVC - 웹 페이지 만들기
+
+> 비공개 레포지토리: https://github.com/JohnKim0911/kyh_spring_mvc1/blob/master/readme/s08.md
 
 ## 9. 다음으로
