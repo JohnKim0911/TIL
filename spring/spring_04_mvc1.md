@@ -22,8 +22,7 @@
   - `여기서는 목차만 공개`합니다.
     - 실제 내용은 `비공개 레포지토리`에 정리하였습니다.
       - 유료 강의이고, 내용을 무단으로 배포하지 않기 위함.
-      - `비공개 레포지토리`: 링크가 있긴하지만, 저만 볼 수 있습니다. (404 error 뜨는게 정상)
-        - https://github.com/JohnKim0911/kyh_spring_mvc1/blob/master/README.md
+      - 각 챕터마다 링크가 있긴하지만, 저만 볼 수 있습니다. (404 error 뜨는게 정상)
 
 ## 1. 소개
 
@@ -36,6 +35,8 @@
 - 동시 요청 - 멀티 쓰레드
 - HTML, HTTP API, CSR, SSR
 - 자바 백엔드 웹 기술 역사
+
+> 비공개 레포지토리: https://github.com/JohnKim0911/kyh_spring_mvc1/blob/master/readme/s02.md
 
 ## 3. 서블릿
 
