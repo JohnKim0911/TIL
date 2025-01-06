@@ -10,7 +10,7 @@
 | 3  | [타임리프 - 스프링 통합과 폼](#3-타임리프---스프링-통합과-폼)           | 1시간 39분   | 24             | 2025.01.03 (금)                 |
 | 4  | [메시지, 국제화](#4-메시지-국제화)                            | 52분       | 18             | 2025.01.03 (금) ~ 01.04 (토)     |
 | 5  | [검증1 - Validation](#5-검증1---validation)           | 3시간 3분    | 36             | 2025.01.05(일) ~ 01.06(월)       |
-| 6  | [검증2 - Bean Validation](#6-검증2---bean-validation) | 1시간 43분   |                |                                |
+| 6  | [검증2 - Bean Validation](#6-검증2---bean-validation) | 1시간 43분   | 33             | 2025.01.06(월) ~ 01.07(화)       |
 | 7  | [로그인 처리1 - 쿠키, 세션](#7-로그인-처리1---쿠키-세션)            | 2시간 20분   |                |                                |
 | 8  | [로그인 처리2 - 필터, 인터셉터](#8-로그인-처리2---필터-인터셉터)        | 1시간 39분   |                |                                |
 | 9  | [예외 처리와 오류 페이지](#9-예외-처리와-오류-페이지)                 | 1시간 22분   |                |                                |
@@ -100,6 +100,22 @@
 > 비공개 레포지토리: https://github.com/JohnKim0911/kyh_spring_mvc2_part4
 
 ## 6. 검증2 - Bean Validation
+
+- Bean Validation - 소개
+- Bean Validation - 시작
+- Bean Validation - 프로젝트 준비 V3
+- Bean Validation - 스프링 적용
+- Bean Validation - 에러 코드
+- Bean Validation - 오브젝트 오류
+- Bean Validation - 수정에 적용
+- Bean Validation - 한계
+- Bean Validation - groups
+- Form 전송 객체 분리 - 프로젝트 준비 V4
+- Form 전송 객체 분리 - 소개
+- Form 전송 객체 분리 - 개발
+- Bean Validation - HTTP 메시지 컨버터
+
+> 비공개 레포지토리: `5. 검증1 - Validation`와 동일
 
 ## 7. 로그인 처리1 - 쿠키, 세션
 
