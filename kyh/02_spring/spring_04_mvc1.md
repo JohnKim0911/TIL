@@ -23,6 +23,10 @@
     - 실제 내용은 `비공개 레포지토리`에 정리하였습니다.
       - 유료 강의이고, 내용을 무단으로 배포하지 않기 위함.
       - 각 챕터마다 링크가 있긴하지만, 저만 볼 수 있습니다. (404 error 뜨는게 정상)
+      - 비공개 레포지토리:
+        - https://github.com/JohnKim0911/kyh_spring_mvc1
+        - https://github.com/JohnKim0911/kyh_spring_mvc1_part2
+        - https://github.com/JohnKim0911/kyh_spring_mvc1_part3
 
 ## 1. 소개
 
