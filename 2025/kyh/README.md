@@ -42,18 +42,15 @@
 
 |   | 제목                                   | 강의 분량    | 교재 분량 <br>(페이지) | 학습 기간                       | 배운내용 정리                              |
 |---|--------------------------------------|----------|-----------------|-----------------------------|--------------------------------------|
-| 1 | 자바 ORM 표준 JPA 프로그래밍 - 기본편            | 16:03:00 |                 | 2025.01.18 ~                | [jpa-basic](03_jpa/jpa_01_basic.md)  |
+| 1 | 자바 ORM 표준 JPA 프로그래밍 - 기본편            | 16:03:00 | 454             | 2025.01.18 ~ 01.26 <br>(9일) | [jpa-basic](03_jpa/jpa_01_basic.md)  |
 | 2 | 실전! 스프링 부트와 JPA 활용1 - 웹 애플리케이션 개발    | 7:44:00  | 93              | 2025.01.16 ~ 01.18 <br>(3일) | [jpa-shop](03_jpa/jpa_02_jpashop.md) |
 | 3 | 실전! 스프링 부트와 JPA 활용2 - API 개발과 성능 최적화 | 6:35:00  |                 |                             |                                      |
 | 4 | 실전! 스프링 데이터 JPA                      | 7:17:00  |                 |                             |                                      |
 | 5 | 실전! Querydsl                         | 6:24:00  |                 |                             |                                      |
 
+- 추가 복습 (비공개 Github Repository)
+  - 2025.01.22 : `JPA 활용 1편` 복습 - https://github.com/JohnKim0911/kyh-jpashop-practice
+  - 2025.01.23 : `JPA 활용 1편` 복습 - https://github.com/JohnKim0911/kyh-jpashop-practice2
+
 ---
-
-## 비공개 Github Repository
-
-- 2025.01.22 : `JPA 활용 1편` - 전체 코드 교재보고 다시 쳐보기 
-  - https://github.com/JohnKim0911/kyh-jpashop-practice
-- 2025.01.23 : `JPA 활용 1편` - 전체 코드 어제 쓴 코드만 보고 다시 쳐보기
-  - https://github.com/JohnKim0911/kyh-jpashop-practice2
 
