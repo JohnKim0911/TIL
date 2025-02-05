@@ -26,7 +26,7 @@
   - ✅ 실전! 스프링 부트와 JPA 활용1 - 웹 애플리케이션 개발
   - ✅ 실전! 스프링 부트와 JPA 활용2 - API 개발과 성능 최적화
   - ✅ 실전! 스프링 데이터 JPA
-  - ✔️ 실전! Querydsl
+  - ✅ 실전! Querydsl
 
 ## 🔎 로드맵 목차 (상세)
 
@@ -69,7 +69,7 @@
 | 1 | 자바 ORM 표준 JPA 프로그래밍 - 기본편            | 16:03:00 | 454             | 2025.01.18 ~ 01.26 <br>(9일) | [jpa-basic](03_jpa/jpa_01_basic.md)             |
 | 3 | 실전! 스프링 부트와 JPA 활용2 - API 개발과 성능 최적화 | 6:35:00  | 47              | 2025.01.27 ~ 01.31 <br>(5일) | [jpa-shop-api](03_jpa/jpa_03_jpashop_api.md)    |
 | 4 | 실전! 스프링 데이터 JPA                      | 7:17:00  | 73              | 2025.01.31 ~ 02.03 <br>(4일) | [spring-data-jpa](03_jpa/jpa_04_spring_data.md) |
-| 5 | 실전! Querydsl                         | 6:24:00  |                 | 2025.02.03 ~                | [querydsl](03_jpa/jpa_05_querydsl.md)           |
+| 5 | 실전! Querydsl                         | 6:24:00  | 80              | 2025.02.03 ~ 02.05 <br>(3일) | [querydsl](03_jpa/jpa_05_querydsl.md)           |
 
 - 추가 복습 (비공개 Github Repository)
   - 2025.01.22 : `JPA 활용 1편` 복습 - https://github.com/JohnKim0911/kyh-jpashop-practice
