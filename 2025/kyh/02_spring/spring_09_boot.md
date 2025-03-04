@@ -10,7 +10,7 @@
 | 3  | [웹 서버와 서블릿 컨테이너](#3-웹-서버와-서블릿-컨테이너)                     | 1시간 37분    | 43             | 2025.02.28 (금)               |
 | 4  | [스프링 부트와 내장 톰캣](#4-스프링-부트와-내장-톰캣)                       | 1시간 31분    | 26             | 2024.03.01 (토) ~ 03.02 (일)   |
 | 5  | [스프링 부트 스타터와 라이브러리 관리](#5-스프링-부트-스타터와-라이브러리-관리)         | 28분        | 7              | 2024.03.03 (월)               |
-| 6  | [자동 설정(Auto Configuration)](#6-자동-설정auto-configuration) | 2시간 12분    |                |                              |
+| 6  | [자동 설정(Auto Configuration)](#6-자동-설정auto-configuration) | 2시간 12분    | 44             | 2024.03.04 (화)               |
 | 7  | [외부설정과 프로필1](#7-외부설정과-프로필1)                             | 2시간 10분    |                |                              |
 | 8  | [외부설정과 프로필2](#8-외부설정과-프로필2)                             | 1시간 27분    |                |                              |
 | 9  | [액츄에이터](#9-액츄에이터)                                       | 1시간 10분    |                |                              |
@@ -96,6 +96,28 @@
 - 스프링 부트 스타터
 
 ## 6. 자동 설정(Auto Configuration)
+
+- 프로젝트 설정
+  - `비공개 레포지토리`: https://github.com/JohnKim0911/kyh_springboot_part5_autoconfig
+- 예제 만들기
+- 자동 구성 확인
+- 스프링 부트의 자동 구성
+- 자동 구성 직접 만들기 - 기반 예제
+- @Conditional
+- @Conditional - 다양한 기능
+- 순수 라이브러리 만들기
+  - `비공개 레포지토리`: https://github.com/JohnKim0911/kyh_springboot_part6_memory-v1
+- 순수 라이브러리 사용하기1
+  - `비공개 레포지토리`: https://github.com/JohnKim0911/kyh_springboot_part7_project-v1
+- 순수 라이브러리 사용하기2
+- 자동 구성 라이브러리 만들기
+  - `비공개 레포지토리`: https://github.com/JohnKim0911/kyh_springboot_part8_memory-v2
+- 자동 구성 라이브러리 사용하기1
+  - `비공개 레포지토리`: https://github.com/JohnKim0911/kyh_springboot_part9_project-v2
+- 자동 구성 라이브러리 사용하기2
+- 자동 구성 이해1 - 스프링 부트의 동작
+- 자동 구성 이해2 - ImportSelector
+  - `비공개 레포지토리(기존) `: https://github.com/JohnKim0911/kyh_springboot_part5_autoconfig
 
 ## 7. 외부설정과 프로필1
 
