@@ -1,5 +1,11 @@
 # SQLD
 
+## 📅 시험 일정
+
+![sqld_schedule](img/sqld_schedule.png)
+
+> 데이터자격시험 홈페이지 : https://www.dataq.or.kr/www/main.do
+
 ## 📌 시험 구성
 
 ![sqld](img/sqld.png)
@@ -10,12 +16,6 @@
     - 1과목: 10문제 중, 4문제 이상 맞춰야 함.
     - 2과목: 40문제 중, 16문제 이상 맞춰야 함.
 - ALL 객관식.
-
-## 📅 시험 일정
-
-![sqld_schedule](img/sqld_schedule.png)
-
-> 데이터자격시험 홈페이지 : https://www.dataq.or.kr/www/main.do
 
 ## 📌 강의 소개
 
