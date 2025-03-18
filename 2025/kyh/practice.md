@@ -6,7 +6,7 @@
 
 |   | 기간                             | 제목          | 설명                                | URL<br>공개여부 | URL                                                       |
 |---|--------------------------------|-------------|-----------------------------------|:-----------:|-----------------------------------------------------------|
-| 4 | 2025.03.17 (월) <br>~           | Querydsl    | 교재만 보고 복습                         |     비공개     | https://github.com/JohnKim0911/kyh-querydsl-review        |
+| 4 | 2025.03.17 (월) <br>~ 03.18 (화) | Querydsl    | 교재만 보고 복습                         |     비공개     | https://github.com/JohnKim0911/kyh-querydsl-review        |
 | 3 | 2025.03.13 (목) <br>~ 03.17 (월) | 스프링 데이터 JPA | 교재만 보고 복습                         |     비공개     | https://github.com/JohnKim0911/kyh-spring-data-jpa-review |
 | 2 | 2025.03.12 (수) <br>~ 03.13 (목) | JPA 활용 2편   | - 교재만 보고 복습 <br>- `활용 1편`에 이어서 작성 |     비공개     | https://github.com/JohnKim0911/kyh_jpashop_review         |
 | 1 | 2025.03.11 (화) <br>~ 03.12 (수) | JPA 활용 1편   | 교재만 보고 복습                         |     비공개     | https://github.com/JohnKim0911/kyh_jpashop_review         |
