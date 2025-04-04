@@ -16,7 +16,7 @@
   - 2024.04 : [[KH정보교육원] 자바 - 사전학습](2024/kh/preJava.md)
   - 2024.02 ~ 2024.07 : [[인프런 / 김영한] 백엔드 개발자 로드맵](2024/kyh/README.md)
 - 2023
-  - 2023.?? : [[두목넷 / 한다맨] 정보처리기능사](2023/craftsman/README.md) (취득)
+  - 2023.?? : [[두목넷 / 한다맨] 정보처리기능사](2023/craftsman/README.md) (취득완료)
   - 2023.?? : [[udemy] The Complete 2023 Web Development Bootcamp](2023/udemy/webdev.md) (미완료)
   - 2023.?? : [[udemy] 100 Days of Code: the Complete Python Pro Bootcamp](2023/udemy/python.md)
 - 2022
